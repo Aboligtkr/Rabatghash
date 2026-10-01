@@ -10,14 +10,16 @@ const mongoose = require('mongoose');
 
 const app = express();
 app.use(cors());
-app.use(express.static(__dirname));
+app.use(express.static(__dirname));app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
+  maxHttpBufferSize: 1e7, // 👈 هذه هي الإضافة (تسمح بـ 10 ميجابايت)
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
 });
 
 // 1. ضع رابط الاتصال الخاص بك من MongoDB هنا (مع كتابة كلمة السر واسم المستخدم بدلاً من الأقواس)
