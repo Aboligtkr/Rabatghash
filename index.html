@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>تطبيق المملكة الربطخشاوية</title>
   <style>
+    canvas {
+  max-width: 100% !important;
+  max-height: 70vh !important;
+  height: auto !important;
+  object-fit: contain;
+}
     @font-face {
       font-family: 'Zanjabeel';
       src: url('assets/fonts/zanjabeel-black.otf') format('opentype');
@@ -31,7 +37,9 @@
       align-items: center;
       height: 100vh;
       padding: 15px;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
+      width: 100%;
     }
 
     .container {
@@ -766,7 +774,7 @@
     <div class="chat-footer">
       <label class="img-upload-btn" title="إرفاق صورة">
         📷
-        <input type="file" accept="image/*" style="display:none;" onchange="sendImage(event, 'public')">
+        <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="sendImage(event, 'public')">
       </label>
       <input type="text" id="chat-input-public" placeholder="اكتب رسالتك..." onkeypress="handleKeyPress(event, 'public')">
       <button class="btn" style="width:auto; padding:10px 16px; margin:0;" onclick="sendMessage('public')">إرسال</button>
@@ -897,16 +905,22 @@
     let isCitizenUser = false;
 
     window.onload = function() {
-      const savedUser = localStorage.getItem('saved_user');
-      const savedRole = localStorage.getItem('saved_role');
-      const savedIsCitizen = localStorage.getItem('saved_is_citizen');
+    const savedUser = localStorage.getItem('saved_user');
+    const savedRole = localStorage.getItem('saved_role');
+    const savedIsCitizen = localStorage.getItem('saved_is_citizen') === 'true';
 
-      if (savedUser) {
+    if (savedUser && savedRole) {
         currentUser = savedUser;
-        isCitizenUser = savedIsCitizen === 'true';
-        showDashboard(savedUser, savedRole, isCitizenUser);
-      }
-    };
+        isCitizenUser = savedIsCitizen;
+
+        // إخفاء شاشة الدخول فوراً
+        const loginScreen = document.getElementById('login-screen') || document.querySelector('.login-container');
+        if (loginScreen) loginScreen.style.display = 'none';
+
+        // تشغيل اللوحة الشاملة
+        showDashboard(savedUser, savedRole, savedIsCitizen);
+    }
+};
 
     function login() {
       const userVal = document.getElementById('username').value.trim().toLowerCase();
@@ -1421,15 +1435,24 @@
             highScoreEl.innerText = score;
         }
     }
+let lastFrameTime = 0;
+const frameInterval = 1000 / 60;
+    function loop(timestamp) {
+    if (!isRunning) return;
 
-    function loop() {
-        if (!isRunning) return;
+    // حساب الوقت المنقضي لتثبيت الـ FPS
+    const elapsed = timestamp - lastFrameTime;
+
+    if (elapsed >= frameInterval) {
+        lastFrameTime = timestamp - (elapsed % frameInterval);
+
         frame++;
         if (currentGame === 'bird') { updateBird(); drawBirdGame(); }
         else { updateDino(); drawDinoGame(); }
-        gameLoop = requestAnimationFrame(loop);
     }
 
+    gameLoop = requestAnimationFrame(loop);
+}
     function drawPreview() {
         if (currentGame === 'bird') drawBirdGame(); else drawDinoGame();
     }
