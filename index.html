@@ -2,9 +2,37 @@
 <html lang="ar" dir="rtl">
 <head><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>تطبيق المملكة الربطخشاوية</title>
   <style>
+   .chat-footer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background-color: #ffffff;
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+            /* حماية الحافة السفلية للجوال لئلا يختفي الزر خلف شريط السحب */
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            z-index: 100;
+        }
+
+        /* ضمان عدم انكماش زر الإرسال */
+        .chat-footer button {
+            flex-shrink: 0 !important;
+            white-space: nowrap;
+        }
+
+        /* تجاوب حقل النص */
+        .chat-footer input[type="text"] {
+            flex: 1;
+            min-width: 0;
+        }
+    </style>
+</head> 
     canvas {
   max-width: 100% !important;
   max-height: 70vh !important;
