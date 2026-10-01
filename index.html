@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>//
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تطبيق المملكة الربطخشاوية</title>
+  <style>
+    @font-face {
+      font-family: 'Zanjabeel';
+      src: url('assets/fonts/zanjabeel-black.otf') format('opentype');
+    }
+    :root {
+      --primary-color: #800020;
+      --secondary-color: #580016;
+      --bg-color: #fcf8f8;
+      --text-color: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Zanjabeel', 'Segoe UI', Tahoma, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .container {
+      background: white;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      position: relative;
+      animation: fadeInContainer 0.5s ease-out;
+    }
+
+    @keyframes fadeInContainer {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* أنماط الشعار */
+    .logo-container {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .app-logo {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      border-radius: 50%;
+      border: 3px solid var(--primary-color);
+      padding: 4px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(128, 0, 32, 0.2);
+    }
+
+    .header-logo {
+      width: 45px;
+      height: 45px;
+      object-fit: contain;
+      border-radius: 50%;
+      border: 2px solid var(--primary-color);
+    }
+
+    #login-screen {
+      padding: 30px;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 5px;
+      color: var(--primary-color);
+      font-size: 22px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .input-group input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(128, 0, 32, 0.15);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(128, 0, 32, 0.2);
+    }
+
+    .btn:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(128, 0, 32, 0.35);
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .btn-guest {
+      background-color: #6b7280;
+      margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(107, 114, 128, 0.2);
+    }
+
+    .btn-guest:hover {
+      background-color: #4b5563;
+    }
+
+    .logout-btn {
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+
+    .logout-btn:hover {
+      background: #fca5a5;
+    }
+
+    .social-btn {
+      display: block;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      text-decoration: none;
+      color: white;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .twitter { background: #1da1f2; }
+    .instagram { background: #e1306c; }
+    .tiktok { background: #000000; }
+
+    .close-chat-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .error-msg {
+      color: #ef4444;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 15px 0;
+      color: #9ca3af;
+      font-size: 13px;
+    }
+
+    #main-screen {
+      display: none;
+      padding: 20px;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #f3f4f6;
+      padding-bottom: 12px;
+    }
+
+    .user-badge {
+      font-size: 13px;
+      background: #f8e6e9;
+      color: var(--primary-color);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .profile-card {
+      background: linear-gradient(135deg, #800020, #a0153e);
+      color: white;
+      padding: 18px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 15px rgba(128, 0, 32, 0.25);
+    }
+
+    .services-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .service-card {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      padding: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .service-card:hover {
+      border-color: var(--primary-color);
+      background: #fdf2f4;
+      transform: translateY(-3px);
+    }
+
+    .service-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .service-icon {
+      font-size: 22px;
+      background: #f8e6e9;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .modal-content {
+      display: none;
+      background: white;
+      padding: 15px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    /* أنماط واجهة الشات وإرسال الصور */
+    .chat-modal-fullscreen {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #fcf8f8;
+      z-index: 9999;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      background: var(--primary-color);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .chat-box-body {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chat-msg {
+      background: #f8e6e9;
+      color: #4a0013;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      width: fit-content;
+      max-width: 80%;
+      line-height: 1.4;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .chat-msg-self {
+      align-self: flex-end;
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .chat-img-msg {
+      max-width: 100%;
+      max-height: 220px;
+      border-radius: 8px;
+      margin-top: 5px;
+      display: block;
+    }
+
+    .chat-footer {
+      padding: 12px 15px;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-footer input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .img-upload-btn {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .img-upload-btn:hover {
+      background: #e5e7eb;
+    }
+
+    /* باقي أنماط البطاقات والألعاب */
+    .citizen-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fdf2f4;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid #f8e6e9;
+    }
+
+    .badge-tag {
+      background: #800020;
+      color: white;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 4px;
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    .poll-option {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 6px 0;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .poll-bar {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(128, 0, 32, 0.15);
+      width: 0%;
+      transition: width 0.4s ease;
+      z-index: 1;
+    }
+
+    .poll-text {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .profile-modal-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border-top: 4px solid var(--primary-color);
+      margin-top: 10px;
+      display: none;
+    }
+
+    .profile-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 12px;
+      margin: 10px 0;
+      background: #f9fafb;
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    .ttt-board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      max-width: 200px;
+      margin: 10px auto;
+    }
+
+    .ttt-cell {
+      width: 60px;
+      height: 60px;
+      background: #f3f4f6;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+ 
+</style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- شاشة تسجيل الدخول مع الشعار -->
+    <div id="login-screen">
+      <div class="logo-container">
+        <!-- ضع مسار الصورة الخاص بشعارك هنا -->
+        <img src="assets/logo/logo.png" alt="شعار المملكة" class="app-logo" onerror="this.onerror=null; this.src='https://via.placeholder.com/90/800020/FFFFFF?text=👑';">
+      </div>
+
+      <h2 class="title">المملكة الربطخشاوية</h2>
+      <p class="subtitle">بوابة الخدمات والمنصة الرسمية</p>
+
+      <div class="input-group">
+        <label for="username">اسم المستخدم</label>
+        <input type="text" id="username" placeholder="أدخل اسم المستخدم">
+      </div>
+
+      <div class="input-group">
+        <label for="password">كود المرور الخاص</label>
+        <input type="password" id="password" placeholder="أدخل كودك">
+      </div>
+
+      <button class="btn" onclick="login()">دخول المواطنين</button>
+      
+      <div class="divider">أو</div>
+      
+      <button class="btn btn-guest" onclick="loginGuest()">دخول كضيف 👤</button>
+      
+      <p id="error-msg" class="error-msg">اسم المستخدم أو الكود غير صحيح!</p>
+    </div>
+
+    <!-- الشاشة الرئيسية -->
+    <div id="main-screen">
+      <div class="header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <img src="assets/logo/logo.png" alt="شعار" class="header-logo" onerror="this.onerror=null; this.src='https://via.placeholder.com/45/800020/FFFFFF?text=👑';">
+          <div>
+            <h3 id="welcome-msg">مرحباً بك 👋</h3>
+            <span id="role-badge" class="user-badge">مواطن</span>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">خروج</button>
+      </div>
+
+      <div class="profile-card">
+        <h2>بوابة المملكة الربطخشاوية</h2>
+        <p style="font-size: 13px; margin-top: 5px;">المنصة الموحدة لإدارة المعاملات والمراسلات</p>
+      </div>
+
+      <h4 style="margin-bottom: 12px; color: #4b5563;">الخدمات المتاحة:</h4>
+      
+      <div class="services-grid">
+
+        <!-- سجل المواطنين والبروفايلات الحماسية -->
+        <div class="service-card citizen-only" onclick="toggleModal('citizens-modal')">
+          <div class="service-header">
+            <div class="service-icon">🎖️</div>
+            <div>
+              <h4>سجل السيرة الملكية والأوسمة</h4>
+              <p style="font-size: 12px; color: #6b7280;">استعراض البطولات، البروفايلات، وزيادة الاحترام</p>
+            </div>
+          </div>
+          <div id="citizens-modal" class="modal-content" onclick="event.stopPropagation()">
+            <div id="citizens-list"></div>
+            <div id="profile-detail-card" class="profile-modal-card">
+              <h4 id="prof-name" style="color:var(--primary-color);">اسم العضو</h4>
+              <p id="prof-title" style="font-size:12px; font-weight:bold; color:#4b5563; margin-top:2px;">المنصب</p>
+              
+              <div class="profile-info-grid">
+                <div><strong>الأصل:</strong> <span id="prof-origin"></span></div>
+                <div><strong>الإقامة:</strong> <span id="prof-loc"></span></div>
+                <div><strong>سنة الانضمام:</strong> <span id="prof-year"></span></div>
+                <div><strong>السمعة:</strong> <span id="prof-rep"></span></div>
+              </div>
+
+              <p style="font-size:11px; color:#6b7280; font-weight:bold; margin-bottom:4px;">الأوسمة والانجازات:</p>
+              <div id="prof-badges" style="margin-bottom:8px;"></div>
+
+              <p style="font-size:11px; color:#6b7280; font-weight:bold; margin-bottom:4px;">السيرة التاريخية داخل المملكة:</p>
+              <p id="prof-bio" style="font-size:12px; line-height:1.4; background:#fdf2f4; padding:8px; border-radius:6px; color:#4a0013;"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- مجلس الاستفتائات -->
+        <div class="service-card citizen-only" onclick="toggleModal('poll-modal')">
+          <div class="service-header">
+            <div class="service-icon">📊</div>
+            <div>
+              <h4>استفتائات المملكة</h4>
+              <p style="font-size: 12px; color: #6b7280;">التصويت والمشاركة في القرارات العامة</p>
+            </div>
+          </div>
+          <div id="poll-modal" class="modal-content" onclick="event.stopPropagation()">
+            <h5 style="margin-bottom:8px;" id="poll-question">سؤال التصويت الحالي: هل تؤيد إقامة بطولة ألعاب الكترونية شتوية؟</h5>
+            <div class="poll-option" onclick="castVote('opt1')">
+              <div id="bar-opt1" class="poll-bar"></div>
+              <div class="poll-text"><span>نعم، مؤيد وبشدة ⚽</span><span id="percent-opt1">0%</span></div>
+            </div>
+            <div class="poll-option" onclick="castVote('opt2')">
+              <div id="bar-opt2" class="poll-bar"></div>
+              <div class="poll-text"><span>لا، أرفض الوقت حالياً ❌</span><span id="percent-opt2">0%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- مركز الألعاب المصغرة Mini-Games -->
+        <div class="service-card" onclick="toggleModal('games-modal')">
+          <div class="service-header">
+            <div class="service-icon">🎮</div>
+            <div>
+              <h4>مركز الألعاب المصغرة</h4>
+              <p style="font-size: 12px; color: #6b7280;">ألعاب خفيفة وتسلية فورية داخل التطبيق</p>
+            </div>
+          </div>
+          <div id="games-modal" class="modal-content" onclick="event.stopPropagation()">
+            <div style="display:flex; gap:8px; margin-bottom:10px;">
+              <button class="btn" style="font-size:12px; padding:6px;" onclick="showGame('clicker')">تحدي النقر السريع⚡</button>
+              <button class="btn" style="font-size:12px; padding:6px; background:#4b5563;" onclick="showGame('ttt')">لعبة X-O ⭕❌</button>
+            </div>
+
+            <!-- لعبة النقر السريع -->
+            <div id="game-clicker" style="text-align:center; display:block;">
+              <p style="font-size:13px;">اضغط أكبر عدد من المرات خلال 5 ثوانٍ!</p>
+              <h3 id="clicker-score" style="margin:8px 0; color:var(--primary-color);">0</h3>
+              <button class="btn" id="clicker-btn" onclick="handleClickGame()">ابدأ التحدي!</button>
+            </div>
+
+            <!-- لعبة X-O -->
+            <div id= "game-ttt" style="text-align:center; display:none;">
+              <p style="font-size:13px;" id="ttt-status">دور اللاعب: X</p>
+              <div class="ttt-board">
+                <div class="ttt-cell" onclick="makeMove(0)"></div>
+                <div class="ttt-cell" onclick="makeMove(1)"></div>
+                <div class="ttt-cell" onclick="makeMove(2)"></div>
+                <div class="ttt-cell" onclick="makeMove(3)"></div>
+                <div class="ttt-cell" onclick="makeMove(4)"></div>
+                <div class="ttt-cell" onclick="makeMove(5)"></div>
+                <div class="ttt-cell" onclick="makeMove(6)"></div>
+                <div class="ttt-cell" onclick="makeMove(7)"></div>
+                <div class="ttt-cell" onclick="makeMove(8)"></div>
+              </div>
+              <button class="btn" style="padding:4px 10px; font-size:12px;" onclick="resetTTT()">إعادة اللعبة</button>
+            </div><!-- لعبة Flappy Bird والديناصور -->
+<div id="game-arcade" style="text-align:center; margin-top: 15px;">
+    <!-- أزرار التنقل بين اللعبتين -->
+    <div id="game-tabs" style="display: flex; gap: 8px; margin-bottom: 12px; justify-content: center;">
+        <button class="btn" style="font-size:12px; padding:6px 12px; background:var(--primary-color, #800020);" onclick="switchGame('bird', this)">Flappy Bird</button>
+        <button class="btn" style="font-size:12px; padding:6px 12px; background:#4b5563;" onclick="switchGame('dino', this)">الديناصور</button>
+    </div>
+
+    <!-- سجل النقاط -->
+    <div class="scoreboard">
+        <div class="score-box">النقاط: <span id="current-score">0</span></div>
+        <div class="score-box">أعلى نتيجة: <span id="high-score">0</span></div>
+    </div>
+
+    <!-- منطقة تشغيل اللعبة -->
+    <div class="game-container">
+        <canvas id="gameCanvas" width="400" height="320"></canvas>
+        <div id="overlay" class="game-overlay">
+            <h2 id="overlay-title">Flappy Bird</h2>
+            <p id="overlay-desc" style="font-size:12px;">اضغط للقفز وتفادي العقبات</p>
+            <button class="btn" style="width:auto; padding:8px 20px;" onclick="startGame()">ابدأ اللعب</button>
+        </div>
+    </div>
+</div>
+        </div>
+ </div>
+</div>
+        <!-- الجواز الربطخشاوي -->
+        <div class="service-card citizen-only" onclick="toggleModal('passport-modal')">
+          <div class="service-header">
+            <div class="service-icon">📜</div>
+            <div>
+              <h4>التقديم على الجواز الربطخشاوي</h4>
+              <p style="font-size: 12px; color: #6b7280;">طلب إصدار أو تجديد الجواز الرسمي</p>
+            </div>
+          </div>
+          <div id="passport-modal" class="modal-content" onclick="event.stopPropagation()">
+            <input type="text" id="pass-fullname" placeholder="الاسم الكامل" style="width:100%; padding:8px; margin-bottom:8px;">
+            <button class="btn" style="padding:8px;" onclick="sendPassportRequest()">إرسال الطلب عبر البريد</button>
+          </div>
+        </div>
+
+        <!-- الشكاوى والمقترحات -->
+        <div class="service-card citizen-only" onclick="toggleModal('complaint-modal')">
+          <div class="service-header">
+            <div class="service-icon">📩</div>
+            <div>
+              <h4>الشكاوى والمقترحات</h4>
+              <p style="font-size: 12px; color: #6b7280;">مراسلة الإدارة عبر البريد الإلكتروني مباشرة</p>
+            </div>
+          </div>
+          <div id="complaint-modal" class="modal-content" onclick="event.stopPropagation()">
+            <textarea id="complaint-text" placeholder="اكتب شكواك أو اقتراحك هنا..." style="width:100%; padding:8px; height:60px; margin-bottom:8px;"></textarea>
+            <button class="btn" style="padding:8px;" onclick="sendComplaintEmail()">إرسال عبر البريد الإلكتروني</button>
+          </div>
+        </div>
+
+        <!-- حسابات المملكة -->
+        <div class="service-card" onclick="toggleModal('social-modal')">
+          <div class="service-header">
+            <div class="service-icon">🌐</div>
+            <div>
+              <h4>حسابات المملكة الربطخشاوية</h4>
+              <p style="font-size: 12px; color: #6b7280;">متابعة الحسابات الرسمية على المنصات</p>
+            </div>
+          </div>
+          <div id="social-modal" class="modal-content" onclick="event.stopPropagation()">
+            <a href="https://x.com/RabatghashEN" target="_blank" class="social-btn twitter">تويتر: @RabatghashEN</a>
+            <a href="https://instagram.com/rabatghash" target="_blank" class="social-btn instagram">إنستغرام: @rabatghash</a>
+            <a href="https://tiktok.com/@rabatghash" target="_blank" class="social-btn tiktok">تيك توك: @rabatghash</a>
+          </div>
+        </div>
+
+        <!-- طلب الانضمام / الإشراف -->
+        <div class="service-card" id="shura-card" onclick="toggleModal('shura-modal')">
+          <div class="service-header">
+            <div class="service-icon">🏛️</div>
+            <div>
+              <h4 id="shura-title">طلب الانضمام</h4>
+              <p style="font-size: 12px; color: #6b7280;" id="shura-desc">تفاصيل الطلب</p>
+            </div>
+          </div>
+          <div id="shura-modal" class="modal-content" onclick="event.stopPropagation()">
+            <input type="text" id="shura-fullname" placeholder="الاسم الثلاثي (مطلوب)" style="width:100%; padding:8px; margin-bottom:8px;">
+            <textarea id="shura-reason" placeholder="سبب الطلب والخبرات..." style="width:100%; padding:8px; height:60px; margin-bottom:8px;"></textarea>
+            <button class="btn" style="padding:8px;" onclick="sendShuraRequest()">إرسال الطلب</button>
+          </div>
+        </div>
+
+        <!-- الدردشة العامة للمواطنين -->
+        <div class="service-card citizen-only" onclick="openChat('public')">
+          <div class="service-header">
+            <div class="service-icon">💬</div>
+            <div>
+              <h4>دردشة المملكة المباشرة</h4>
+              <p style="font-size: 12px; color: #6b7280;">المجلس العام للمواطنين (شاشة كاملة وإرسال صور)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- شات الشورى الخاص -->
+        <div class="service-card shura-only" id="shura-chat-card" style="display:none;" onclick="openChat('shura')">
+          <div class="service-header">
+            <div class="service-icon">👑</div>
+            <div>
+              <h4>شات مجلس الشورى الخاص</h4>
+              <p style="font-size: 12px; color: #6b7280;">مخصص لأعضاء المجلس فقط (مغلق)</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- الشات العام -->
+  <div id="chat-modal-public" class="chat-modal-fullscreen">
+    <div class="chat-header">
+      <h3>💬 الدردشة العامة للمملكة</h3>
+      <button class="close-chat-btn" onclick="closeChat('public')">إغلاق ✕</button>
+    </div>
+
+    <div id="chat-box-public" class="chat-box-body">
+      <div class="chat-msg"><b>النظام:</b> أهلاً بك في الدردشة العامة للمملكة 👑</div>
+    </div>
+
+    <div class="chat-footer">
+      <label class="img-upload-btn" title="إرفاق صورة">
+        📷
+        <input type="file" accept="image/*" style="display:none;" onchange="sendImage(event, 'public')">
+      </label>
+      <input type="text" id="chat-input-public" placeholder="اكتب رسالتك..." onkeypress="handleKeyPress(event, 'public')">
+      <button class="btn" style="width:auto; padding:10px 16px; margin:0;" onclick="sendMessage('public')">إرسال</button>
+    </div>
+  </div>
+
+  <!-- شات الشورى -->
+  <div id="chat-modal-shura" class="chat-modal-fullscreen">
+    <div class="chat-header" style="background: #580016;">
+      <h3>👑 شات مجلس الشورى الخاص</h3>
+      <button class="close-chat-btn" onclick="closeChat('shura')">إغلاق ✕</button>
+    </div>
+
+    <div id="chat-box-shura" class="chat-box-body">
+      <div class="chat-msg"><b>النظام:</b> مرحباً بكم أعضاء مجلس الشورى المحترمين 🏛️</div>
+    </div>
+
+    <div class="chat-footer">
+      <label class="img-upload-btn" title="إرفاق صورة">
+        📷
+        <input type="file" accept="image/*" style="display:none;" onchange="sendImage(event, 'shura')">
+      </label>
+      <input type="text" id="chat-input-shura" placeholder="اكتب رسالتك لأعضاء المجلس..." onkeypress="handleKeyPress(event, 'shura')">
+      <button class="btn" style="width:auto; padding:10px 16px; margin:0; background-color: #580016;" onclick="sendMessage('shura')">إرسال</button>
+    </div>
+  </div>
+
+  <script>
+    const users = {
+      "baybars": "ByB#9284",
+      "marwan": "MrW$5103",
+      "abdulrahman": "AbD@7391",
+      "mohammed khatteb": "MKh#4028",
+      "shehab": "ShB%6149",
+      "ziyad": "ZyD*8512",
+      "tareq": "TrQ#3940",
+      "mohammed alg": "MAl!7261"
+    };
+
+    const shuraMembers = ["marwan", "abdulrahman", "baybars", "tareq"];
+
+    let citizensData = {
+      "baybars": {
+        name: "بيبرس 👑",
+        title: "ملك المملكة الربطخشاوية والمؤسس الحديث",
+        origin: "سوريا 🇸🇾",
+        loc: "سوريا 🇸🇾",
+        year: "المؤسس",
+        badges: ["👑 المؤسس والملك", "🏛️ قائد الشورى", "⚡ رأس الهرم"],
+        bio: "مؤسس المجموعة الحديثة ومديرها العام، القائد الذي أرسى دعائم المملكة الربطخشاوية وقاد تنظيمها وإدارتها.",
+        rep: 250
+      },
+      "marwan": {
+        name: "مروان 🛡️",
+        title: "وزير الداخلية الربطخشاوي",
+        origin: "السودان 🇸🇩",
+        loc: "مصر 🇪🇬",
+        year: "2023",
+        badges: ["🛡️ صخرة الثبات", "⚔️ قاهر الرواشنة", "🏛️ عضو شورى"],
+        bio: "أحد أركان المملكة وأكثر الأعضاء ثباتاً وصموداً أمام موجات التقلبات والهجر. صاحب الدور المباشر والحاسم في تحقيق النصر الإستراتيجي ضد مجموعة الرواشنة.",
+        rep: 210
+      },
+      "tareq": {
+        name: "طارق 👁️",
+        title: "وزير الدفاع وعرّاب الاستخبارات",
+        origin: "سوريا 🇸🇾",
+        loc: "سوريا 🇸🇾",
+        year: "2023 (متخفي)",
+        badges: ["👁️ ثعلب الاستخبارات", "⚔️ حاسم الحروب", "🏛️ عضو شورى"],
+        bio: "عضو استخباراتي عمل في الخفاء، كشف عن هويته من جديد ليقود الدفاع. يعتبر الورقة الرابحة والعامل الرئيسي المشترك في كسب وحسم جميع حروب المملكة التاريخية.",
+        rep: 195
+      },
+      "abdulrahman": {
+        name: "عبدالرحمن ⚔️",
+        title: "مشرف في مجلس الشورى",
+        origin: "اليمن 🇾🇪",
+        loc: "السعودية 🇸🇦",
+        year: "2023",
+        badges: ["⚔️ بطل الحرب الأولى", "📜 مخضرم الشورى", "🏛️ عضو شورى"],
+        bio: "من قدامى الأعضاء ومؤسسي الهيبة. لعب دوراً جوهرياً ومحورياً في انتصار المملكة خلال الحرب الربطخشاوية الأولى.",
+        rep: 180
+      },
+      "mohammed khatteb": {
+        name: "محمد خطيب 📜",
+        title: "مواطن مخضرم ورمز الذكريات",
+        origin: "فلسطين 🇵🇸",
+        loc: "فلسطين 🇵🇸",
+        year: "2023",
+        badges: ["📜 رفيق الذكريات", "🌟 الجيل الذهبي"],
+        bio: "عضو قديم وصادق من الرعيل الأول، صنعت معه أجمل ذكريات المملكة التاريخية، والداعي الرسمي لأعضاء من الجيل الجديد.",
+        rep: 140
+      },
+      "shehab": {
+        name: "شهاب 🔄",
+        title: "المواطن العائد للديار",
+        origin: "الجزائر 🇩🇿",
+        loc: "الجزائر 🇩🇿",
+        year: "عائد حديثاً",
+        badges: ["🔄 العائد إلى الديار", "🛡️ وفيّ المملكة"],
+        bio: "عضو سابق قديم غادر صفوف المملكة لفترة، ثم عاد من جديد ليكمل مسيرته بين إخوانه المواطنين.",
+        rep: 110
+      },
+      "ziyad": {
+        name: "زياد 🤝",
+        title: "مواطن ربطخشاوي",
+        origin: "السودان 🇸🇩",
+        loc: "مصر 🇪🇬",
+        year: "2024",
+        badges: ["🤝 واسطة ملكية", "🌟 أخ الوزير"],
+        bio: "عضو قديم انضم للمملكة عام 2024، شقيق وزير الداخلية مروان. دخل بدعم وواسطة مباشرة من أخيه الوزير!",
+        rep: 95
+      },
+      "mohammed alg": {
+        name: "محمد الجرادي ✨",
+        title: "مواطن ربطخشاوي جديد",
+        origin: "الجزائر 🇩🇿",
+        loc: "الجزائر 🇩🇿",
+        year: "2026",
+        badges: ["✨ العهد الجديد", "📩 سفير خطيب"],
+        bio: "أحدث انضمام للمملكة في عام 2026، دخل الديار برعاية ودعوة شخصية من العضو المخضرم محمد خطيب الفلسطيني.",
+        rep: 80
+      }
+    };
+
+    let votes = { opt1: 0, opt2: 0 };
+    let hasVoted = false;
+    let currentUser = "";
+    let isCitizenUser = false;
+
+    window.onload = function() {
+      const savedUser = localStorage.getItem('saved_user');
+      const savedRole = localStorage.getItem('saved_role');
+      const savedIsCitizen = localStorage.getItem('saved_is_citizen');
+
+      if (savedUser) {
+        currentUser = savedUser;
+        isCitizenUser = savedIsCitizen === 'true';
+        showDashboard(savedUser, savedRole, isCitizenUser);
+      }
+    };
+
+    function login() {
+      const userVal = document.getElementById('username').value.trim().toLowerCase();
+      const passVal = document.getElementById('password').value.trim();
+      const errorMsg = document.getElementById('error-msg');
+
+      if (users[userVal] && users[userVal] === passVal) {
+        currentUser = userVal;
+        isCitizenUser = true;
+        
+        localStorage.setItem('saved_user', userVal);
+        localStorage.setItem('saved_role', 'مواطن');
+        localStorage.setItem('saved_is_citizen', 'true');
+
+        showDashboard(userVal, "مواطن", true);
+        errorMsg.style.display = 'none';
+      } else {
+        errorMsg.style.display = 'none';
+        void errorMsg.offsetWidth;
+        errorMsg.style.display = 'block';
+      }
+    }
+
+    function loginGuest() {
+      currentUser = "ضيف";
+      isCitizenUser = false;
+
+      localStorage.setItem('saved_user', 'الضيف');
+      localStorage.setItem('saved_role', 'زائر');
+      localStorage.setItem('saved_is_citizen', 'false');
+
+      showDashboard("الضيف", "زائر", false);
+    }
+
+    function showDashboard(name, role, isCitizen) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('main-screen').style.display = 'block';
+      document.getElementById('welcome-msg').innerText = `أهلاً ${name} 👋`;
+      document.getElementById('role-badge').innerText = role;
+
+      const citizenCards = document.querySelectorAll('.citizen-only');
+      citizenCards.forEach(card => {
+        card.style.display = isCitizen ? 'block' : 'none';
+      });
+
+      const userLower = name.toLowerCase();
+      const shuraCard = document.getElementById('shura-card');
+      const shuraTitle = document.getElementById('shura-title');
+      const shuraDesc = document.getElementById('shura-desc');
+      const shuraNameInput = document.getElementById('shura-fullname');
+      const shuraChatCard = document.getElementById('shura-chat-card');
+
+      if (shuraMembers.includes(userLower)) {
+        shuraCard.style.display = 'none';
+        shuraChatCard.style.display = 'block';
+      } else {
+        shuraChatCard.style.display = 'none';
+        shuraCard.style.display = 'block';
+
+        if (!isCitizen) {
+          shuraTitle.innerText = "طلب عضوية ربطخشاوية";
+          shuraDesc.innerText = "التقديم للحصول على العضوية الرسمية والمواطنة";
+          shuraNameInput.style.display = 'block';
+        } else {
+          shuraTitle.innerText = "طلب إشراف في مجلس الشورى";
+          shuraDesc.innerText = "الترشح والتقديم لطلب صفة إشراف بمجلس الشورى";
+          shuraNameInput.style.display = 'none';
+        }
+      }
+
+      renderCitizens();
+    }
+
+    function logout() {
+      localStorage.removeItem('saved_user');
+      localStorage.removeItem('saved_role');
+      localStorage.removeItem('saved_is_citizen');
+
+      document.getElementById('main-screen').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'block';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      closeAllModals();
+      closeChat('public');
+      closeChat('shura');
+    }
+
+    function toggleModal(id) {
+      const target = document.getElementById(id);
+      const isVisible = target.style.display === 'block';
+      closeAllModals();
+      target.style.display = isVisible ? 'none' : 'block';
+    }
+
+    function closeAllModals() {
+      const modals = document.querySelectorAll('.modal-content');
+      modals.forEach(m => m.style.display = 'none');
+    }
+
+    function openChat(type) {
+      closeAllModals();
+      const modal = document.getElementById(`chat-modal-${type}`);
+      modal.style.display = 'flex';
+      const box = document.getElementById(`chat-box-${type}`);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function closeChat(type) {
+      document.getElementById(`chat-modal-${type}`).style.display = 'none';
+    }
+
+    /* --- وظائف إرسال النص والصور بالشات --- */
+    function sendMessage(type) {
+      const input = document.getElementById(`chat-input-${type}`);
+      const box = document.getElementById(`chat-box-${type}`);
+      if (input.value.trim() !== '') {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-msg chat-msg-self';
+        msgDiv.innerHTML = `<b>${currentUser}:</b> ${input.value}`;
+        box.appendChild(msgDiv);
+        box.scrollTop = box.scrollHeight;
+        input.value = '';
+      }
+    }
+
+    function sendImage(event, type) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const box = document.getElementById(`chat-box-${type}`);
+          const msgDiv = document.createElement('div');
+          msgDiv.className = 'chat-msg chat-msg-self';
+          msgDiv.innerHTML = `<b>${currentUser}:</b><br><img src="${e.target.result}" class="chat-img-msg" alt="صورة مرسلة">`;
+          box.appendChild(msgDiv);
+          box.scrollTop = box.scrollHeight;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handleKeyPress(e, type) {
+      if (e.key === 'Enter') {
+        sendMessage(type);
+      }
+    }
+
+    /* --- السجل والألعاب والاستفتائات --- */
+    function renderCitizens() {
+      const listContainer = document.getElementById('citizens-list');
+      listContainer.innerHTML = '';
+
+      for (let key in citizensData) {
+        const c = citizensData[key];
+        const div = document.createElement('div');
+        div.className = 'citizen-item';
+        div.innerHTML = `
+          <div>
+            <strong>${c.name}</strong>
+            <div style="font-size:11px; color:#6b7280;">${c.title}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:5px;">
+            <button class="logout-btn" style="background:#f8e6e9; color:#800020; padding:4px 8px; font-size:11px;" onclick="viewProfile('${key}')">عرض السجل 📜</button>
+            <button class="logout-btn" style="background:#800020; color:white; padding:4px 6px; font-size:11px;" onclick="giveRep('${key}')">+1 👍</button>
+          </div>
+        `;
+        listContainer.appendChild(div);
+      }
+    }
+
+    function viewProfile(key) {
+      const c = citizensData[key];
+      const card = document.getElementById('profile-detail-card');
+      
+      document.getElementById('prof-name').innerText = c.name;
+      document.getElementById('prof-title').innerText = c.title;
+      document.getElementById('prof-origin').innerText = c.origin;
+      document.getElementById('prof-loc').innerText = c.loc;
+      document.getElementById('prof-year').innerText = c.year;
+      document.getElementById('prof-rep').innerText = c.rep;
+      document.getElementById('prof-bio').innerText = c.bio;
+
+      document.getElementById('prof-badges').innerHTML = c.badges.map(b => `<span class="badge-tag">${b}</span>`).join('');
+      
+      card.style.display = 'block';
+    }
+
+    function giveRep(userKey) {
+      citizensData[userKey].rep += 1;
+      renderCitizens();
+      if (document.getElementById('profile-detail-card').style.display === 'block') {
+        viewProfile(userKey);
+      }
+    }
+
+    function castVote(option) {
+      if (hasVoted) {
+        alert('لقد قمت بالتصويت سابقاً!');
+        return;
+      }
+      votes[option] += 1;
+      hasVoted = true;
+
+      const total = votes.opt1 + votes.opt2;
+      const p1 = Math.round((votes.opt1 / total) * 100);
+      const p2 = Math.round((votes.opt2 / total) * 100);
+
+      document.getElementById('bar-opt1').style.width = p1 + '%';
+      document.getElementById('percent-opt1').innerText = p1 + '%';
+
+      document.getElementById('bar-opt2').style.width = p2 + '%';
+      document.getElementById('percent-opt2').innerText = p2 + '%';
+    }
+
+    function showGame(gameType) {
+      document.getElementById('game-clicker').style.display = gameType === 'clicker' ? 'block' : 'none';
+      document.getElementById('game-ttt').style.display = gameType === 'ttt' ? 'block' : 'none';
+    }
+
+    let clickCount = 0;
+    let clickTimer = null;
+    let isPlayingClicker = false;
+
+    function handleClickGame() {
+      const btn = document.getElementById('clicker-btn');
+      const scoreEl = document.getElementById('clicker-score');
+
+      if (!isPlayingClicker) {
+        isPlayingClicker = true;
+        clickCount = 0;
+        scoreEl.innerText = clickCount;
+        btn.innerText = "انقر بأسرع ما يمكن! ⚡";
+
+        clickTimer = setTimeout(() => {
+          isPlayingClicker = false;
+          btn.innerText = "إعادة التحدي 🔄";
+          alert(`انتهى الوقت! عدد النقرات: ${clickCount}`);
+        }, 5000);
+      } else {
+        clickCount++;
+        scoreEl.innerText = clickCount;
+      }
+    }
+
+    let tttBoard = ["", "", "", "", "", "", "", "", ""];
+    let currentPlayer = "X";
+    let tttActive = true;
+
+    function makeMove(index) {
+      if (tttBoard[index] === "" && tttActive) {
+        tttBoard[index] = currentPlayer;
+        const cells = document.getElementsByClassName('ttt-cell');
+        cells[index].innerText = currentPlayer;
+        cells[index].style.color = currentPlayer === 'X' ? '#800020' : '#1da1f2';
+
+        if (checkWin()) {
+          document.getElementById('ttt-status').innerText = `الفائز هو: ${currentPlayer} 🎉`;
+          tttActive = false;
+          return;
+        }
+
+        if (!tttBoard.includes("")) {
+          document.getElementById('ttt-status').innerText = "تعادل! 🤝";
+          tttActive = false;
+          return;
+        }
+
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        document.getElementById('ttt-status').innerText = `دور اللاعب: ${currentPlayer}`;
+      }
+    }
+
+    function checkWin() {
+      const wins = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      return wins.some(w => tttBoard[w[0]] && tttBoard[w[0]] === tttBoard[w[1]] && tttBoard[w[0]] === tttBoard[w[2]]);
+    }
+
+    function resetTTT() {
+      tttBoard = ["", "", "", "", "", "", "", "", ""];
+      currentPlayer = "X";
+      tttActive = true;
+      document.getElementById('ttt-status').innerText = "دور اللاعب: X";
+      const cells = document.getElementsByClassName('ttt-cell');
+      for (let c of cells) {
+        c.innerText = "";
+      }
+    }
+
+    function sendComplaintEmail() {
+      const text = document.getElementById('complaint-text').value.trim();
+      if (!text) {
+        alert('الرجاء كتابة تفاصيل الشكوى أو الاقتراح أولاً.');
+        return;
+      }
+      const subject = `شكوى/اقتراح من: ${currentUser}`;
+      const body = `اسم المستخدم: ${currentUser}\nتفاصيل الرسالة:\n${text}`;
+      window.location.href = `mailto:rabatghash@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    function sendPassportRequest() {
+      const name = document.getElementById('pass-fullname').value.trim();
+      if (!name) {
+        alert('الرجاء كتابة الاسم الكامل.');
+        return;
+      }
+      const subject = `طلب إصدار جواز ربطخشاوي: ${currentUser}`;
+      const body = `اسم الحساب: ${currentUser}\nالاسم الكامل: ${name}\nيرجى النظر في طلب إصدار الجواز الربطخشاوي.`;
+      window.location.href = `mailto:rabatghash@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    function sendShuraRequest() {
+      const reason = document.getElementById('shura-reason').value.trim();
+      let name = "";
+      let subject = "";
+      let body = "";
+
+      if (!isCitizenUser) {
+        name = document.getElementById('shura-fullname').value.trim();
+        if (!name || !reason) {
+          alert('الرجاء ملء كافة البيانات المطلوبة.');
+          return;
+        }
+        subject = `طلب عضوية ربطخشاوية جديدة من: ${name}`;
+        body = `اسم المتقدم (ضيف): ${name}\n\nسبب طلب العضوية والخبرات:\n${reason}`;
+      } else {
+        if (!reason) {
+          alert('الرجاء كتابة سبب ومبررات طلب الإشراف.');
+          return;
+        }
+        subject = `طلب إشراف في مجلس الشورى من العضو: ${currentUser}`;
+        body = `المتقدم: ${currentUser} (مواطن مسجل)\n\nتفاصيل ومبررات طلب الإشراف بمجلس الشورى:\n${reason}`;
+      }
+
+      window.location.href = `mailto:rabatghash@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+  </script><script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const currentScoreEl = document.getElementById('current-score');
+    const highScoreEl = document.getElementById('high-score');
+    const overlay = document.getElementById('overlay');
+    const overlayTitle = document.getElementById('overlay-title');
+    
+    let currentGame = 'bird';
+    let gameLoop = null;
+    let isRunning = false;
+    let score = 0;
+    let highScores = { bird: 0, dino: 0 };
+    let frame = 0;
+
+    // التحكم بالقفز (مسافة أو ضغط/لمس الشاشة)
+    window.addEventListener('keydown', (e) => { 
+        if (e.code === 'Space') {
+            e.preventDefault();
+            handleJump(); 
+        }
+    });
+    
+    if (canvas) {
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleJump(); });
+        canvas.addEventListener('mousedown', handleJump);
+    }
+
+    function handleJump() {
+        if (!isRunning) return;
+        if (currentGame === 'bird') bird.velocity = -6.5;
+        if (currentGame === 'dino' && dino.grounded) {
+            dino.vy = -12;
+            dino.grounded = false;
+        }
+    }
+
+    // إصلاح التحويل بين اللعبتين وتفادي خطأ event
+    function switchGame(game, btnElement) {
+        currentGame = game;
+        
+        // تحديث حالة الأزرار بصرياً
+        const tabsContainer = document.getElementById('game-tabs');
+        if (tabsContainer) {
+            const buttons = tabsContainer.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.style.background = '#4b5563';
+            });
+        }
+        if (btnElement) {
+            btnElement.style.background = 'var(--primary-color, #800020)';
+        }
+        
+        stopGame();
+        highScoreEl.innerText = highScores[currentGame];
+        currentScoreEl.innerText = 0;
+        overlayTitle.innerText = game === 'bird' ? 'Flappy Bird' : 'لعبة الديناصور';
+        overlay.style.display = 'flex';
+        drawPreview();
+    }
+
+    /* --- محرك Flappy Bird --- */
+    let bird = { x: 50, y: 150, radius: 12, velocity: 0, gravity: 0.35 };
+    let pipes = [];
+
+    function initBird() {
+        bird.y = 150; bird.velocity = 0; pipes = []; frame = 0;
+    }
+
+    function updateBird() {
+        bird.velocity += bird.gravity;
+        bird.y += bird.velocity;
+
+        if (frame % 90 === 0) {
+            let gap = 100, minTop = 40, maxTop = canvas.height - gap - 40;
+            let topHeight = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
+            pipes.push({ x: canvas.width, top: topHeight, bottom: canvas.height - topHeight - gap, passed: false });
+        }
+
+        for (let i = pipes.length - 1; i >= 0; i--) {
+            pipes[i].x -= 2.5;
+            if (bird.x + bird.radius > pipes[i].x && bird.x - bird.radius < pipes[i].x + 45 &&
+               (bird.y - bird.radius < pipes[i].top || bird.y + bird.radius > canvas.height - pipes[i].bottom)) {
+                gameOver();
+            }
+            if (!pipes[i].passed && pipes[i].x < bird.x) {
+                pipes[i].passed = true; score++; updateScore();
+            }
+            if (pipes[i].x < -50) pipes.splice(i, 1);
+        }
+        if (bird.y + bird.radius >= canvas.height || bird.y - bird.radius <= 0) gameOver();
+    }
+
+    function drawBirdGame() {
+        ctx.fillStyle = '#70c5ce'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        pipes.forEach(p => {
+            ctx.fillStyle = '#2ecc71';
+            ctx.beginPath(); ctx.roundRect(p.x, 0, 45, p.top, [0, 0, 8, 8]); ctx.fill();
+            ctx.beginPath(); ctx.roundRect(p.x, canvas.height - p.bottom, 45, p.bottom, [8, 8, 0, 0]); ctx.fill();
+        });
+        ctx.fillStyle = '#f1c40f';
+        ctx.beginPath(); ctx.arc(bird.x, bird.y, bird.radius, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(bird.x + 5, bird.y - 3, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(bird.x + 6, bird.y - 3, 2, 0, Math.PI * 2); ctx.fill();
+    }
+
+    /* --- محرك الديناصور --- */
+    let dino = { x: 40, y: 260, width: 24, height: 35, vy: 0, gravity: 0.6, grounded: true };
+    let obstacles = [];
+
+    function initDino() {
+        dino.y = 260; dino.vy = 0; dino.grounded = true; obstacles = []; frame = 0;
+    }
+
+    function updateDino() {
+        dino.vy += dino.gravity; dino.y += dino.vy;
+        if (dino.y >= 260) { dino.y = 260; dino.vy = 0; dino.grounded = true; }
+
+        if (frame % 100 === 0) {
+            obstacles.push({ x: canvas.width, width: 18, height: Math.random() > 0.5 ? 30 : 45 });
+        }
+
+        for (let i = obstacles.length - 1; i >= 0; i--) {
+            obstacles[i].x -= 4;
+            if (dino.x < obstacles[i].x + obstacles[i].width && dino.x + dino.width > obstacles[i].x &&
+                dino.y < 295 - obstacles[i].height && dino.y + dino.height > 295 - obstacles[i].height) {
+                gameOver();
+            }
+            if (obstacles[i].x < -20) {
+                obstacles.splice(i, 1); score++; updateScore();
+            }
+        }
+    }
+
+    function drawDinoGame() {
+        ctx.fillStyle = '#f7f7f7'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = '#535353'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, 295); ctx.lineTo(canvas.width, 295); ctx.stroke();
+        ctx.fillStyle = '#535353';
+        ctx.beginPath(); ctx.roundRect(dino.x, dino.y, dino.width, dino.height, 6); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.fillRect(dino.x + 14, dino.y + 5, 4, 4);
+        ctx.fillStyle = '#27ae60';
+        obstacles.forEach(o => {
+            ctx.beginPath(); ctx.roundRect(o.x, 295 - o.height, o.width, o.height, 4); ctx.fill();
+        });
+    }
+
+    /* --- تشغيل وإيقاف اللعبة --- */
+    function startGame() {
+        score = 0; updateScore(); overlay.style.display = 'none'; isRunning = true;
+        if (currentGame === 'bird') initBird(); else initDino();
+        if (gameLoop) cancelAnimationFrame(gameLoop);
+        loop();
+    }
+
+    function stopGame() {
+        isRunning = false;
+        if (gameLoop) cancelAnimationFrame(gameLoop);
+    }
+
+    function gameOver() {
+        stopGame();
+        overlayTitle.innerText = 'انتهت اللعبة!';
+        overlay.style.display = 'flex';
+    }
+
+    function updateScore() {
+        currentScoreEl.innerText = score;
+        if (score > highScores[currentGame]) {
+            highScores[currentGame] = score;
+            highScoreEl.innerText = score;
+        }
+    }
+
+    function loop() {
+        if (!isRunning) return;
+        frame++;
+        if (currentGame === 'bird') { updateBird(); drawBirdGame(); }
+        else { updateDino(); drawDinoGame(); }
+        gameLoop = requestAnimationFrame(loop);
+    }
+
+    function drawPreview() {
+        if (currentGame === 'bird') drawBirdGame(); else drawDinoGame();
+    }
+
+    // إعداد العرض الأول عند تحميل الصفحة
+    window.onload = function() {
+        drawPreview();
+    };
+// 1. الاتصال بالخادم
+  const socket = io("http://localhost:3000");
+  let currentUsername = "";
+
+  // 2. دالة إرسال النص المرنة
+  function sendMessage(type) {
+      const input = document.getElementById("chat-input-" + type) || 
+                    document.getElementById("chat-input") || 
+                    document.querySelector("input[type='text']");
+      
+      if (!input) return;
+      const text = input.value.trim();
+
+      if (text !== "") {
+          socket.emit("send_message", {
+              type: type || "public",
+              text: text,
+              sender: currentUsername || (typeof currentUser !== 'undefined' ? currentUser : "مواطن"),
+              senderId: socket.id
+          });
+          input.value = "";
+      }
+  }
+
+  // 3. دالة إرسال الصور
+  function sendImage(event, type) {
+      const file = event.target.files[0];
+      if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+              socket.emit("send_message", {
+                  type: type || "public",
+                  image: e.target.result,
+                  sender: currentUsername || (typeof currentUser !== 'undefined' ? currentUser : "مواطن"),
+                  senderId: socket.id
+              });
+          };
+          reader.readAsDataURL(file);
+      }
+  }
+
+  // 4. استقبال وتنسيق الرسائل
+  socket.on("receive_message", (data) => {
+      const chatBox = document.getElementById("chat-box-" + data.type) || 
+                      document.getElementById("chat-box") || 
+                      document.querySelector(".chat-box");
+      if (!chatBox) return;
+
+      const msgDiv = document.createElement("div");
+      const isMe = (data.senderId === socket.id);
+
+      msgDiv.style.margin = "8px 0";
+      msgDiv.style.padding = "10px 14px";
+      msgDiv.style.borderRadius = "12px";
+      msgDiv.style.maxWidth = "75%";
+      msgDiv.style.wordBreak = "break-word";
+
+     if (isMe) {
+          // رسالتي: خلفية عنابية + نص أبيض غامق (يمين)
+          msgDiv.style.marginLeft = "auto";
+          msgDiv.style.marginRight = "0";
+          msgDiv.style.backgroundColor = "#701c2e"; // درجة العنابي المعتمدة
+          msgDiv.style.color = "#ffffff";           // جعل النص باللون الأبيض
+          msgDiv.style.fontWeight = "bold";
+          msgDiv.style.textAlign = "right";
+      } else {
+          // رسالة الطرف الآخر: خلفية بيضاء (يسار)
+          msgDiv.style.marginRight = "auto";
+          msgDiv.style.marginLeft = "0";
+          msgDiv.style.backgroundColor = "#ffffff";
+          msgDiv.style.color = "#1e293b";
+          msgDiv.style.border = "1px solid #e2e8f0";
+          msgDiv.style.fontWeight = "normal";
+          msgDiv.style.textAlign = "right";
+      }
+
+      let htmlContent = `<div style="font-size: 11px; color: ${isMe ? '#e2e8f0' : '#64748b'}; margin-bottom: 3px;">${data.sender}</div>`;
+      if (data.text) {
+          htmlContent += `<div>${data.text}</div>`;
+      }
+      if (data.image) {
+          htmlContent += `<img src="${data.image}" style="max-width:100%; border-radius:8px; margin-top:5px;">`;
+      }
+
+      msgDiv.innerHTML = htmlContent;
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+  });
+</script>
+
+</body>
+</html>
