@@ -909,16 +909,12 @@
     const savedRole = localStorage.getItem('saved_role');
     const savedIsCitizen = localStorage.getItem('saved_is_citizen') === 'true';
 
-    if (savedUser && savedRole) {
+    if (savedUser) {
         currentUser = savedUser;
         isCitizenUser = savedIsCitizen;
-
-        // إخفاء شاشة الدخول فوراً
-        const loginScreen = document.getElementById('login-screen') || document.querySelector('.login-container');
-        if (loginScreen) loginScreen.style.display = 'none';
-
-        // تشغيل اللوحة الشاملة
-        showDashboard(savedUser, savedRole, savedIsCitizen);
+        
+        // استدعاء دالة الإظهار الرسمية (وهي بنفسها تخفي login-screen وتظهر main-screen)
+        showDashboard(savedUser, savedRole || 'مواطن', savedIsCitizen);
     }
 };
 
