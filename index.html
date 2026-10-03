@@ -5,6 +5,70 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>تطبيق المملكة الربطخشاوية</title>
   <style>
+ /* تمكين التمرير على الصفحة بالكامل وإضافة مسافات علوية وسفلية مريحة */
+html, body {
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100vh !important;
+}
+
+#main-screen {
+  display: none;
+  width: 100% !important;
+  min-height: 100vh !important;
+  height: auto !important;
+  overflow-y: visible !important; /* السماح بالتمرير الخارجي لصفحة التطبيق */
+  /* إضافة مسافة وفراغ واسع في الأعلى والأسفل للمجال المريح لللمس والسحب */
+  padding-top: 50px !important; 
+  padding-bottom: 80px !important; 
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  box-sizing: border-box !important;
+}
+
+/* التأكد من وجود مسافات شاقولية بين كل عنصر والآخر */
+#main-screen > * {
+  margin-bottom: 18px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+/* 2. الحفاظ على مسافة متناسقة بين الهيدر العلوي وبوابة المملكة */
+.header {
+  margin-bottom: 15px !important;
+  width: 100% !important;
+}
+
+/* 3. إظهار بطاقة "بوابة المملكة" والخدمات بشكل مرتب وبدون التسامب أو الالتصاق */
+.welcome-card, .portal-card, .services-list {
+  width: 100% !important;
+  margin-bottom: 15px !important;
+  box-sizing: border-box !important;
+}
+    /* إلغاء الوميض والتحديد الأزرق عند الضغط على الأزرار والروابط */
+* {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+  outline: none !important;
+}
+
+/* إلغاء تأثير الضغط المحدد على الأزرار لتبدو كتطبيق native */
+button, a, div, input {
+  -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+}
+    /* إتاحة التمرير للـ body والمستند بشكل سلس */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-y: auto !important; /* السماح بالتمرير الرأسي دائماً */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* إضافة حماية لشريط الحالة العلوي (StatusBar Safe Area) */
+body {
+  padding-top: env(safe-area-inset-top, 20px); /* يترك مسافة لكاميرا ونوتش الهاتف */
+}
    .chat-footer {
             display: flex;
             align-items: center;
@@ -800,7 +864,7 @@
     <div class="chat-footer">
       <label class="img-upload-btn" title="إرفاق صورة">
         📷
-        <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="sendImage(event, 'public')">
+        <input type="file" accept="image/*" style="display:none;" onchange="sendImage(event, 'public')">
       </label>
       <input type="text" id="chat-input-public" placeholder="اكتب رسالتك..." onkeypress="handleKeyPress(event, 'public')">
       <button class="btn" style="width:auto; padding:10px 16px; margin:0;" onclick="sendMessage('public')">إرسال</button>
@@ -943,7 +1007,18 @@
         showDashboard(savedUser, savedRole || 'مواطن', savedIsCitizen);
     }
 };
+// فحص حالة الجلسة المحفوظة فور فتح التطبيق
+document.addEventListener("DOMContentLoaded", function() {
+  const savedUser = localStorage.getItem('saved_user');
+  const savedRole = localStorage.getItem('saved_role');
+  const savedIsCitizen = localStorage.getItem('saved_is_citizen') === 'true';
 
+  if (savedUser) {
+    currentUser = savedUser;
+    isCitizenUser = savedIsCitizen;
+    showDashboard(savedUser, savedRole, savedIsCitizen);
+  }
+});
     function login() {
       const userVal = document.getElementById('username').value.trim().toLowerCase();
       const passVal = document.getElementById('password').value.trim();
@@ -1042,13 +1117,16 @@
       modals.forEach(m => m.style.display = 'none');
     }
 
-    function openChat(type) {
-      closeAllModals();
-      const modal = document.getElementById(`chat-modal-${type}`);
-      modal.style.display = 'flex';
-      const box = document.getElementById(`chat-box-${type}`);
-      box.scrollTop = box.scrollHeight;
-    }
+   function openChat(type) {
+  closeAllModals();
+  const modal = document.getElementById(`chat-modal-${type}`);
+  if (modal) modal.style.display = 'flex';
+  
+  // طلب جلب السجل فوراً من قاعدة البيانات عند فتح النافذة
+  if (typeof socket !== 'undefined' && socket.connected) {
+    socket.emit("fetch_history", type);
+  }
+}
 
     function closeChat(type) {
       document.getElementById(`chat-modal-${type}`).style.display = 'none';
@@ -1067,6 +1145,14 @@
         input.value = '';
       }
     }
+// دالة لجلب الرسائل بانتظام من السيرفر
+setInterval(function() {
+  // تحقق أولاً إذا كان المستخدم داخل شاشة المحادثة
+  const chatScreen = document.getElementById('shuraChatCard');
+  if (chatScreen && chatScreen.style.display !== 'none') {
+    fetchMessages(); // الدالة التي تستدعي الرسائل من السيرفر وتحدث القائمة
+  }
+}, 3000); // تحديث كل 3 ثوانٍ
 
     function sendImage(event, type) {
       const file = event.target.files[0];
@@ -1483,93 +1569,109 @@ const frameInterval = 1000 / 60;
     window.onload = function() {
         drawPreview();
     };
-// 1. الاتصال بالخادم
+// 1. الاتصال بالسيرفر
   const socket = io("https://rabatghash.onrender.com");
-  let currentUsername = "";
 
-  // 2. دالة إرسال النص المرنة
+  // 2. طلب السجل تلقائياً فور الاتصال بالسيرفر
+  socket.on("connect", () => {
+    console.log("تم الاتصال بالسيرفر بنجاح:", socket.id);
+    socket.emit("fetch_history", "public");
+  });
+
+  // 3. دالة إرسال النص
   function sendMessage(type) {
-      const input = document.getElementById("chat-input-" + type) || 
-                    document.getElementById("chat-input") || 
-                    document.querySelector("input[type='text']");
-      
-      if (!input) return;
-      const text = input.value.trim();
+    const input = document.getElementById(`chat-input-${type}`);
+    if (!input) return;
+    const text = input.value.trim();
 
-      if (text !== "") {
-          socket.emit("send_message", {
-              type: type || "public",
-              text: text,
-              sender: currentUsername || (typeof currentUser !== 'undefined' ? currentUser : "مواطن"),
-              senderId: socket.id
-          });
-          input.value = "";
-      }
+    if (text !== "") {
+      socket.emit("send_message", {
+        type: type || "public",
+        text: text,
+        sender: currentUser || "مواطن"
+      });
+      input.value = "";
+    }
   }
 
-  // 3. دالة إرسال الصور
+  // 4. دالة إرسال الصور
   function sendImage(event, type) {
-      const file = event.target.files[0];
-      if (file) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-              socket.emit("send_message", {
-                  type: type || "public",
-                  image: e.target.result,
-                  sender: currentUsername || (typeof currentUser !== 'undefined' ? currentUser : "مواطن"),
-                  senderId: socket.id
-              });
-          };
-          reader.readAsDataURL(file);
-      }
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        socket.emit("send_message", {
+          type: type || "public",
+          image: e.target.result,
+          sender: currentUser || "مواطن"
+        });
+        event.target.value = '';
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
-  // 4. استقبال وتنسيق الرسائل
+  // 5. دالة رسم وتنسيق أي رسالة في الشاشات
+  function renderSingleMessage(data) {
+    const chatBox = document.getElementById(`chat-box-${data.type}`) || document.getElementById("chat-box-public");
+    if (!chatBox) return;
+
+    const msgDiv = document.createElement("div");
+    const isMe = (data.sender === currentUser);
+
+    msgDiv.style.margin = "8px 0";
+    msgDiv.style.padding = "10px 14px";
+    msgDiv.style.borderRadius = "12px";
+    msgDiv.style.maxWidth = "75%";
+    msgDiv.style.wordBreak = "break-word";
+
+    if (isMe) {
+      msgDiv.style.marginLeft = "auto";
+      msgDiv.style.marginRight = "0";
+      msgDiv.style.backgroundColor = "#701c20"; // اللون العنابي
+      msgDiv.style.color = "#ffffff";
+      msgDiv.style.fontWeight = "bold";
+      msgDiv.style.textAlign = "right";
+    } else {
+      msgDiv.style.marginRight = "auto";
+      msgDiv.style.marginLeft = "0";
+      msgDiv.style.backgroundColor = "#ffffff";
+      msgDiv.style.color = "#1e293b";
+      msgDiv.style.border = "1px solid #e2e8f0";
+      msgDiv.style.fontWeight = "normal";
+      msgDiv.style.textAlign = "right";
+    }
+
+    let htmlContent = `<div style="font-size: 11px; color: ${isMe ? '#e2e8f0' : '#64748b'}; margin-bottom: 3px;">${data.sender || 'مواطن'}</div>`;
+    if (data.text) {
+      htmlContent += `<div>${data.text}</div>`;
+    }
+    if (data.image) {
+      htmlContent += `<img src="${data.image}" style="max-width:100%; border-radius:8px; margin-top:5px;">`;
+    }
+
+    msgDiv.innerHTML = htmlContent;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // 6. استقبال الرسائل المباشرة فور إرسالها
   socket.on("receive_message", (data) => {
-      const chatBox = document.getElementById("chat-box-" + data.type) || 
-                      document.getElementById("chat-box") || 
-                      document.querySelector(".chat-box");
-      if (!chatBox) return;
+    renderSingleMessage(data);
+  });
 
-      const msgDiv = document.createElement("div");
-      const isMe = (data.senderId === socket.id);
+  // 7. استقبال سجل الـ 24 ساعة عند فتح الشات
+  socket.on("load_history", (res) => {
+    const chatBox = document.getElementById(`chat-box-${res.type}`);
+    if (!chatBox) return;
 
-      msgDiv.style.margin = "8px 0";
-      msgDiv.style.padding = "10px 14px";
-      msgDiv.style.borderRadius = "12px";
-      msgDiv.style.maxWidth = "75%";
-      msgDiv.style.wordBreak = "break-word";
+    chatBox.innerHTML = ''; // مسح الشاشة أولاً لمنع التكرار
 
-     if (isMe) {
-          // رسالتي: خلفية عنابية + نص أبيض غامق (يمين)
-          msgDiv.style.marginLeft = "auto";
-          msgDiv.style.marginRight = "0";
-          msgDiv.style.backgroundColor = "#701c2e"; // درجة العنابي المعتمدة
-          msgDiv.style.color = "#ffffff";           // جعل النص باللون الأبيض
-          msgDiv.style.fontWeight = "bold";
-          msgDiv.style.textAlign = "right";
-      } else {
-          // رسالة الطرف الآخر: خلفية بيضاء (يسار)
-          msgDiv.style.marginRight = "auto";
-          msgDiv.style.marginLeft = "0";
-          msgDiv.style.backgroundColor = "#ffffff";
-          msgDiv.style.color = "#1e293b";
-          msgDiv.style.border = "1px solid #e2e8f0";
-          msgDiv.style.fontWeight = "normal";
-          msgDiv.style.textAlign = "right";
-      }
-
-      let htmlContent = `<div style="font-size: 11px; color: ${isMe ? '#e2e8f0' : '#64748b'}; margin-bottom: 3px;">${data.sender}</div>`;
-      if (data.text) {
-          htmlContent += `<div>${data.text}</div>`;
-      }
-      if (data.image) {
-          htmlContent += `<img src="${data.image}" style="max-width:100%; border-radius:8px; margin-top:5px;">`;
-      }
-
-      msgDiv.innerHTML = htmlContent;
-      chatBox.appendChild(msgDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
+    if (res.history && res.history.length > 0) {
+      res.history.forEach(msg => {
+        renderSingleMessage(msg);
+      });
+    }
   });
 </script>
 
