@@ -1122,7 +1122,13 @@ document.addEventListener("DOMContentLoaded", function() {
   const modal = document.getElementById(`chat-modal-${type}`);
   if (modal) modal.style.display = 'flex';
   
-  // طلب جلب السجل فوراً من قاعدة البيانات عند فتح النافذة
+  // تنظيف الشاشة من الرسائل القديمة المعروضة محلياً لمنع التكرار
+  const chatBox = document.getElementById(`chat-box-${type}`);
+  if (chatBox) {
+    chatBox.innerHTML = '<div class="chat-msg"><b>النظام:</b> جاري تحميل الرسائل... 👑</div>';
+  }
+
+  // طلب السجل فوراً من قاعدة البيانات عند فتح الشات
   if (typeof socket !== 'undefined' && socket.connected) {
     socket.emit("fetch_history", type);
   }
@@ -1133,18 +1139,20 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     /* --- وظائف إرسال النص والصور بالشات --- */
-    function sendMessage(type) {
-      const input = document.getElementById(`chat-input-${type}`);
-      const box = document.getElementById(`chat-box-${type}`);
-      if (input.value.trim() !== '') {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'chat-msg chat-msg-self';
-        msgDiv.innerHTML = `<b>${currentUser}:</b> ${input.value}`;
-        box.appendChild(msgDiv);
-        box.scrollTop = box.scrollHeight;
-        input.value = '';
-      }
-    }
+   function sendMessage(type) {
+  const input = document.getElementById(`chat-input-${type}`);
+  if (!input) return;
+  const text = input.value.trim();
+
+  if (text !== "") {
+    socket.emit("send_message", {
+      type: type || "public",
+      text: text,
+      sender: currentUser || "مواطن"
+    });
+    input.value = "";
+  }
+}
 // دالة لجلب الرسائل بانتظام من السيرفر
 setInterval(function() {
   // تحقق أولاً إذا كان المستخدم داخل شاشة المحادثة
