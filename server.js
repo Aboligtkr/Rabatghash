@@ -86,3 +86,7 @@ io.on('connection', (socket) => {
         console.log('مستخدم قطع الاتصال:', socket.id);
     });
 });
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`الخادم يعمل بنجاح على المنفذ: ${PORT}`);
+});
