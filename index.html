@@ -1903,9 +1903,25 @@ canvas {
         playNotificationSound();
         if (document.hidden || activeChatType !== data.type) {
           showBrowserNotification(data);
+
+          // إشعار الأندرويد المحلي (طريقة نظيفة وبدون أخطاء)
+          if (window.Capacitor && window.Capacitor.isPluginAvailable('LocalNotifications')) {
+            window.Capacitor.Plugins.LocalNotifications.schedule({
+              notifications: [
+                {
+                  title: data.sender || "رسالة جديدة 👑",
+                  body: data.message || "لديك رسالة جديدة في المملكة",
+                  id: new Date().getTime(),
+                  channelId: 'default',
+                  sound: 'default'
+                }
+              ]
+            });
+          }
         }
       }
     });
+
 
     socket.on("load_history", (res) => {
       const chatBox = document.getElementById(`chat-box-${res.type}`);
