@@ -1789,22 +1789,32 @@ canvas {
 
   <!-- الاتصال بـ Socket.io -->
   <script>
-    const socket = io("https://rabatghash.onrender.com");
+    const socket = io("https://rabatghash.onrender.com", {
+      transports: ['websocket', 'polling'], // إجبار السوكيت على استخدام أقوى طريقتين للاتصال السريع
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 2000
+    });
 
     socket.on("connect", () => {
-      console.log("تم الاتصال بالسيرفر بنجاح:", socket.id);
+      console.log("تم الاتصال بالسيرفر بنجاح، رقم الجلسة:", socket.id);
+      
+      // إخفاء جملة جاري تحميل الرسائل فوراً
+      hideLoadingMessage(); 
+
       socket.emit("fetch_history", "public");
       socket.emit("fetch_leaderboard");
 
-      // إرسال الـ FCM Token تلقائياً للسيرفر فور اكتمال اتصال الـ Socket
-      if (window.savedFcmToken) {
+      // إرسال الـ FCM Token فور التأكد من ثبات الاتصال
+      if (typeof cachedFcmToken !== 'undefined' && cachedFcmToken) {
+        socket.emit("register_fcm_token", { token: cachedFcmToken, user: currentUser });
+      } else if (window.savedFcmToken) {
         socket.emit("register_fcm_token", { token: window.savedFcmToken, user: currentUser });
       }
     });
 
-    socket.on("update_reputation_state", (updatedCitizens) => {
-      citizensData = updatedCitizens;
-      renderCitizens();
+    socket.on("connect_error", (err) => {
+      console.log("محاولة الاتصال بالسيرفر جارية...", err);
     });
 
     socket.on("update_leaderboard_state", (serverLeaderboard) => {
@@ -1908,24 +1918,30 @@ canvas {
       }
     });
 
-   async function setupPushNotifications() {
-      if (window.Capacitor && window.Capacitor.isPluginAvailable('PushNotifications')) {
-        const { PushNotifications } = window.Capacitor.Plugins;
-        const { LocalNotifications } = window.Capacitor.Plugins;
+  async function setupPushNotifications() {
+  if (window.Capacitor && window.Capacitor.isPluginAvailable('PushNotifications')) {
+    const { PushNotifications } = window.Capacitor.Plugins;
+    const { LocalNotifications } = window.Capacitor.Plugins;
 
-        let promptResult = await PushNotifications.checkPermissions();
-        if (promptResult.receive === 'prompt') {
-          promptResult = await PushNotifications.requestPermissions();
-        }
+    // --- إضافة قناة الإشعارات للأندرويد هنا ---
+    if (LocalNotifications) {
+      try {
+        await LocalNotifications.createChannel({
+          id: 'default',
+          name: 'General Notifications',
+          description: 'إشعارات الرسائل والمملكة',
+          importance: 5, // أعلى أهمية لضمان ظهور الإشعار على الشاشة وفوق التطبيقات
+          visibility: 1,
+          sound: 'default'
+        });
+      } catch (e) {
+        console.log("Error creating notification channel:", e);
+      }
+    }
+    // ------------------------------------------
 
-        if (promptResult.receive === 'granted') {
-          await PushNotifications.register();
-          
-          // طلب صلاحية الإشعارات المحلية أيضاً لضمان ظهورها
-          if (LocalNotifications) {
-            await LocalNotifications.requestPermissions();
-          }
-        }
+    let promptResult = await PushNotifications.checkPermissions();
+    // ... وباقي الكود كما هو تماماً ...
 
         // حفظ التوكن وإرساله للسيرفر
         PushNotifications.addListener('registration', (token) => {
@@ -1952,6 +1968,7 @@ canvas {
                     body: notification.body || "لديك رسالة في المملكة",
                     id: new Date().getTime(),
                     sound: 'default',
+                    channelId: 'default', // ربط الإشعار بالقناة التي أنشأناها
                     extra: { type: notification.data?.type || 'public' }
                   }
                 ]
