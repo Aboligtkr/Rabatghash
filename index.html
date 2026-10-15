@@ -1795,6 +1795,11 @@ canvas {
       console.log("تم الاتصال بالسيرفر بنجاح:", socket.id);
       socket.emit("fetch_history", "public");
       socket.emit("fetch_leaderboard");
+
+      // إرسال الـ FCM Token تلقائياً للسيرفر فور اكتمال اتصال الـ Socket
+      if (window.savedFcmToken) {
+        socket.emit("register_fcm_token", { token: window.savedFcmToken, user: currentUser });
+      }
     });
 
     socket.on("update_reputation_state", (updatedCitizens) => {
@@ -1903,9 +1908,10 @@ canvas {
       }
     });
 
-    async function setupPushNotifications() {
+   async function setupPushNotifications() {
       if (window.Capacitor && window.Capacitor.isPluginAvailable('PushNotifications')) {
         const { PushNotifications } = window.Capacitor.Plugins;
+        const { LocalNotifications } = window.Capacitor.Plugins;
 
         let promptResult = await PushNotifications.checkPermissions();
         if (promptResult.receive === 'prompt') {
@@ -1914,24 +1920,67 @@ canvas {
 
         if (promptResult.receive === 'granted') {
           await PushNotifications.register();
+          
+          // طلب صلاحية الإشعارات المحلية أيضاً لضمان ظهورها
+          if (LocalNotifications) {
+            await LocalNotifications.requestPermissions();
+          }
         }
 
+        // حفظ التوكن وإرساله للسيرفر
         PushNotifications.addListener('registration', (token) => {
           console.log('FCM Device Token:', token.value);
+          cachedFcmToken = token.value;
+          
           if (typeof socket !== 'undefined' && socket.connected) {
             socket.emit("register_fcm_token", { token: token.value, user: currentUser });
           }
         });
 
-        PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-          const type = notification.notification.data.type || 'public';
+        // هذا الحدث يعمل عندما يصل الإشعار والتطبيق يعمل
+        PushNotifications.addListener('pushNotificationReceived', async (notification) => {
+          console.log('Push received: ', notification);
+          playNotificationSound();
+
+          // إظهار إشعار مرئي في شريط تنبيهات أندرويد عبر الإشعارات المحلية
+          if (LocalNotifications) {
+            try {
+              await LocalNotifications.schedule({
+                notifications: [
+                  {
+                    title: notification.title || "رسالة جديدة 👑",
+                    body: notification.body || "لديك رسالة في المملكة",
+                    id: new Date().getTime(),
+                    sound: 'default',
+                    extra: { type: notification.data?.type || 'public' }
+                  }
+                ]
+              });
+            } catch (e) {
+              console.error("Error scheduling local notification:", e);
+            }
+          }
+        });
+
+        // عند النقر على الإشعار
+        PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
+          const type = action.notification.data?.type || 'public';
           if (typeof openChat === 'function') {
             openChat(type);
           }
         });
+
+        // التفاعل مع النقر على الإشعار المحلي
+        if (LocalNotifications) {
+          LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
+            const type = notification.notification.extra?.type || 'public';
+            if (typeof openChat === 'function') {
+              openChat(type);
+            }
+          });
+        }
       }
     }
-
     document.addEventListener("DOMContentLoaded", () => {
       setupPushNotifications();
     });
