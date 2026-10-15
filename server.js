@@ -56,7 +56,9 @@ let pollVotes = { opt1: 0, opt2: 0 };
 let globalLeaderboard = {
   clicker: { name: 'لا يوجد', score: 0 },
   bird: { name: 'لا يوجد', score: 0 },
-  dino: { name: 'لا يوجد', score: 0 }
+  dino: { name: 'لا يوجد', score: 0 },
+  snake: { name: 'لا يوجد', score: 0 },
+  memory: { name: 'لا يوجد', score: 0 }
 };
 
 let citizensDB = {
@@ -145,13 +147,9 @@ let citizensDB = {
 let deviceTokens = new Set();
 
 io.on('connection', (socket) => {
-socket.on("update_reputation", (data) => {
-        if (data && data.userKey && citizensDB[data.userKey]) {
-            citizensDB[data.userKey].rep += 1;
-            io.emit("update_reputation_state", citizensDB);
-        }
-    });
     console.log('مستخدم جديد اتصل بالتطبيق:', socket.id);
+
+    socket.emit("update_reputation_state", citizensDB);
 
     socket.on("register_fcm_token", (data) => {
         if (data && data.token) {
