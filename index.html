@@ -7,7 +7,7 @@
   <title>تطبيق المملكة الربطخشاوية</title>
   <style>
 /* ========================================================
-   التصميم العصري الداعم للوضع العادي والدارك مود اليدوي
+   التصميم العصري الداعم للمسافات الآمنة والدارك مود اليدوي
    ======================================================== */
 @font-face {
   font-family: 'Zanjabeel';
@@ -31,7 +31,6 @@
   --radius-lg: 24px;
 }
 
-/* تنسيق الدارك مود عند تفعيله يدوياً عبر الكلاس */
 html.dark-mode {
   --primary: #e11d48;
   --primary-hover: #f43f5e;
@@ -68,7 +67,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 20px 15px;
+  /* إضافة مسافة أمان علوية هنا لتجنب التصاق المحتوى بالكاميرا والحافة */
+  padding: max(25px, env(safe-area-inset-top)) 15px 20px 15px;
 }
 
 .container {
@@ -102,6 +102,8 @@ body {
   transform: scale(0.97);
   transition: opacity 0.2s ease, transform 0.2s ease;
   pointer-events: none;
+  /* دعم المسافة الآمنة حتى داخل الشاشات الكاملة */
+  padding-top: env(safe-area-inset-top);
 }
 
 .fullscreen-modal.open {
@@ -1007,7 +1009,6 @@ canvas {
   </div>
 
   <script>
-    /* دالة تبديل الوضع الليلي والنهاري يدوياً */
     function toggleDarkMode() {
       const html = document.documentElement;
       html.classList.toggle('dark-mode');
@@ -1015,7 +1016,6 @@ canvas {
       localStorage.setItem('theme_mode', isDark ? 'dark' : 'light');
     }
 
-    // استرجاع الوضع المحفوظ عند تحميل الصفحة
     document.addEventListener("DOMContentLoaded", function() {
       const savedTheme = localStorage.getItem('theme_mode');
       if (savedTheme === 'dark') {
@@ -1907,12 +1907,12 @@ canvas {
       if (window.Capacitor && window.Capacitor.isPluginAvailable('PushNotifications')) {
         const { PushNotifications } = window.Capacitor.Plugins;
 
-        let perm = await PushNotifications.checkPermissions();
-        if (perm.receive === 'prompt') {
-          perm = await PushNotifications.requestPermissions();
+        let promptResult = await PushNotifications.checkPermissions();
+        if (promptResult.receive === 'prompt') {
+          promptResult = await PushNotifications.requestPermissions();
         }
 
-        if (perm.receive === 'granted') {
+        if (promptResult.receive === 'granted') {
           await PushNotifications.register();
         }
 
