@@ -1459,58 +1459,75 @@ canvas {
       }
     }
 
-    let memoryIcons = ['👑', '🛡️', '⚔️', '🦅','🐐','👾', '👑', '🛡️', '⚔️', '🦅','🐐',"👾"];
-    let flippedCards = [];
-    let matchedPairs = 0;
+    let memoryIcons = ['👑', '🛡️', '⚔️', '🦅','🐐','👾' ,'👑', '🛡️', '⚔️', '🦅','🐐','👾'];
+let flippedCards = [];
+let matchedPairs = 0;
+let memoryStartTime = null;
+let memoryTimerInterval = null;
+let elapsedTime = 0;
 
-    function initMemoryGame() {
-      const board = document.getElementById('memory-board');
-      if (!board) return;
-      board.innerHTML = '';
-      flippedCards = [];
-      matchedPairs = 0;
-      document.getElementById('memory-status').innerText = "طابق الرموز المتشابهة!";
+function initMemoryGame() {
+  const board = document.getElementById('memory-board');
+  if (!board) return;
+  board.innerHTML = '';
+  flippedCards = [];
+  matchedPairs = 0;
 
-      let shuffled = [...memoryIcons].sort(() => Math.random() - 0.5);
-      shuffled.forEach((icon, index) => {
-        const card = document.createElement('div');
-        card.className = 'memory-card';
-        card.dataset.icon = icon;
-        card.onclick = () => flipMemoryCard(card);
-        board.appendChild(card);
-      });
+  if (memoryTimerInterval) clearInterval(memoryTimerInterval);
+  memoryStartTime = null;
+  elapsedTime = 0;
+  document.getElementById('memory-status').innerText = "طابق الرموز المتشابهة! (الوقت: 0 ثانية)";
+
+  let shuffled = [...memoryIcons].sort(() => Math.random() - 0.5);
+  shuffled.forEach((icon, index) => {
+    const card = document.createElement('div');
+    card.className = 'memory-card';
+    card.dataset.icon = icon;
+    card.onclick = () => flipMemoryCard(card);
+    board.appendChild(card);
+  });
+}
+
+function flipMemoryCard(card) {
+  if (!memoryStartTime) {
+    memoryStartTime = Date.now();
+    memoryTimerInterval = setInterval(() => {
+      elapsedTime = Math.floor((Date.now() - memoryStartTime) / 1000);
+      document.getElementById('memory-status').innerText = `طابق الرموز المتشابهة! (الوقت: ${elapsedTime} ثانية)`;
+    }, 1000);
+  }
+
+  if (flippedCards.length < 2 && !card.classList.contains('flipped') && !card.classList.contains('matched')) {
+    card.classList.add('flipped');
+    card.innerText = card.dataset.icon;
+    flippedCards.push(card);
+
+    if (flippedCards.length === 2) {
+      setTimeout(checkMemoryMatch, 500);
     }
+  }
+}
 
-    function flipMemoryCard(card) {
-      if (flippedCards.length < 2 && !card.classList.contains('flipped') && !card.classList.contains('matched')) {
-        card.classList.add('flipped');
-        card.innerText = card.dataset.icon;
-        flippedCards.push(card);
-
-        if (flippedCards.length === 2) {
-          setTimeout(checkMemoryMatch, 500);
-        }
-      }
+function checkMemoryMatch() {
+  const [card1, card2] = flippedCards;
+  if (card1.dataset.icon === card2.dataset.icon) {
+    card1.classList.add('matched');
+    card2.classList.add('matched');
+    matchedPairs++;
+    if (matchedPairs === 6) {
+      clearInterval(memoryTimerInterval);
+      document.getElementById('memory-status').innerText = `أحسنت! فزت في لعبة الذاكرة خلال ${elapsedTime} ثانية 🎉`;
+      submitScoreToLeaderboard('memory', elapsedTime);
     }
-
-    function checkMemoryMatch() {
-      const [card1, card2] = flippedCards;
-      if (card1.dataset.icon === card2.dataset.icon) {
-        card1.classList.add('matched');
-        card2.classList.add('matched');
-        matchedPairs++;
-        if (matchedPairs === 4) {
-          document.getElementById('memory-status').innerText = "أحسنت! فزت في لعبة الذاكرة 🎉";
-          submitScoreToLeaderboard('memory', 4);
-        }
-      } else {
-        card1.classList.remove('flipped');
-        card1.innerText = '';
-        card2.classList.remove('flipped');
-        card2.innerText = '';
-      }
-      flippedCards = [];
-    }
+  } else {
+    card1.classList.remove('flipped');
+    card1.innerText = '';
+    card2.classList.remove('flipped');
+    card2.innerText = '';
+  }
+  flippedCards = [];
+}
+    
 
     function playRPS(playerChoice) {
       const choices = ['rock', 'paper', 'scissors'];
@@ -1684,46 +1701,92 @@ canvas {
         ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(bird.x + 6, bird.y - 3, 2, 0, Math.PI * 2); ctx.fill();
     }
 
-    let dino = { x: 40, y: 260, width: 24, height: 35, vy: 0, gravity: 0.6, grounded: true };
+let dino = { x: 40, y: 260, width: 24, height: 35, vy: 0, gravity: 0.6, grounded: true };
     let obstacles = [];
+    let gameSpeed = 4; // السرعة الابتدائية للعبة
 
     function initDino() {
-        dino.y = 260; dino.vy = 0; dino.grounded = true; obstacles = []; frame = 0;
+        dino.y = 260; 
+        dino.vy = 0; 
+        dino.grounded = true; 
+        obstacles = []; 
+        frame = 0;
+        gameSpeed = 4; // إعادة تعيين السرعة عند بدء اللعبة
     }
 
     function updateDino() {
-        dino.vy += dino.gravity; dino.y += dino.vy;
-        if (dino.y >= 260) { dino.y = 260; dino.vy = 0; dino.grounded = true; }
+        dino.vy += dino.gravity; 
+        dino.y += dino.vy;
+        if (dino.y >= 260) { 
+            dino.y = 260; 
+            dino.vy = 0; 
+            dino.grounded = true; 
+        }
 
-        if (frame % 100 === 0) {
-            obstacles.push({ x: canvas.width, width: 18, height: Math.random() > 0.5 ? 30 : 45 });
+        // زيادة السرعة تدريجياً مع مرور الوقت (كلما زادت النقاط أو الفريمات)
+        gameSpeed = 4 + Math.floor(score / 5) * 0.2; 
+        if (gameSpeed > 9) gameSpeed = 9; // وضع حد أقصى للسرعة لتبقى اللعبة قابلة للعب
+
+        // توليد العقبات بناءً على السرعة الحالية
+        if (frame % Math.max(60, Math.floor(100 - gameSpeed * 4)) === 0) {
+            obstacles.push({ 
+                x: canvas.width, 
+                width: Math.random() > 0.5 ? 18 : 22, 
+                height: Math.random() > 0.5 ? 30 : 45 
+            });
         }
 
         for (let i = obstacles.length - 1; i >= 0; i--) {
-            obstacles[i].x -= 4;
-            if (dino.x < obstacles[i].x + obstacles[i].width && dino.x + dino.width > obstacles[i].x &&
-                dino.y < 295 - obstacles[i].height && dino.y + dino.height > 295 - obstacles[i].height) {
+            obstacles[i].x -= gameSpeed; // تحريك العقبة بناءً على السرعة المتزايدة
+
+            // فحص الاصطدام بدقة
+            if (dino.x < obstacles[i].x + obstacles[i].width && 
+                dino.x + dino.width > obstacles[i].x &&
+                dino.y < 295 - obstacles[i].height && 
+                dino.y + dino.height > 295 - obstacles[i].height) {
                 gameOver();
             }
+
+            // إذا تجاوز اللاعب العقبة بنجاح تزيد النقاط
             if (obstacles[i].x < -20) {
-                obstacles.splice(i, 1); score++; updateScore();
+                obstacles.splice(i, 1); 
+                score++; 
+                updateScore();
             }
         }
     }
 
     function drawDinoGame() {
-        ctx.fillStyle = '#f7f7f7'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = '#535353'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(0, 295); ctx.lineTo(canvas.width, 295); ctx.stroke();
+        ctx.fillStyle = '#f7f7f7'; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // رسم خط الأرض الكلاسيكي
+        ctx.strokeStyle = '#535353'; 
+        ctx.lineWidth = 2;
+        ctx.beginPath(); 
+        ctx.moveTo(0, 295); 
+        ctx.lineTo(canvas.width, 295); 
+        ctx.stroke();
+
+        // رسم الديناصور
         ctx.fillStyle = '#535353';
-        ctx.beginPath(); ctx.roundRect(dino.x, dino.y, dino.width, dino.height, 6); ctx.fill();
-        ctx.fillStyle = '#fff'; ctx.fillRect(dino.x + 14, dino.y + 5, 4, 4);
+        ctx.beginPath(); 
+        ctx.roundRect(dino.x, dino.y, dino.width, dino.height, 4); 
+        ctx.fill();
+        
+        // عين الديناصور الصغيرة
+        ctx.fillStyle = '#fff'; 
+        ctx.fillRect(dino.x + 14, dino.y + 5, 4, 4);
+
+        // رسم الصبار (العقبات)
         ctx.fillStyle = '#27ae60';
         obstacles.forEach(o => {
-            ctx.beginPath(); ctx.roundRect(o.x, 295 - o.height, o.width, o.height, 4); ctx.fill();
+            ctx.beginPath(); 
+            ctx.roundRect(o.x, 295 - o.height, o.width, o.height, 3); 
+            ctx.fill();
         });
     }
-
+    
     function startGame() {
         score = 0; updateScore(); overlay.style.display = 'none'; isRunning = true;
         if (currentGame === 'bird') initBird(); else initDino();
