@@ -6,9 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>تطبيق المملكة الربطخشاوية</title>
   <style>
-/* ========================================================
-   التصميم العصري الداعم للمسافات الآمنة والدارك مود اليدوي
-   ======================================================== */
 @font-face {
   font-family: 'Zanjabeel';
   src: url('assets/fonts/zanjabeel-black.otf') format('opentype');
@@ -67,7 +64,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  /* إضافة مسافة أمان علوية هنا لتجنب التصاق المحتوى بالكاميرا والحافة */
   padding: max(25px, env(safe-area-inset-top)) 15px 20px 15px;
 }
 
@@ -102,7 +98,6 @@ body {
   transform: scale(0.97);
   transition: opacity 0.2s ease, transform 0.2s ease;
   pointer-events: none;
-  /* دعم المسافة الآمنة حتى داخل الشاشات الكاملة */
   padding-top: env(safe-area-inset-top);
 }
 
@@ -249,10 +244,6 @@ body {
 .btn:hover {
   background-color: var(--primary-hover);
   transform: translateY(-1px);
-}
-
-.btn:active {
-  transform: translateY(1px);
 }
 
 .btn-guest {
@@ -630,7 +621,6 @@ canvas {
 
   <div class="container">
     
-    <!-- شاشة تسجيل الدخول -->
     <div id="login-screen">
       <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
         <button class="logout-btn" onclick="toggleDarkMode()">🌙 / ☀️</button>
@@ -661,7 +651,6 @@ canvas {
       <p id="error-msg" class="error-msg">اسم المستخدم أو الكود غير صحيح!</p>
     </div>
 
-    <!-- الشاشة الرئيسية -->
     <div id="main-screen">
       <div class="header">
         <div style="display:flex; align-items:center; gap:12px;">
@@ -686,7 +675,6 @@ canvas {
       
       <div class="services-grid">
 
-        <!-- خانة الأذكار -->
         <div class="service-card" onclick="openFullscreenModal('adhkar-fullscreen-modal')">
           <div class="service-header">
             <div class="service-icon">📿</div>
@@ -697,7 +685,6 @@ canvas {
           </div>
         </div>
 
-        <!-- سجل المواطنين -->
         <div class="service-card citizen-only" onclick="openFullscreenModal('citizens-fullscreen-modal')">
           <div class="service-header">
             <div class="service-icon">🎖️</div>
@@ -708,7 +695,6 @@ canvas {
           </div>
         </div>
 
-        <!-- مركز الألعاب -->
         <div class="service-card" onclick="openFullscreenModal('games-fullscreen-modal')">
           <div class="service-header">
             <div class="service-icon">🎮</div>
@@ -719,7 +705,6 @@ canvas {
           </div>
         </div>
 
-        <!-- الجواز الربطخشاوي -->
         <div class="service-card citizen-only" onclick="openFullscreenModal('passport-fullscreen-modal')">
           <div class="service-header">
             <div class="service-icon">📜</div>
@@ -730,7 +715,6 @@ canvas {
           </div>
         </div>
 
-        <!-- الشكاوى والمقترحات -->
         <div class="service-card citizen-only" onclick="openFullscreenModal('complaint-fullscreen-modal')">
           <div class="service-header">
             <div class="service-icon">📩</div>
@@ -741,7 +725,6 @@ canvas {
           </div>
         </div>
 
-        <!-- حسابات المملكة -->
         <div class="service-card" onclick="openFullscreenModal('social-fullscreen-modal')">
           <div class="service-header">
             <div class="service-icon">🌐</div>
@@ -752,7 +735,6 @@ canvas {
           </div>
         </div>
 
-        <!-- طلب الانضمام / الإشراف -->
         <div class="service-card" id="shura-card" onclick="openFullscreenModal('shura-fullscreen-modal')">
           <div class="service-header">
             <div class="service-icon">🏛️</div>
@@ -763,7 +745,6 @@ canvas {
           </div>
         </div>
 
-        <!-- الدردشة العامة -->
         <div class="service-card citizen-only" onclick="openChat('public')">
           <div class="service-header">
             <div class="service-icon">💬</div>
@@ -774,7 +755,6 @@ canvas {
           </div>
         </div>
 
-        <!-- شات الشورى الخاص -->
         <div class="service-card shura-only" id="shura-chat-card" style="display:none;" onclick="openChat('shura')">
           <div class="service-header">
             <div class="service-icon">👑</div>
@@ -790,11 +770,6 @@ canvas {
 
   </div>
 
-  <!-- ========================================================
-       الشاشات الكاملة المعاصرة (Fullscreen Modals)
-       ======================================================== -->
-
-  <!-- 1. شاشة الأذكار -->
   <div id="adhkar-fullscreen-modal" class="fullscreen-modal">
     <div class="modal-header">
       <h3>📿 ركن الأذكار والعدّادات المبرمجة</h3>
@@ -805,7 +780,6 @@ canvas {
     </div>
   </div>
 
-  <!-- 2. شاشة سجل المواطنين -->
   <div id="citizens-fullscreen-modal" class="fullscreen-modal">
     <div class="modal-header">
       <h3>🎖️ سجل السيرة الملكية والأوسمة</h3>
@@ -833,7 +807,6 @@ canvas {
     </div>
   </div>
 
-  <!-- 3. شاشة الألعاب -->
   <div id="games-fullscreen-modal" class="fullscreen-modal">
     <div class="modal-header">
       <h3>🎮 مركز الألعاب المصغرة</h3>
@@ -847,21 +820,18 @@ canvas {
         <button class="btn" style="font-size:12px; padding:8px; background:#0f172a; flex:1; margin:0;" onclick="openLeaderboard()">الصدارة🏆</button>
       </div>
 
-      <!-- لعبة النقر السريع -->
       <div id="game-clicker" style="text-align:center; display:block; background:var(--card-bg); padding:20px; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
         <p style="font-size:14px; margin-bottom:10px; color:var(--text-muted); font-weight:600;">اضغط أكبر عدد من المرات خلال 5 ثوانٍ!</p>
         <h2 id="clicker-score" style="margin:12px 0; color:var(--primary); font-size:36px; font-weight:800;">0</h2>
         <button class="btn" id="clicker-btn" onclick="handleClickGame()">ابدأ التحدي!</button>
       </div>
 
-      <!-- لعبة الذاكرة -->
       <div id="game-memory" style="text-align:center; display:none; background:var(--card-bg); padding:20px; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
         <p style="font-size:14px; font-weight:700; color:var(--text-main);" id="memory-status">طابق الرموز المتشابهة!</p>
         <div class="memory-grid" id="memory-board"></div>
         <button class="btn" style="padding:8px 16px; font-size:13px; width:auto; margin-top:10px;" onclick="initMemoryGame()">إعادة اللعبة</button>
       </div>
 
-      <!-- لعبة حجر ورقة مقص -->
       <div id="game-rps" style="text-align:center; display:none; background:var(--card-bg); padding:20px; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
         <p style="font-size:14px; font-weight:700; color:var(--text-main); margin-bottom:10px;" id="rps-status">اختر سلاحك لتحدي النظام:</p>
         <div class="rps-choices">
@@ -872,7 +842,6 @@ canvas {
         <h4 id="rps-result" style="color:var(--primary); margin-top:10px; font-weight:800;"></h4>
       </div>
 
-      <!-- ألعاب الآركيد -->
       <div id="game-arcade" style="text-align:center; margin-top: 20px; background:var(--card-bg); padding:15px; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
         <div id="game-tabs" style="display: flex; gap: 8px; margin-bottom: 12px; justify-content: center;">
             <button class="btn" style="font-size:12px; padding:8px 14px; background:var(--primary); margin:0;" onclick="switchGame('bird', this)">Flappy Bird</button>
@@ -896,7 +865,6 @@ canvas {
     </div>
   </div>
 
-  <!-- 4. شاشة الجواز -->
   <div id="passport-fullscreen-modal" class="fullscreen-modal">
     <div class="modal-header">
       <h3>📜 التقديم على الجواز الربطخشاوي</h3>
@@ -911,7 +879,6 @@ canvas {
     </div>
   </div>
 
-  <!-- 5. شاشة الشكاوى -->
   <div id="complaint-fullscreen-modal" class="fullscreen-modal">
     <div class="modal-header">
       <h3>📩 الشكاوى والمقترحات</h3>
@@ -926,7 +893,6 @@ canvas {
     </div>
   </div>
 
-  <!-- 6. شاشة حسابات المملكة -->
   <div id="social-fullscreen-modal" class="fullscreen-modal">
     <div class="modal-header">
       <h3>🌐 حسابات المملكة الربطخشاوية</h3>
@@ -939,7 +905,6 @@ canvas {
     </div>
   </div>
 
-  <!-- 7. شاشة طلب الانضمام -->
   <div id="shura-fullscreen-modal" class="fullscreen-modal">
     <div class="modal-header">
       <h3>🏛️ تقديم طلب رسمي للمملكة</h3>
@@ -954,10 +919,13 @@ canvas {
     </div>
   </div>
 
-  <!-- 8. الشات العام -->
+  <!-- الشات العام (مضاف إليه عداد الستريك) -->
   <div id="chat-modal-public" class="fullscreen-modal">
-    <div class="modal-header">
-      <h3>💬 الدردشة العامة للمملكة</h3>
+    <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h3>💬 الدردشة العامة للمملكة</h3>
+        <span id="streak-counter" style="font-size:12px; font-weight:700; color:var(--primary);">🔥 الستريك الجماعي: 0 (مطلوب 3 أشخاص)</span>
+      </div>
       <button class="close-chat-btn" onclick="closeChat('public')">إغلاق ✕</button>
     </div>
 
@@ -975,7 +943,6 @@ canvas {
     </div>
   </div>
 
-  <!-- 9. شات الشورى -->
   <div id="chat-modal-shura" class="fullscreen-modal">
     <div class="modal-header">
       <h3 style="color:var(--primary);">👑 شات مجلس الشورى الخاص</h3>
@@ -996,7 +963,6 @@ canvas {
     </div>
   </div>
 
-  <!-- 10. لوحة الصدارة -->
   <div id="leaderboard-modal" class="fullscreen-modal">
     <div class="modal-header">
       <h3>🏆 لوحة صدارة الألعاب والبطولات</h3>
@@ -1014,6 +980,13 @@ canvas {
       html.classList.toggle('dark-mode');
       const isDark = html.classList.contains('dark-mode');
       localStorage.setItem('theme_mode', isDark ? 'dark' : 'light');
+    }
+
+    function hideLoadingMessage() {
+      const publicBox = document.getElementById("chat-box-public");
+      if (publicBox && publicBox.innerHTML.includes("جاري تحميل الرسائل...")) {
+        publicBox.innerHTML = '<div class="chat-msg"><b>النظام:</b> أهلاً بك في الدردشة العامة للمملكة 👑</div>';
+      }
     }
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -1410,6 +1383,9 @@ canvas {
 
     function openLeaderboard() {
       openFullscreenModal('leaderboard-modal');
+      if (typeof socket !== 'undefined' && socket.connected) {
+        socket.emit("fetch_leaderboard");
+      }
       renderLeaderboardContent();
     }
 
@@ -1420,11 +1396,24 @@ canvas {
     function renderLeaderboardContent() {
       const container = document.getElementById('leaderboard-list-content');
       if (!container) return;
+      
+      const cName = globalLeaderboard.clicker ? globalLeaderboard.clicker.name : 'لا يوجد';
+      const cScore = globalLeaderboard.clicker ? globalLeaderboard.clicker.score : 0;
+      
+      const mName = globalLeaderboard.memory ? globalLeaderboard.memory.name : 'لا يوجد';
+      const mScore = globalLeaderboard.memory ? globalLeaderboard.memory.score : 0;
+
+      const bName = globalLeaderboard.bird ? globalLeaderboard.bird.name : 'لا يوجد';
+      const bScore = globalLeaderboard.bird ? globalLeaderboard.bird.score : 0;
+
+      const dName = globalLeaderboard.dino ? globalLeaderboard.dino.name : 'لا يوجد';
+      const dScore = globalLeaderboard.dino ? globalLeaderboard.dino.score : 0;
+
       container.innerHTML = `
-        <div class="leaderboard-item"><span>⚡ أفضل نتيجة في النقر السريع:</span> <span style="color:var(--primary);">${globalLeaderboard.clicker.name} (${globalLeaderboard.clicker.score})</span></div>
-        <div class="leaderboard-item"><span>🧠 أفضل نتيجة في الذاكرة:</span> <span style="color:var(--primary);">${globalLeaderboard.memory ? globalLeaderboard.memory.name : 'لا يوجد'} (${globalLeaderboard.memory ? globalLeaderboard.memory.score : 0})</span></div>
-        <div class="leaderboard-item"><span>🐦 أفضل نتيجة في Flappy Bird:</span> <span style="color:var(--primary);">${globalLeaderboard.bird.name} (${globalLeaderboard.bird.score})</span></div>
-        <div class="leaderboard-item"><span>🦖 أفضل نتيجة في الديناصور:</span> <span style="color:var(--primary);">${globalLeaderboard.dino.name} (${globalLeaderboard.dino.score})</span></div>
+        <div class="leaderboard-item"><span>⚡ أفضل نتيجة في النقر السريع:</span> <span style="color:var(--primary);">${cName} (${cScore})</span></div>
+        <div class="leaderboard-item"><span>🧠 أفضل نتيجة في الذاكرة:</span> <span style="color:var(--primary);">${mName} (${mScore})</span></div>
+        <div class="leaderboard-item"><span>🐦 أفضل نتيجة في Flappy Bird:</span> <span style="color:var(--primary);">${bName} (${bScore})</span></div>
+        <div class="leaderboard-item"><span>🦖 أفضل نتيجة في الديناصور:</span> <span style="color:var(--primary);">${dName} (${dScore})</span></div>
       `;
     }
 
@@ -1594,7 +1583,6 @@ canvas {
     }
   </script>
 
-  <!-- محرك الألعاب -->
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -1787,10 +1775,10 @@ canvas {
     };
   </script>
 
-  <!-- الاتصال بـ Socket.io -->
+  <!-- الاتصال بـ Socket.io وتحديث الستريك ووقت الرسائل -->
   <script>
     const socket = io("https://rabatghash.onrender.com", {
-      transports: ['websocket', 'polling'], // إجبار السوكيت على استخدام أقوى طريقتين للاتصال السريع
+      transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 2000
@@ -1799,13 +1787,11 @@ canvas {
     socket.on("connect", () => {
       console.log("تم الاتصال بالسيرفر بنجاح، رقم الجلسة:", socket.id);
       
-      // إخفاء جملة جاري تحميل الرسائل فوراً
       hideLoadingMessage(); 
 
       socket.emit("fetch_history", "public");
       socket.emit("fetch_leaderboard");
 
-      // إرسال الـ FCM Token فور التأكد من ثبات الاتصال
       if (typeof cachedFcmToken !== 'undefined' && cachedFcmToken) {
         socket.emit("register_fcm_token", { token: cachedFcmToken, user: currentUser });
       } else if (window.savedFcmToken) {
@@ -1818,7 +1804,18 @@ canvas {
     });
 
     socket.on("update_leaderboard_state", (serverLeaderboard) => {
-      globalLeaderboard = serverLeaderboard;
+      if (serverLeaderboard) {
+        globalLeaderboard = serverLeaderboard;
+        renderLeaderboardContent();
+      }
+    });
+
+    // استقبال تحديثات الستريك وعرضها في الشات العام
+    socket.on("update_streak_state", (streak) => {
+      const streakEl = document.getElementById("streak-counter");
+      if (streakEl) {
+        streakEl.innerText = `🔥 الستريك الجماعي: ${streak.count} (بمشاركة 3 أشخاص)`;
+      }
     });
 
     function sendMessage(type) {
@@ -1883,7 +1880,23 @@ canvas {
         msgDiv.style.textAlign = "right";
       }
 
-      let htmlContent = `<div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight:700;">${data.sender || 'مواطن'}</div>`;
+      // تنسيق وقت الرسالة (الساعة والدقيقة)
+      let timeString = "";
+      if (data.createdAt) {
+        const msgDate = new Date(data.createdAt);
+        timeString = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } else {
+        const now = new Date();
+        timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+
+      let htmlContent = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 10px;">
+          <span style="font-size: 11px; font-weight:700; opacity: 0.9;">${data.sender || 'مواطن'}</span>
+          <span style="font-size: 10px; opacity: 0.7;">${timeString}</span>
+        </div>
+      `;
+
       if (data.text) {
         htmlContent += `<div>${data.text}</div>`;
       }
@@ -1904,7 +1917,6 @@ canvas {
         if (document.hidden || activeChatType !== data.type) {
           showBrowserNotification(data);
 
-          // إشعار الأندرويد المحلي (طريقة نظيفة وبدون أخطاء)
           if (window.Capacitor && window.Capacitor.isPluginAvailable('LocalNotifications')) {
             window.Capacitor.Plugins.LocalNotifications.schedule({
               notifications: [
@@ -1922,7 +1934,6 @@ canvas {
       }
     });
 
-
     socket.on("load_history", (res) => {
       const chatBox = document.getElementById(`chat-box-${res.type}`);
       if (!chatBox) return;
@@ -1935,31 +1946,46 @@ canvas {
     });
 
   async function setupPushNotifications() {
-  if (window.Capacitor && window.Capacitor.isPluginAvailable('PushNotifications')) {
-    const { PushNotifications } = window.Capacitor.Plugins;
-    const { LocalNotifications } = window.Capacitor.Plugins;
-
-    // --- إضافة قناة الإشعارات للأندرويد هنا ---
-    if (LocalNotifications) {
+    if (window.Capacitor && window.Capacitor.isPluginAvailable('LocalNotifications')) {
+      const { LocalNotifications } = window.Capacitor.Plugins;
+      
       try {
-        await LocalNotifications.createChannel({
-          id: 'default',
-          name: 'General Notifications',
-          description: 'إشعارات الرسائل والمملكة',
-          importance: 5, // أعلى أهمية لضمان ظهور الإشعار على الشاشة وفوق التطبيقات
-          visibility: 1,
-          sound: 'default'
+        const reminders = [
+          "يا طويل العمر، الرعايا ينتظرونك في المملكة! افتح التطبيق وطمّنا عنك.",
+          "المملكة تحييكم! افتح التطبيق وتابع آخر مجريات المملكة.",
+          "القهوة جاهزة والمجلس عامر في المملكة الربطخشاوية، نورنا بطلتك!",
+          "اشتاقت المملكة لناسها! افتح التطبيق وشوف وش الجديد.",
+          "يلي مايشوف الرسايل منغولي لحد علمك!",
+          "كيف تسمي نفسك ربطخشاوي و انت نايم؟ افتح و سولف الحين!",
+          "عش سندا لمملكتك و لا تتخاذل!"
+        ];
+
+        const randomBody = reminders[Math.floor(Math.random() * reminders.length)];
+
+        await LocalNotifications.schedule({
+          notifications: [
+            {
+              title: "المملكة الربطخشاوية 👑",
+              body: randomBody,
+              id: 9999,
+              schedule: { 
+                every: 'hour',
+                count: 1 
+              },
+              sound: 'default',
+              channelId: 'default'
+            }
+          ]
         });
-      } catch (e) {
-        console.log("Error creating notification channel:", e);
+        console.log("تمت جدولة تذكيرات المملكة المتنوعة بنجاح!");
+      } catch (err) {
+        console.log("خطأ في جدولة التذكير:", err);
       }
-    }
-    // ------------------------------------------
 
-    let promptResult = await PushNotifications.checkPermissions();
-    // ... وباقي الكود كما هو تماماً ...
+      if (window.Capacitor.isPluginAvailable('PushNotifications')) {
+        const { PushNotifications } = window.Capacitor.Plugins;
+        let promptResult = await PushNotifications.checkPermissions();
 
-        // حفظ التوكن وإرساله للسيرفر
         PushNotifications.addListener('registration', (token) => {
           console.log('FCM Device Token:', token.value);
           cachedFcmToken = token.value;
@@ -1969,12 +1995,10 @@ canvas {
           }
         });
 
-        // هذا الحدث يعمل عندما يصل الإشعار والتطبيق يعمل
         PushNotifications.addListener('pushNotificationReceived', async (notification) => {
           console.log('Push received: ', notification);
           playNotificationSound();
 
-          // إظهار إشعار مرئي في شريط تنبيهات أندرويد عبر الإشعارات المحلية
           if (LocalNotifications) {
             try {
               await LocalNotifications.schedule({
@@ -1984,7 +2008,7 @@ canvas {
                     body: notification.body || "لديك رسالة في المملكة",
                     id: new Date().getTime(),
                     sound: 'default',
-                    channelId: 'default', // ربط الإشعار بالقناة التي أنشأناها
+                    channelId: 'default',
                     extra: { type: notification.data?.type || 'public' }
                   }
                 ]
@@ -1995,7 +2019,6 @@ canvas {
           }
         });
 
-        // عند النقر على الإشعار
         PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
           const type = action.notification.data?.type || 'public';
           if (typeof openChat === 'function') {
@@ -2003,7 +2026,6 @@ canvas {
           }
         });
 
-        // التفاعل مع النقر على الإشعار المحلي
         if (LocalNotifications) {
           LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
             const type = notification.notification.extra?.type || 'public';
@@ -2014,9 +2036,11 @@ canvas {
         }
       }
     }
-    document.addEventListener("DOMContentLoaded", () => {
-      setupPushNotifications();
-    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    setupPushNotifications();
+  });
   </script>
 
 </body>
