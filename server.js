@@ -40,7 +40,7 @@ mongoose.connect(MONGO_URI)
     .then(() => console.log("تم الاتصال بنجاح بقاعدة البيانات MongoDB"))
     .catch(err => console.error("خطأ في الاتصال بقاعدة البيانات:", err));
 
-// تم زيادة مدة الحفظ في السيرفر من 24 ساعة إلى 48 ساعة (172800 ثانية)
+// حفظ الرسائل لمدة 48 ساعة (172800 ثانية)[cite: 1]
 const messageSchema = new mongoose.Schema({
     type: { type: String, default: "public" },
     text: String,
@@ -52,7 +52,7 @@ const messageSchema = new mongoose.Schema({
 
 const Message = mongoose.model("Message", messageSchema);
 
-// جدول قاعدة بيانات دائم لحفظ الصدارة (Leaderboard) والستريك
+// نموذج تخزين الحالة العامة (للصدارة والستريك) في قاعدة البيانات لضمان عدم ضياعها أبداً
 const gameStateSchema = new mongoose.Schema({
     key: { type: String, unique: true },
     data: mongoose.Schema.Types.Mixed
@@ -69,10 +69,9 @@ let globalLeaderboard = {
   memory: { name: 'لا يوجد', score: 0 }
 };
 
-// نظام الستريك (يشترط تفاعل 3 أشخاص مختلفين)
 let streakData = {
   count: 0,
-  lastSenders: [] // تخزين آخر الأسماء أو الـ IDs للمشاركين
+  lastSenders: []
 };
 
 // استرجاع الصدارة والستريك من قاعدة البيانات عند الإقلاع
@@ -203,6 +202,7 @@ io.on('connection', (socket) => {
 
     socket.emit("update_reputation_state", citizensDB);
     socket.emit("update_streak_state", streakData);
+    socket.emit("update_leaderboard_state", globalLeaderboard);
 
     socket.on("register_fcm_token", (data) => {
         if (data && data.token) {
@@ -242,6 +242,7 @@ io.on('connection', (socket) => {
         }
     });
 
+    // تحديث وتعميم الصدارة لكل المتصلين وحفظها بالداتا بيس فوراً
     socket.on("update_leaderboard", async (newLeaderboard) => {
         if (newLeaderboard) {
             globalLeaderboard = newLeaderboard;
@@ -254,13 +255,12 @@ io.on('connection', (socket) => {
         try {
             const senderName = data.sender || "مواطن";
             
-            // منطق الستريك: يتطلب مشاركة 3 أشخاص مختلفين لتسجيل نقطة ستريك جديدة
             if (!streakData.lastSenders.includes(senderName)) {
                 streakData.lastSenders.push(senderName);
             }
             if (streakData.lastSenders.length >= 3) {
                 streakData.count += 1;
-                streakData.lastSenders = [senderName]; // إعادة تعيين الدورة للـ 3 أشخاص الجدد
+                streakData.lastSenders = [senderName];
             }
             await saveStreakToDB();
             io.emit('update_streak_state', streakData);
