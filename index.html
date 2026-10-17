@@ -919,7 +919,6 @@ canvas {
     </div>
   </div>
 
-  <!-- الشات العام (مضاف إليه عداد الستريك) -->
   <div id="chat-modal-public" class="fullscreen-modal">
     <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
       <div>
@@ -1775,7 +1774,6 @@ canvas {
     };
   </script>
 
-  <!-- الاتصال بـ Socket.io وتحديث الستريك ووقت الرسائل -->
   <script>
     const socket = io("https://rabatghash.onrender.com", {
       transports: ['websocket', 'polling'],
@@ -1810,7 +1808,6 @@ canvas {
       }
     });
 
-    // استقبال تحديثات الستريك وعرضها في الشات العام
     socket.on("update_streak_state", (streak) => {
       const streakEl = document.getElementById("streak-counter");
       if (streakEl) {
@@ -1880,7 +1877,6 @@ canvas {
         msgDiv.style.textAlign = "right";
       }
 
-      // تنسيق وقت الرسالة (الساعة والدقيقة)
       let timeString = "";
       if (data.createdAt) {
         const msgDate = new Date(data.createdAt);
