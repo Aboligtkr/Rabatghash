@@ -40,16 +40,24 @@ mongoose.connect(MONGO_URI)
     .then(() => console.log("تم الاتصال بنجاح بقاعدة البيانات MongoDB"))
     .catch(err => console.error("خطأ في الاتصال بقاعدة البيانات:", err));
 
+// تم زيادة مدة الحفظ في السيرفر من 24 ساعة إلى 48 ساعة (172800 ثانية)
 const messageSchema = new mongoose.Schema({
     type: { type: String, default: "public" },
     text: String,
     image: String,
     sender: String,
     senderId: String,
-    createdAt: { type: Date, default: Date.now, expires: 86400 }
+    createdAt: { type: Date, default: Date.now, expires: 172800 }
 });
 
 const Message = mongoose.model("Message", messageSchema);
+
+// جدول قاعدة بيانات دائم لحفظ الصدارة (Leaderboard) والستريك
+const gameStateSchema = new mongoose.Schema({
+    key: { type: String, unique: true },
+    data: mongoose.Schema.Types.Mixed
+});
+const GameState = mongoose.model("GameState", gameStateSchema);
 
 let pollVotes = { opt1: 0, opt2: 0 };
 
@@ -60,6 +68,50 @@ let globalLeaderboard = {
   snake: { name: 'لا يوجد', score: 0 },
   memory: { name: 'لا يوجد', score: 0 }
 };
+
+// نظام الستريك (يشترط تفاعل 3 أشخاص مختلفين)
+let streakData = {
+  count: 0,
+  lastSenders: [] // تخزين آخر الأسماء أو الـ IDs للمشاركين
+};
+
+// استرجاع الصدارة والستريك من قاعدة البيانات عند الإقلاع
+async function loadPersistentState() {
+  try {
+    const savedLb = await GameState.findOne({ key: 'globalLeaderboard' });
+    if (savedLb) globalLeaderboard = savedLb.data;
+
+    const savedStreak = await GameState.findOne({ key: 'streakData' });
+    if (savedStreak) streakData = savedStreak.data;
+  } catch (e) {
+    console.error("خطأ في استرجاع الحالة الثابتة:", e);
+  }
+}
+loadPersistentState();
+
+async function saveLeaderboardToDB() {
+  try {
+    await GameState.findOneAndUpdate(
+      { key: 'globalLeaderboard' },
+      { data: globalLeaderboard },
+      { upsert: true, new: true }
+    );
+  } catch (e) {
+    console.error("خطأ في حفظ الصدارة:", e);
+  }
+}
+
+async function saveStreakToDB() {
+  try {
+    await GameState.findOneAndUpdate(
+      { key: 'streakData' },
+      { data: streakData },
+      { upsert: true, new: true }
+    );
+  } catch (e) {
+    console.error("خطأ في حفظ الستريك:", e);
+  }
+}
 
 let citizensDB = {
   "baybars": {
@@ -150,6 +202,7 @@ io.on('connection', (socket) => {
     console.log('مستخدم جديد اتصل بالتطبيق:', socket.id);
 
     socket.emit("update_reputation_state", citizensDB);
+    socket.emit("update_streak_state", streakData);
 
     socket.on("register_fcm_token", (data) => {
         if (data && data.token) {
@@ -189,21 +242,36 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on("update_leaderboard", (newLeaderboard) => {
+    socket.on("update_leaderboard", async (newLeaderboard) => {
         if (newLeaderboard) {
             globalLeaderboard = newLeaderboard;
+            await saveLeaderboardToDB();
             io.emit("update_leaderboard_state", globalLeaderboard);
         }
     });
 
     socket.on('send_message', async (data) => {
         try {
+            const senderName = data.sender || "مواطن";
+            
+            // منطق الستريك: يتطلب مشاركة 3 أشخاص مختلفين لتسجيل نقطة ستريك جديدة
+            if (!streakData.lastSenders.includes(senderName)) {
+                streakData.lastSenders.push(senderName);
+            }
+            if (streakData.lastSenders.length >= 3) {
+                streakData.count += 1;
+                streakData.lastSenders = [senderName]; // إعادة تعيين الدورة للـ 3 أشخاص الجدد
+            }
+            await saveStreakToDB();
+            io.emit('update_streak_state', streakData);
+
             const newMessage = new Message({
                 type: data.type || "public",
                 text: data.text || "",
                 image: data.image || "",
-                sender: data.sender || "مواطن",
-                senderId: socket.id
+                sender: senderName,
+                senderId: socket.id,
+                createdAt: new Date()
             });
 
             const savedMsg = await newMessage.save();
@@ -213,7 +281,7 @@ io.on('connection', (socket) => {
                 const tokensArray = Array.from(deviceTokens);
                 const messagePayload = {
                     notification: {
-                        title: `رسالة جديدة من ${data.sender || 'مواطن'} 👑`,
+                        title: `رسالة جديدة من ${senderName} 👑`,
                         body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
                     },
                     data: {
