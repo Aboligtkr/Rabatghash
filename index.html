@@ -1452,14 +1452,14 @@ canvas {
           btn.innerText = "إعادة التحدي 🔄";
           alert(`انتهى الوقت! عدد النقرات: ${clickCount}`);
           submitScoreToLeaderboard('clicker', clickCount);
-        }, 5000);
+        }, 15000);
       } else {
         clickCount++;
         scoreEl.innerText = clickCount;
       }
     }
 
-    let memoryIcons = ['👑', '🛡️', '⚔️', '🦅', '👑', '🛡️', '⚔️', '🦅'];
+    let memoryIcons = ['👑', '🛡️', '⚔️', '🦅','🐐','👾', '👑', '🛡️', '⚔️', '🦅','🐐',"👾"];
     let flippedCards = [];
     let matchedPairs = 0;
 
@@ -1514,7 +1514,7 @@ canvas {
 
     function playRPS(playerChoice) {
       const choices = ['rock', 'paper', 'scissors'];
-      const emojis = { rock: '✊', paper: '✋', scissors: '✌️' };
+      const emojis = { rock: '🪨', paper: '📄', scissors: '✂️' };
       const computerChoice = choices[Math.floor(Math.random() * choices.length)];
       
       let resultText = `أنت: ${emojis[playerChoice]} | النظام: ${emojis[computerChoice]} -> `;
