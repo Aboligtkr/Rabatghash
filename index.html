@@ -8,7 +8,7 @@
   <style>
 @font-face {
   font-family: 'Zanjabeel';
-  src: url('assets/fonts/zanjabeel-black.otf') format('opentype');
+  src: url('assets/fonts/zanjabeel-black.ttf') format('opentype');
 }
 
 :root {
@@ -1786,7 +1786,7 @@ let dino = { x: 40, y: 260, width: 24, height: 35, vy: 0, gravity: 0.6, grounded
             ctx.fill();
         });
     }
-    
+
     function startGame() {
         score = 0; updateScore(); overlay.style.display = 'none'; isRunning = true;
         if (currentGame === 'bird') initBird(); else initDino();
