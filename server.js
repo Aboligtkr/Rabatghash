@@ -1,6 +1,7 @@
 const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
 
+const crypto = require('crypto');
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -57,7 +58,30 @@ const gameStateSchema = new mongoose.Schema({
     data: mongoose.Schema.Types.Mixed
 });
 const GameState = mongoose.model("GameState", gameStateSchema);
+const citizenSessionSchema = new mongoose.Schema({
+  tokenHash: {
+    type: String,
+    unique: true,
+    required: true
+  },
+  citizen: {
+    type: String,
+    required: true
+  },
+  expiresAt: {
+    type: Date,
+    required: true,
+    expires: 0
+  }
+});
 
+const CitizenSession = mongoose.model(
+  'CitizenSession',
+  citizenSessionSchema
+);
+
+const hashSession = token =>
+  crypto.createHash('sha256').update(token).digest('hex');
 let pollVotes = { opt1: 0, opt2: 0 };
 
 let globalLeaderboard = {
@@ -247,16 +271,99 @@ io.on('connection', (socket) => {
     socket.emit("update_streak_state", streakData);
     socket.emit("update_leaderboard_state", globalLeaderboard);
 
-    socket.on('citizen_auth', (payload, ack) => {
-        const name = String(payload?.username || '').trim().toLowerCase();
-        const password = String(payload?.password || '');
-        const ok = validCitizen(name) && citizenCredentials[name] === password;
-        if (ok) {
-            socket.data.citizen = name;
-            socket.join('citizen:' + name);
-        }
-        if (typeof ack === 'function') ack({ ok, user: ok ? name : null });
-    });
+    socket.on('citizen_auth', async (payload, ack) => {
+  try {
+    const name = String(payload?.username || '')
+      .trim()
+      .toLowerCase();
+
+    const password = String(payload?.password || '');
+    const token = String(payload?.token || '');
+
+    let citizen = null;
+    let issuedToken = null;
+
+    if (token && token.length <= 256) {
+      const session = await CitizenSession.findOne({
+        tokenHash: hashSession(token),
+        expiresAt: { $gt: new Date() }
+      });
+
+      if (
+        session &&
+        validCitizen(session.citizen) &&
+        (!name || name === session.citizen)
+      ) {
+        citizen = session.citizen;
+      }
+
+    } else if (
+      validCitizen(name) &&
+      citizenCredentials[name] === password
+    ) {
+      citizen = name;
+
+      issuedToken = crypto.randomBytes(32).toString('hex');
+
+      await CitizenSession.create({
+        tokenHash: hashSession(issuedToken),
+        citizen,
+        expiresAt: new Date(Date.now() + 30 * 86400000)
+      });
+    }
+
+    if (citizen) {
+      if (
+        socket.data.citizen &&
+        socket.data.citizen !== citizen
+      ) {
+        socket.leave('citizen:' + socket.data.citizen);
+      }
+
+      socket.data.citizen = citizen;
+      socket.join('citizen:' + citizen);
+    }
+
+    if (typeof ack === 'function') {
+      ack({
+        ok: !!citizen,
+        user: citizen,
+        token: issuedToken
+      });
+    }
+
+  } catch (err) {
+    console.error('Citizen auth error:', err);
+
+    if (typeof ack === 'function') {
+      ack({ ok: false });
+    }
+  }
+});
+
+socket.on('citizen_logout', async (payload, ack) => {
+  const token = String(payload?.token || '');
+
+  if (token && token.length <= 256) {
+    try {
+      await CitizenSession.deleteOne({
+        tokenHash: hashSession(token)
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  if (socket.data.citizen) {
+    socket.leave('citizen:' + socket.data.citizen);
+  }
+
+  socket.data.citizen = null;
+
+  if (typeof ack === 'function') {
+    ack({ ok: true });
+  }
+});
 
     socket.on('private_contacts', (_payload, ack) => {
         if (typeof ack !== 'function') return;
