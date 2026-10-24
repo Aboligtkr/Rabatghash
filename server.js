@@ -33,7 +33,7 @@ try {
   console.warn("تنبيه: لم يتم العثور على serviceAccountKey.json، سيتم الاعتماد على إشعارات Web/Socket المحلية.");
 }
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = "mongodb+srv://baybarskgr:fie8jdk84jdh3@cluster0.ujpcrsl.mongodb.net/?appName=Cluster0";
 
 mongoose.connect(MONGO_URI || "mongodb://127.0.0.1:27017/rabatghash")
     .then(() => console.log("تم الاتصال بنجاح بقاعدة البيانات MongoDB"))
@@ -45,9 +45,11 @@ const messageSchema = new mongoose.Schema({
     image: String,
     sender: String,
     senderId: String,
-    createdAt: { type: Date, default: Date.now, expires: 172800 }
+    createdAt: { type: Date, default: Date.now }
 });
 
+// الرسائل الخاصة محفوظة دون انتهاء تلقائي. انتبه: فهرس TTL القديم في MongoDB
+// قد يظل موجوداً؛ احذفه من مجموعة messages إذا رغبت في حفظ الرسائل الخاصة دائماً.
 const Message = mongoose.model("Message", messageSchema);
 
 const gameStateSchema = new mongoose.Schema({
@@ -219,6 +221,22 @@ let citizensDB = {
   }
 };
 
+// نقل المصادقة إلى السيرفر للدردشات الخاصة. غيّر الأكواد وانقلها لمتغير البيئة CITIZEN_CREDENTIALS_JSON.
+const defaultCredentials = {
+      "baybars": "ByB#9284",
+      "marwan": "MrW$5103",
+      "abdulrahman": "AbD@7391",
+      "mohammed khatteb": "MKh#4028",
+      "shehab": "ShB%6149",
+      "ziyad": "ZyD*8512",
+      "tareq": "TrQ#3940",
+      "mohammed alg": "MAl!7261"
+    };
+let citizenCredentials = defaultCredentials;
+try { if (process.env.CITIZEN_CREDENTIALS_JSON) citizenCredentials = JSON.parse(process.env.CITIZEN_CREDENTIALS_JSON); } catch (e) { console.error('Invalid CITIZEN_CREDENTIALS_JSON'); }
+const privateRoom = (a, b) => 'dm:' + [a, b].sort().join(':');
+const validCitizen = (name) => Object.prototype.hasOwnProperty.call(citizenCredentials, name);
+
 let deviceTokens = new Set();
 
 io.on('connection', (socket) => {
@@ -229,6 +247,50 @@ io.on('connection', (socket) => {
     socket.emit("update_streak_state", streakData);
     socket.emit("update_leaderboard_state", globalLeaderboard);
 
+    socket.on('citizen_auth', (payload, ack) => {
+        const name = String(payload?.username || '').trim().toLowerCase();
+        const password = String(payload?.password || '');
+        const ok = validCitizen(name) && citizenCredentials[name] === password;
+        if (ok) {
+            socket.data.citizen = name;
+            socket.join('citizen:' + name);
+        }
+        if (typeof ack === 'function') ack({ ok, user: ok ? name : null });
+    });
+
+    socket.on('private_contacts', (_payload, ack) => {
+        if (typeof ack !== 'function') return;
+        if (!socket.data.citizen) return ack({ ok: false, error: 'يلزم تسجيل الدخول مجدداً' });
+        ack({ ok: true, contacts: Object.entries(citizensDB).filter(([key]) => key !== socket.data.citizen).map(([key, val]) => ({ id: key, name: val.name, title: val.title })) });
+    });
+
+    socket.on('private_history', async (payload, ack) => {
+        if (typeof ack !== 'function') return;
+        const me = socket.data.citizen, other = String(payload?.with || '').trim().toLowerCase();
+        if (!me || !validCitizen(other) || other === me) return ack({ ok: false, error: 'محادثة غير مسموحة' });
+        try {
+            const room = privateRoom(me, other);
+            const history = await Message.find({ type: room }).sort({ createdAt: -1 }).limit(200).lean();
+            ack({ ok: true, with: other, history: history.reverse() });
+        } catch (err) { ack({ ok: false, error: 'تعذر تحميل المحادثة' }); }
+    });
+
+    socket.on('private_send', async (payload, ack) => {
+        const me = socket.data.citizen, other = String(payload?.to || '').trim().toLowerCase();
+        const text = typeof payload?.text === 'string' ? payload.text.trim().slice(0, 4000) : '';
+        const image = typeof payload?.image === 'string' && /^data:image\/(png|jpeg|webp|gif);base64,/.test(payload.image) && payload.image.length < 7_000_000 ? payload.image : '';
+        if (!me || !validCitizen(other) || other === me || (!text && !image)) {
+            if (typeof ack === 'function') ack({ ok: false, error: 'تعذر إرسال الرسالة' });
+            return;
+        }
+        try {
+            const saved = await new Message({ type: privateRoom(me, other), sender: me, senderId: me, text, image, createdAt: new Date() }).save();
+            const data = saved.toObject();
+            io.to('citizen:' + me).to('citizen:' + other).emit('private_receive', { ...data, peer: other });
+            if (typeof ack === 'function') ack({ ok: true });
+        } catch (err) { if (typeof ack === 'function') ack({ ok: false, error: 'فشل حفظ الرسالة' }); }
+    });
+
     socket.on("register_fcm_token", (data) => {
         if (data && data.token) {
             deviceTokens.add(data.token);
@@ -237,7 +299,7 @@ io.on('connection', (socket) => {
 
     socket.on("fetch_history", async (type) => {
         try {
-            const chatType = type || "public";
+            const chatType = type === 'shura' ? 'shura' : 'public';
             const history = await Message.find({ type: chatType }).sort({ createdAt: 1 }).limit(200);
             socket.emit("load_history", { type: chatType, history: history });
         } catch (err) {
@@ -277,9 +339,9 @@ io.on('connection', (socket) => {
 
     socket.on('send_message', async (data) => {
         try {
+            if (!data || !['public', 'shura'].includes(data.type)) return;
             const senderName = data.sender || "مواطن";
-            
-            await recordStreakMessage(data);
+            if (data.type === 'public') await recordStreakMessage(data);
 
             const newMessage = new Message({
                 type: data.type || "public",
