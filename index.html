@@ -1355,7 +1355,7 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
         currentUser = userVal;
         isCitizenUser = true;
         privatePassword = passVal;
-        sessionStorage.setItem('rg_private_password', passVal);
+        sessionStorage.removeItem('rg_private_password');
         if (typeof socket !== 'undefined' && socket.connected) authenticatePrivate();
         
         localStorage.setItem('saved_user', userVal);
@@ -1433,6 +1433,13 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
     }
 
     function logout() {
+      const oldDmToken = localStorage.getItem('rg_dm_token');
+
+if (oldDmToken && typeof socket !== 'undefined') {
+  socket.emit('citizen_logout', { token: oldDmToken });
+}
+
+localStorage.removeItem('rg_dm_token');
       sessionStorage.removeItem('rg_private_password');
       privatePassword = '';
       privateAuth = false;
@@ -2147,18 +2154,43 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
     // الرسائل الخاصة: المصادقة والجلب والإرسال تتم عبر Socket.IO والسيرفر فقط.
     let privatePeer = null;
     let privateAuth = false;
-    let privatePassword = sessionStorage.getItem('rg_private_password') || '';
+    let privatePassword = '';
     function authenticatePrivate(callback) {
-      if (!isCitizenUser || !currentUser || !privatePassword || !socket.connected) {
-        privateAuth = false;
-        if (callback) callback(false);
-        return;
-      }
-      socket.emit('citizen_auth', { username: currentUser, password: privatePassword }, res => {
-        privateAuth = !!res?.ok;
-        if (callback) callback(privateAuth);
-      });
+  if (!isCitizenUser || !currentUser || !socket.connected) {
+    privateAuth = false;
+    if (callback) callback(false);
+    return;
+  }
+
+  const token = localStorage.getItem('rg_dm_token');
+
+  const payload = token
+    ? { username: currentUser, token }
+    : privatePassword
+      ? { username: currentUser, password: privatePassword }
+      : null;
+
+  if (!payload) {
+    privateAuth = false;
+    if (callback) callback(false);
+    return;
+  }
+
+  socket.emit('citizen_auth', payload, res => {
+    privateAuth = !!res?.ok;
+
+    if (res?.token) {
+      localStorage.setItem('rg_dm_token', res.token);
+      privatePassword = '';
     }
+
+    if (!privateAuth && token) {
+      localStorage.removeItem('rg_dm_token');
+    }
+
+    if (callback) callback(privateAuth);
+  });
+}
     function openPrivateContacts() {
       if (!isCitizenUser) return;
       openFullscreenModal('private-contacts-modal');
@@ -2229,7 +2261,14 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
       const room = 'dm:' + [currentUser, privatePeer].sort().join(':');
       if (privatePeer && data.type === room) renderPrivateMessage(data);
     });
-    socket.on('connect', () => { if (privatePassword && isCitizenUser) authenticatePrivate(); });
+   socket.on('connect', () => {
+  if (
+    isCitizenUser &&
+    (privatePassword || localStorage.getItem('rg_dm_token'))
+  ) {
+    authenticatePrivate();
+  }
+});
     socket.on("receive_message", (data) => {
       renderSingleMessage(data);
 
