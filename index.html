@@ -667,7 +667,60 @@ canvas {
   object-fit: contain;
   border-radius: var(--radius-sm);
 }
-  </style>
+  
+/* RABATGHASH — Royal Edition | non-invasive design system */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
+:root {--primary:#d6ad62;--primary-hover:#f0ca80;--primary-light:#302719;--primary-border:#72552c;--bg-main:#0b0e11;--card-bg:#171b20;--text-main:#f5f0e6;--text-muted:#9b9b9b;--border-color:#303238;--shadow-sm:0 8px 25px #0004;--shadow-md:0 22px 60px #0008;--radius-sm:18px;--radius-md:26px;--radius-lg:32px}
+html.light-mode{--primary:#8c5e20;--primary-hover:#68400e;--primary-light:#f8ecd7;--primary-border:#ddc39a;--bg-main:#f5f2eb;--card-bg:#fffdf9;--text-main:#22201c;--text-muted:#77716a;--border-color:#e8dfd1;--shadow-sm:0 8px 25px #34200a10;--shadow-md:0 22px 60px #34200a18}
+*,*::before,*::after{font-family:'Cairo',system-ui,sans-serif}
+body{background:var(--bg-main);background-image:radial-gradient(ellipse at 95% 0%,#bd853012,transparent 40%)}
+.container{background:transparent}
+.header{background:color-mix(in srgb,var(--bg-main) 87%,transparent);backdrop-filter:blur(22px);box-shadow:none;border-bottom:1px solid var(--border-color);padding-bottom:18px}
+.header:before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(to left,#e6b744 0 33%,#f5f3ed 33% 66%,#b42c32 66% 100%)}
+.header-logo,.app-logo{border:1px solid var(--primary-border);background:var(--card-bg);box-shadow:0 0 0 5px #d6ad6214}
+.header-logo{width:48px;height:48px}
+.header h3{letter-spacing:-.3px}
+.user-badge{background:transparent;border:0;padding:0;color:var(--primary);font-size:11px}
+.app-screen-section{max-width:1100px;padding:28px 22px 130px;animation:appear .35s ease both}
+@keyframes appear{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+.profile-card{position:relative;text-align:right;overflow:hidden;background:linear-gradient(120deg,#2b241a,#17191c 65%,#35261b)!important;border:1px solid #6d552f;color:#fff7e8;padding:35px 30px;min-height:155px;border-radius:28px;box-shadow:0 15px 50px #0003}
+.profile-card:after{content:'✦';position:absolute;left:22px;top:-47px;font-size:180px;color:#d6ad6219;pointer-events:none}
+.profile-card:before{content:'RABATGHASH  •  2023';display:block;color:#e6bc76;letter-spacing:3px;font:700 10px system-ui;margin-bottom:14px;direction:ltr;text-align:right}
+.profile-card h2{font-size:clamp(22px,4vw,32px);line-height:1.5;position:relative;z-index:1}
+.profile-card p{color:#d2c5b2;font-size:13px;position:relative;z-index:1}
+.services-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:15px}
+.service-card,.citizen-item,.leaderboard-item,.adhkar-card-item{background:var(--card-bg);border:1px solid var(--border-color);box-shadow:none;border-radius:22px;padding:21px;transition:transform .2s,border-color .2s,background .2s}
+.service-card:hover{transform:translateY(-4px);border-color:var(--primary-border);background:var(--primary-light);box-shadow:0 15px 35px #0002}
+.service-icon{width:56px;height:56px;border-radius:17px;background:var(--primary-light);border:1px solid var(--primary-border);font-size:25px}
+.service-header h4{font-size:15px;font-weight:800}.service-header p{font-size:12px;line-height:1.8}
+.bottom-nav{max-width:570px;bottom:max(15px,env(safe-area-inset-bottom));padding:8px 10px;border-radius:24px;background:#1a1c20ee;border:1px solid #6a542f66;box-shadow:0 15px 50px #0009}
+html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
+.nav-item{padding:8px 2px;border-radius:16px;gap:0;font-size:11px}
+.nav-item span:first-child{font-family:system-ui;font-size:26px;font-weight:700;line-height:1.35}
+.nav-item.active{background:var(--primary-light);color:var(--primary)}
+.nav-item.active span:first-child{transform:none}
+.btn{background:linear-gradient(135deg,#d5a95a,#ae7a32);color:#16120c;border-radius:14px;box-shadow:none;font-weight:800}
+.btn:hover{background:linear-gradient(135deg,#efc778,#bd893f)}
+.logout-btn,.close-chat-btn{border-radius:12px;background:var(--primary-light);color:var(--primary);border:1px solid var(--primary-border)}
+.input-group input,textarea,input[type=text],input[type=password]{font-family:'Cairo',sans-serif}
+.input-group input:focus,textarea:focus{box-shadow:0 0 0 3px #d6ad6220}
+#login-screen{margin:auto;max-width:500px;background:var(--card-bg);border:1px solid var(--border-color);border-radius:30px;padding:35px 30px;box-shadow:0 35px 80px #0004;position:relative;overflow:hidden}
+#login-screen:before{content:'';position:absolute;top:0;right:0;left:0;height:5px;background:linear-gradient(to left,#e6b744 0 33%,#fff 33% 66%,#b42c32 66%)}
+#login-screen .app-logo{width:108px;height:108px}#login-screen .title{font-size:27px;color:var(--text-main);line-height:1.5}
+#login-screen .subtitle{font-size:12px;color:var(--primary);margin-bottom:32px}
+.modal-header{background:var(--card-bg);box-shadow:none;padding:18px 22px}.modal-header h3{color:var(--text-main);font-size:17px}
+.fullscreen-modal{background:var(--bg-main)}.chat-box-body{background:var(--bg-main);gap:14px}
+.chat-msg{border-radius:19px 19px 5px 19px;box-shadow:none;line-height:1.8;padding:12px 17px}
+.chat-footer{background:var(--card-bg);box-shadow:none;border-color:var(--border-color);gap:8px}
+.chat-footer input[type=text]{border-radius:16px;background:var(--bg-main)}.chat-footer .btn{border-radius:15px}
+.img-upload-btn{border-radius:14px;background:var(--primary-light);color:var(--primary)}
+.streak-pill{display:inline-flex;margin-top:6px;padding:5px 12px;border-radius:100px;background:#edaa3920;border:1px solid #d6ad6240;color:#e5b85e;font-size:11px;font-weight:800}
+.profile-modal-card{border-top:3px solid var(--primary);border-radius:22px}
+.social-btn{border-radius:16px}.twitter{background:#20242b}.instagram{background:#9c345f}.tiktok{background:#252525}
+@media(min-width:900px){.app-screen-section{padding-top:40px}.profile-card{padding:42px}.services-grid{gap:20px}}
+@media(max-width:420px){.app-screen-section{padding:19px 15px 125px}.profile-card{padding:27px 21px}.bottom-nav{width:calc(100% - 18px)}.nav-item{font-size:10px}.modal-body{padding:16px}.chat-footer{padding-inline:10px}.chat-footer .btn{min-width:60px;padding-inline:10px}}
+
+</style>
 </head>
 <body>
 
@@ -682,7 +735,7 @@ canvas {
       </div>
 
       <h2 class="title">المملكة الربطخشاوية</h2>
-      <p class="subtitle">بوابة الخدمات والمنصة الرسمية</p>
+      <p class="subtitle">مجتمع واحد، تاريخ واحد، راية واحدة</p>
 
       <div class="input-group">
         <label for="username">اسم المستخدم</label>
@@ -721,8 +774,8 @@ canvas {
       <!-- 1. قسم الخدمات المباشر -->
       <div id="tab-services" class="app-screen-section active-tab">
         <div class="profile-card">
-          <h2>بوابة الخدمات الرسمية</h2>
-          <p>المنصة الموحدة لإدارة كافة المعاملات والطلبات</p>
+          <h2>ديوان المملكة</h2>
+          <p>مساحتك الرسمية في المملكة الإسلامية الربطخشاوية</p>
         </div>
 
         <h4 style="margin-bottom: 14px; color: var(--text-muted); font-size: 14px; font-weight: 700;">الخدمات المتاحة:</h4>
@@ -763,7 +816,7 @@ canvas {
       <!-- 2. قسم الألعاب -->
       <div id="tab-games" class="app-screen-section">
         <div class="profile-card" style="background: linear-gradient(135deg, #0f172a, #334155);">
-          <h2>🎮 مركز الألعاب المصغرة</h2>
+          <h2>🎮 ميدان التحديات</h2>
           <p>تحدى أصدقاءك وحقق أفضل النتائج وسجلها في لوحة الصدارة</p>
         </div>
 
@@ -821,7 +874,7 @@ canvas {
       <!-- 3. قسم خيارات الدردشة -->
       <div id="tab-chat" class="app-screen-section">
         <div class="profile-card" style="background: linear-gradient(135deg, #334155, #475569);">
-          <h2>💬 ساحة المراسلات والدردشة</h2>
+          <h2>💬 مجالس المملكة</h2>
           <p>تواصل مع أبناء المملكة وانضم للمجالس المباشرة</p>
         </div>
 
@@ -836,6 +889,10 @@ canvas {
             </div>
           </div>
 
+
+          <div class="service-card citizen-only" onclick="openPrivateContacts()">
+            <div class="service-header"><div class="service-icon">✉️</div><div><h4>الرسائل الخاصة</h4><p>محادثات مستقلة وآمنة الوصول بين مواطني المملكة، متصلة بالسيرفر</p></div></div>
+          </div>
           <div class="service-card shura-only" id="shura-chat-option" style="display:none;" onclick="openChat('shura')">
             <div class="service-header">
               <div class="service-icon">👑</div>
@@ -851,7 +908,7 @@ canvas {
       <!-- 4. قسم الأذكار -->
       <div id="tab-adhkar" class="app-screen-section">
         <div class="profile-card" style="background: linear-gradient(135deg, #047857, #065f46);">
-          <h2>📿 ركن الأذكار والعدّادات</h2>
+          <h2>📿 واحة الذكر</h2>
           <p>سبحة إلكترونية للتسبيح والاستغفار والذكر اليومي</p>
         </div>
         <div id="adhkar-list-container"></div>
@@ -860,7 +917,7 @@ canvas {
       <!-- 5. قسم الإعدادات -->
       <div id="tab-settings" class="app-screen-section">
         <div class="profile-card" style="background: linear-gradient(135deg, #475569, #1e293b);">
-          <h2>⚙️ إعدادات التطبيق والحساب</h2>
+          <h2>⚙️ حسابك وتفضيلاتك</h2>
           <p>إدارة المظهر، الحسابات الرسمية، والسير التاريخية</p>
         </div>
 
@@ -904,23 +961,23 @@ canvas {
   <!-- الشريط السفلي العائم والثابت -->
   <div id="app-bottom-nav" class="bottom-nav">
     <button class="nav-item active" onclick="switchNavTab('services', this)">
-      <span>🛠️</span>
+      <span>⌂</span>
       <span>الخدمات</span>
     </button>
     <button class="nav-item" onclick="switchNavTab('games', this)">
-      <span>🎮</span>
+      <span>◈</span>
       <span>الألعاب</span>
     </button>
     <button class="nav-item" id="nav-chat-item" onclick="switchNavTab('chat', this)">
-      <span>💬</span>
+      <span>◉</span>
       <span>الدردشة</span>
     </button>
     <button class="nav-item" onclick="switchNavTab('adhkar', this)">
-      <span>📿</span>
+      <span>✦</span>
       <span>الأذكار</span>
     </button>
     <button class="nav-item" onclick="switchNavTab('settings', this)">
-      <span>⚙️</span>
+      <span>☷</span>
       <span>الإعدادات</span>
     </button>
   </div>
@@ -1006,11 +1063,21 @@ canvas {
     </div>
   </div>
 
+
+  <div id="private-contacts-modal" class="fullscreen-modal">
+    <div class="modal-header"><h3>✉️ رسائل المواطنين</h3><button class="close-chat-btn" onclick="closeFullscreenModal('private-contacts-modal')">إغلاق ✕</button></div>
+    <div class="modal-body"><p style="color:var(--text-muted);margin-bottom:18px">اختر مواطناً لفتح محادثتكما الخاصة.</p><div id="private-contacts-list"></div></div>
+  </div>
+  <div id="private-chat-modal" class="fullscreen-modal">
+    <div class="modal-header"><h3 id="private-chat-title">محادثة خاصة</h3><button class="close-chat-btn" onclick="closePrivateChat()">رجوع ✕</button></div>
+    <div id="private-chat-box" class="chat-box-body" aria-live="polite"></div>
+    <div class="chat-footer"><label class="img-upload-btn" title="إرفاق صورة">📷<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="sendPrivateImage(event)"></label><input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة..." onkeydown="if(event.key==='Enter')sendPrivateMessage()"><button class="btn" onclick="sendPrivateMessage()">إرسال</button></div>
+  </div>
   <div id="chat-modal-public" class="fullscreen-modal">
     <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
       <div>
         <h3>💬 الدردشة العامة للمملكة</h3>
-        <span id="streak-counter" style="font-size:12px; font-weight:700; color:var(--primary);">🔥 الستريك الجماعي: 0 (مطلوب 3 أشخاص)</span>
+        <span id="streak-counter" class="streak-pill">🔥 سلسلة المجلس · 0 يوم</span>
       </div>
       <button class="close-chat-btn" onclick="closeChat('public')">إغلاق ✕</button>
     </div>
@@ -1287,6 +1354,9 @@ canvas {
       if (users[userVal] && users[userVal] === passVal) {
         currentUser = userVal;
         isCitizenUser = true;
+        privatePassword = passVal;
+        sessionStorage.setItem('rg_private_password', passVal);
+        if (typeof socket !== 'undefined' && socket.connected) authenticatePrivate();
         
         localStorage.setItem('saved_user', userVal);
         localStorage.setItem('saved_role', 'مواطن');
@@ -1363,6 +1433,10 @@ canvas {
     }
 
     function logout() {
+      sessionStorage.removeItem('rg_private_password');
+      privatePassword = '';
+      privateAuth = false;
+      if (typeof socket !== 'undefined') socket.disconnect().connect();
       localStorage.removeItem('saved_user');
       localStorage.removeItem('saved_role');
       localStorage.removeItem('saved_is_citizen');
@@ -1976,7 +2050,7 @@ canvas {
     socket.on("update_streak_state", (streak) => {
       const streakEl = document.getElementById("streak-counter");
       if (streakEl) {
-        streakEl.innerText = `🔥 الستريك الجماعي: ${streak.count} (بمشاركة 3 أشخاص)`;
+        streakEl.innerText = `🔥 سلسلة المجلس · ${streak.count || 0} يوم ${streak.todayParticipants?.length === 1 ? "· بانتظار مشاركة ثانية" : ""}`;
       }
     });
 
@@ -2069,6 +2143,93 @@ canvas {
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
+
+    // الرسائل الخاصة: المصادقة والجلب والإرسال تتم عبر Socket.IO والسيرفر فقط.
+    let privatePeer = null;
+    let privateAuth = false;
+    let privatePassword = sessionStorage.getItem('rg_private_password') || '';
+    function authenticatePrivate(callback) {
+      if (!isCitizenUser || !currentUser || !privatePassword || !socket.connected) {
+        privateAuth = false;
+        if (callback) callback(false);
+        return;
+      }
+      socket.emit('citizen_auth', { username: currentUser, password: privatePassword }, res => {
+        privateAuth = !!res?.ok;
+        if (callback) callback(privateAuth);
+      });
+    }
+    function openPrivateContacts() {
+      if (!isCitizenUser) return;
+      openFullscreenModal('private-contacts-modal');
+      const box = document.getElementById('private-contacts-list');
+      box.textContent = 'جاري تحميل المواطنين...';
+      authenticatePrivate(ok => {
+        if (!ok) { box.textContent = 'لتفعيل الرسائل الخاصة، سجّل خروجاً ثم ادخل بكود المواطن مجدداً.'; return; }
+        socket.emit('private_contacts', {}, res => {
+          box.replaceChildren();
+          if (!res?.ok) { box.textContent = res?.error || 'تعذر تحميل المواطنين'; return; }
+          res.contacts.forEach(contact => {
+            const item = document.createElement('button');
+            item.className = 'service-card';
+            item.style.cssText = 'width:100%;text-align:right;color:var(--text-main);margin-bottom:10px';
+            const title = document.createElement('strong'); title.textContent = '✉️ ' + contact.name;
+            const sub = document.createElement('p'); sub.textContent = contact.title || 'مواطن'; sub.style.color = 'var(--text-muted)';
+            item.append(title, sub);
+            item.onclick = () => openPrivateChat(contact);
+            box.appendChild(item);
+          });
+        });
+      });
+    }
+    function openPrivateChat(contact) {
+      privatePeer = contact.id;
+      document.getElementById('private-chat-title').textContent = '✉️ ' + contact.name;
+      const box = document.getElementById('private-chat-box');
+      box.textContent = 'جاري تحميل المحادثة...';
+      openFullscreenModal('private-chat-modal');
+      socket.emit('private_history', { with: privatePeer }, res => {
+        if (privatePeer !== contact.id) return;
+        box.replaceChildren();
+        if (!res?.ok) { box.textContent = res?.error || 'تعذر التحميل'; return; }
+        res.history.forEach(renderPrivateMessage);
+      });
+    }
+    function closePrivateChat() { closeFullscreenModal('private-chat-modal'); privatePeer = null; }
+    function renderPrivateMessage(data) {
+      if (!privatePeer || ![data.sender, data.type?.split(':').pop()].includes(privatePeer) && data.sender !== currentUser) return;
+      const box = document.getElementById('private-chat-box');
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-msg';
+      bubble.style.cssText = 'margin:5px 0;max-width:80%;align-self:' + (data.sender === currentUser ? 'flex-end;background:var(--primary);color:white' : 'flex-start');
+      const meta = document.createElement('small'); meta.textContent = (data.sender === currentUser ? 'أنت' : data.sender) + ' · ' + new Date(data.createdAt).toLocaleTimeString('ar', {hour:'2-digit',minute:'2-digit'});
+      bubble.appendChild(meta);
+      if (data.text) { const line = document.createElement('div'); line.textContent = data.text; line.style.whiteSpace = 'pre-wrap'; bubble.appendChild(line); }
+      if (data.image && /^data:image\/(png|jpeg|webp|gif);base64,/.test(data.image)) { const img = document.createElement('img'); img.src = data.image; img.style.cssText='max-width:100%;border-radius:12px;margin-top:8px'; bubble.appendChild(img); }
+      box.appendChild(bubble); box.scrollTop = box.scrollHeight;
+    }
+    function sendPrivateMessage(image) {
+      if (!privatePeer || !privateAuth) return;
+      const input = document.getElementById('private-chat-input');
+      const text = image ? '' : input.value.trim();
+      if (!text && !image) return;
+      const to = privatePeer;
+      socket.emit('private_send', { to, text, image: image || '' }, res => {
+        if (!res?.ok) alert(res?.error || 'فشل إرسال الرسالة');
+        else if (!image) input.value = '';
+      });
+    }
+    function sendPrivateImage(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      if (file.size > 4 * 1024 * 1024 || !/^image\/(png|jpeg|webp|gif)$/.test(file.type)) { alert('اختر صورة بحجم أقل من 4 ميغابايت'); return; }
+      const reader = new FileReader(); reader.onload = () => sendPrivateMessage(reader.result); reader.readAsDataURL(file); event.target.value = '';
+    }
+    socket.on('private_receive', data => {
+      const room = 'dm:' + [currentUser, privatePeer].sort().join(':');
+      if (privatePeer && data.type === room) renderPrivateMessage(data);
+    });
+    socket.on('connect', () => { if (privatePassword && isCitizenUser) authenticatePrivate(); });
     socket.on("receive_message", (data) => {
       renderSingleMessage(data);
 
