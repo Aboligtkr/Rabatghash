@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "768986936184",
+    "project_id": "ikr-service",
+    "storage_bucket": "ikr-service.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768986936184:android:e6a2ca5792b464ff4dce8d",
+        "android_client_info": {
+          "package_name": "com.rabatghash.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlQHVEoKWk_k6wGFI0gzIsmz4n18TG01s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
