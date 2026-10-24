@@ -1,6 +1,5 @@
 const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
-dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const express = require('express');
 const http = require('http');
@@ -34,9 +33,9 @@ try {
   console.warn("تنبيه: لم يتم العثور على serviceAccountKey.json، سيتم الاعتماد على إشعارات Web/Socket المحلية.");
 }
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = "mongodb+srv://baybarskgr:fie8jdk84jdh3@cluster0.ujpcrsl.mongodb.net/?appName=Cluster0";
 
-mongoose.connect(MONGO_URI || "mongodb://127.0.0.1:27017/rabatghash")
+mongoose.connect(MONGO_URI)
     .then(() => console.log("تم الاتصال بنجاح بقاعدة البيانات MongoDB"))
     .catch(err => console.error("خطأ في الاتصال بقاعدة البيانات:", err));
 
@@ -67,37 +66,10 @@ let globalLeaderboard = {
   memory: { name: 'لا يوجد', score: 999999 } // تم تعيين قيمة ابتدائية مرتفعة للأدوار
 };
 
-let streakData = { count: 0, lastActiveDay: null, participants: [], todayParticipants: [] };
-const utcDay = (date = new Date()) => date.toISOString().slice(0, 10);
-const dayBefore = (day) => new Date(Date.parse(day + 'T00:00:00Z') - 86400000).toISOString().slice(0, 10);
-function refreshStreakDay() {
-  const today = utcDay();
-  if (streakData.lastActiveDay && streakData.lastActiveDay !== today && streakData.lastActiveDay !== dayBefore(today)) {
-    streakData.count = 0;
-    streakData.participants = [];
-    streakData.todayParticipants = [];
-    streakData.lastActiveDay = null;
-  }
-}
-async function recordStreakMessage(data) {
-  if ((data.type || 'public') !== 'public') return;
-  refreshStreakDay();
-  const today = utcDay();
-  const sender = String(data.sender || '').trim().toLowerCase();
-  if (!sender) return;
-  if (streakData.lastActiveDay !== today) {
-    streakData.todayParticipants = [];
-  }
-  if (!streakData.todayParticipants.includes(sender)) streakData.todayParticipants.push(sender);
-  // لا يُحتسب اليوم إلا بعد مشاركة شخصين مختلفين في المجلس العام.
-  if (streakData.todayParticipants.length >= 2 && streakData.lastActiveDay !== today) {
-    streakData.count = streakData.lastActiveDay === dayBefore(today) ? streakData.count + 1 : 1;
-    streakData.lastActiveDay = today;
-  }
-  streakData.participants = [...streakData.todayParticipants];
-  await saveStreakToDB();
-  io.emit('update_streak_state', streakData);
-}
+let streakData = {
+  count: 0,
+  lastSenders: []
+};
 
 async function loadPersistentState() {
   try {
@@ -105,8 +77,7 @@ async function loadPersistentState() {
     if (savedLb) globalLeaderboard = savedLb.data;
 
     const savedStreak = await GameState.findOne({ key: 'streakData' });
-    if (savedStreak) streakData = { count: 0, lastActiveDay: null, participants: [], todayParticipants: [], ...savedStreak.data };
-    refreshStreakDay();
+    if (savedStreak) streakData = savedStreak.data;
   } catch (e) {
     console.error("خطأ في استرجاع الحالة الثابتة:", e);
   }
@@ -226,7 +197,6 @@ io.on('connection', (socket) => {
     console.log('مستخدم جديد اتصل بالتطبيق:', socket.id);
 
     socket.emit("update_reputation_state", citizensDB);
-    refreshStreakDay();
     socket.emit("update_streak_state", streakData);
     socket.emit("update_leaderboard_state", globalLeaderboard);
 
@@ -280,7 +250,15 @@ io.on('connection', (socket) => {
         try {
             const senderName = data.sender || "مواطن";
             
-            await recordStreakMessage(data);
+            if (!streakData.lastSenders.includes(senderName)) {
+                streakData.lastSenders.push(senderName);
+            }
+            if (streakData.lastSenders.length >= 3) {
+                streakData.count += 1;
+                streakData.lastSenders = [senderName];
+            }
+            await saveStreakToDB();
+            io.emit('update_streak_state', streakData);
 
             const newMessage = new Message({
                 type: data.type || "public",
