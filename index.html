@@ -889,6 +889,10 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
             </div>
           </div>
 
+
+          <div class="service-card citizen-only" onclick="openPrivateContacts()">
+            <div class="service-header"><div class="service-icon">✉️</div><div><h4>الرسائل الخاصة</h4><p>محادثات مستقلة وآمنة الوصول بين مواطني المملكة، متصلة بالسيرفر</p></div></div>
+          </div>
           <div class="service-card shura-only" id="shura-chat-option" style="display:none;" onclick="openChat('shura')">
             <div class="service-header">
               <div class="service-icon">👑</div>
@@ -1059,6 +1063,16 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
     </div>
   </div>
 
+
+  <div id="private-contacts-modal" class="fullscreen-modal">
+    <div class="modal-header"><h3>✉️ رسائل المواطنين</h3><button class="close-chat-btn" onclick="closeFullscreenModal('private-contacts-modal')">إغلاق ✕</button></div>
+    <div class="modal-body"><p style="color:var(--text-muted);margin-bottom:18px">اختر مواطناً لفتح محادثتكما الخاصة.</p><div id="private-contacts-list"></div></div>
+  </div>
+  <div id="private-chat-modal" class="fullscreen-modal">
+    <div class="modal-header"><h3 id="private-chat-title">محادثة خاصة</h3><button class="close-chat-btn" onclick="closePrivateChat()">رجوع ✕</button></div>
+    <div id="private-chat-box" class="chat-box-body" aria-live="polite"></div>
+    <div class="chat-footer"><label class="img-upload-btn" title="إرفاق صورة">📷<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="sendPrivateImage(event)"></label><input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة..." onkeydown="if(event.key==='Enter')sendPrivateMessage()"><button class="btn" onclick="sendPrivateMessage()">إرسال</button></div>
+  </div>
   <div id="chat-modal-public" class="fullscreen-modal">
     <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
       <div>
@@ -1340,6 +1354,9 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
       if (users[userVal] && users[userVal] === passVal) {
         currentUser = userVal;
         isCitizenUser = true;
+        privatePassword = passVal;
+        sessionStorage.setItem('rg_private_password', passVal);
+        if (typeof socket !== 'undefined' && socket.connected) authenticatePrivate();
         
         localStorage.setItem('saved_user', userVal);
         localStorage.setItem('saved_role', 'مواطن');
@@ -1416,6 +1433,10 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
     }
 
     function logout() {
+      sessionStorage.removeItem('rg_private_password');
+      privatePassword = '';
+      privateAuth = false;
+      if (typeof socket !== 'undefined') socket.disconnect().connect();
       localStorage.removeItem('saved_user');
       localStorage.removeItem('saved_role');
       localStorage.removeItem('saved_is_citizen');
@@ -2122,6 +2143,93 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
+
+    // الرسائل الخاصة: المصادقة والجلب والإرسال تتم عبر Socket.IO والسيرفر فقط.
+    let privatePeer = null;
+    let privateAuth = false;
+    let privatePassword = sessionStorage.getItem('rg_private_password') || '';
+    function authenticatePrivate(callback) {
+      if (!isCitizenUser || !currentUser || !privatePassword || !socket.connected) {
+        privateAuth = false;
+        if (callback) callback(false);
+        return;
+      }
+      socket.emit('citizen_auth', { username: currentUser, password: privatePassword }, res => {
+        privateAuth = !!res?.ok;
+        if (callback) callback(privateAuth);
+      });
+    }
+    function openPrivateContacts() {
+      if (!isCitizenUser) return;
+      openFullscreenModal('private-contacts-modal');
+      const box = document.getElementById('private-contacts-list');
+      box.textContent = 'جاري تحميل المواطنين...';
+      authenticatePrivate(ok => {
+        if (!ok) { box.textContent = 'لتفعيل الرسائل الخاصة، سجّل خروجاً ثم ادخل بكود المواطن مجدداً.'; return; }
+        socket.emit('private_contacts', {}, res => {
+          box.replaceChildren();
+          if (!res?.ok) { box.textContent = res?.error || 'تعذر تحميل المواطنين'; return; }
+          res.contacts.forEach(contact => {
+            const item = document.createElement('button');
+            item.className = 'service-card';
+            item.style.cssText = 'width:100%;text-align:right;color:var(--text-main);margin-bottom:10px';
+            const title = document.createElement('strong'); title.textContent = '✉️ ' + contact.name;
+            const sub = document.createElement('p'); sub.textContent = contact.title || 'مواطن'; sub.style.color = 'var(--text-muted)';
+            item.append(title, sub);
+            item.onclick = () => openPrivateChat(contact);
+            box.appendChild(item);
+          });
+        });
+      });
+    }
+    function openPrivateChat(contact) {
+      privatePeer = contact.id;
+      document.getElementById('private-chat-title').textContent = '✉️ ' + contact.name;
+      const box = document.getElementById('private-chat-box');
+      box.textContent = 'جاري تحميل المحادثة...';
+      openFullscreenModal('private-chat-modal');
+      socket.emit('private_history', { with: privatePeer }, res => {
+        if (privatePeer !== contact.id) return;
+        box.replaceChildren();
+        if (!res?.ok) { box.textContent = res?.error || 'تعذر التحميل'; return; }
+        res.history.forEach(renderPrivateMessage);
+      });
+    }
+    function closePrivateChat() { closeFullscreenModal('private-chat-modal'); privatePeer = null; }
+    function renderPrivateMessage(data) {
+      if (!privatePeer || ![data.sender, data.type?.split(':').pop()].includes(privatePeer) && data.sender !== currentUser) return;
+      const box = document.getElementById('private-chat-box');
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-msg';
+      bubble.style.cssText = 'margin:5px 0;max-width:80%;align-self:' + (data.sender === currentUser ? 'flex-end;background:var(--primary);color:white' : 'flex-start');
+      const meta = document.createElement('small'); meta.textContent = (data.sender === currentUser ? 'أنت' : data.sender) + ' · ' + new Date(data.createdAt).toLocaleTimeString('ar', {hour:'2-digit',minute:'2-digit'});
+      bubble.appendChild(meta);
+      if (data.text) { const line = document.createElement('div'); line.textContent = data.text; line.style.whiteSpace = 'pre-wrap'; bubble.appendChild(line); }
+      if (data.image && /^data:image\/(png|jpeg|webp|gif);base64,/.test(data.image)) { const img = document.createElement('img'); img.src = data.image; img.style.cssText='max-width:100%;border-radius:12px;margin-top:8px'; bubble.appendChild(img); }
+      box.appendChild(bubble); box.scrollTop = box.scrollHeight;
+    }
+    function sendPrivateMessage(image) {
+      if (!privatePeer || !privateAuth) return;
+      const input = document.getElementById('private-chat-input');
+      const text = image ? '' : input.value.trim();
+      if (!text && !image) return;
+      const to = privatePeer;
+      socket.emit('private_send', { to, text, image: image || '' }, res => {
+        if (!res?.ok) alert(res?.error || 'فشل إرسال الرسالة');
+        else if (!image) input.value = '';
+      });
+    }
+    function sendPrivateImage(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      if (file.size > 4 * 1024 * 1024 || !/^image\/(png|jpeg|webp|gif)$/.test(file.type)) { alert('اختر صورة بحجم أقل من 4 ميغابايت'); return; }
+      const reader = new FileReader(); reader.onload = () => sendPrivateMessage(reader.result); reader.readAsDataURL(file); event.target.value = '';
+    }
+    socket.on('private_receive', data => {
+      const room = 'dm:' + [currentUser, privatePeer].sort().join(':');
+      if (privatePeer && data.type === room) renderPrivateMessage(data);
+    });
+    socket.on('connect', () => { if (privatePassword && isCitizenUser) authenticatePrivate(); });
     socket.on("receive_message", (data) => {
       renderSingleMessage(data);
 
