@@ -1388,7 +1388,7 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
         errorMsg.style.display = 'block';
       }
     }
-    
+
     function loginGuest() {
       currentUser = "الضيف";
       isCitizenUser = false;
@@ -2094,13 +2094,14 @@ localStorage.removeItem('rg_dm_token');
     });
 
     function sendMessage(type) {
-      const input = document.getElementById(`chat-input-${type}`);
+      const activeType = type || activeChatType || 'public';
+      const input = document.getElementById(`chat-input-${activeType}`);
       if (!input) return;
       const text = input.value.trim();
 
-      if (text !== "") {
+      if (text !== "" && typeof socket !== 'undefined' && socket.connected) {
         socket.emit("send_message", {
-          type: type || "public",
+          type: activeType,
           text: text,
           sender: currentUser || "مواطن"
         });
