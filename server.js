@@ -484,21 +484,28 @@ socket.on('citizen_logout', async (payload, ack) => {
             const savedMsg = await newMessage.save();
             io.emit('receive_message', savedMsg);
 
-            if (admin.apps.length > 0 && deviceTokens.size > 0) {
-                const tokensArray = Array.from(deviceTokens);
-                const messagePayload = {
-                    notification: {
-                        title: `رسالة جديدة من ${senderName} 👑`,
-                        body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
-                    },
-                    data: {
-                        type: data.type || "public"
-                    },
-                    tokens: tokensArray
-                };
-
-                admin.messaging().sendEachForMulticast(messagePayload).catch(err => console.error("FCM Error:", err));
+            // محاولة إرسال إشعار FCM بأمان ت تام دون أي أخطاء
+            try {
+                if (typeof admin !== 'undefined' && admin.apps.length > 0 && typeof deviceTokens !== 'undefined' && deviceTokens && typeof deviceTokens.size === 'number' && deviceTokens.size > 0) {
+                    const tokensArray = Array.from(deviceTokens).filter(Boolean);
+                    if (tokensArray.length > 0) {
+                        const messagePayload = {
+                            notification: {
+                                title: `رسالة جديدة من ${senderName} 👑`,
+                                body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
+                            },
+                            data: {
+                                type: data.type || "public"
+                            },
+                            tokens: tokensArray
+                        };
+                        admin.messaging().sendEachForMulticast(messagePayload).catch(err => console.error("FCM Error:", err));
+                    }
+                }
+            } catch (fcmErr) {
+                console.log("تنبيه إشعارات:", fcmErr.message);
             }
+
         } catch (err) {
             console.error("خطأ في حفظ أو إرسال الرسالة:", err);
         }
