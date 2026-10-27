@@ -485,25 +485,26 @@ socket.on('citizen_logout', async (payload, ack) => {
             const savedMsg = await newMessage.save();
             io.emit('receive_message', savedMsg);
 
-            // محاولة إرسال إشعار FCM بأمان ت تام دون أي أخطاء
-        // محاولة إرسال إشعار FCM بأمان تام
+      
             try {
-                if (typeof admin !== 'undefined' && admin.apps.length > 0 && typeof deviceTokens !== 'undefined') {
-                    const tokensArray = Array.isArray(deviceTokens) ? deviceTokens : Array.from(deviceTokens);
+                console.log("حالة الـ tokens حالياً:", deviceTokens.size);
+                if (typeof admin !== 'undefined' && admin.apps.length > 0 && deviceTokens && deviceTokens.size > 0) {
+                    const tokensArray = Array.from(deviceTokens);
+                    console.log("جاري إرسال إشعار إلى عدد أجهزة:", tokensArray.length);
                     
-                    if (tokensArray.length > 0) {
-                        admin.messaging().sendEachForMulticast({
-                            notification: {
-                                title: `رسالة جديدة من ${senderName} 👑`,
-                                body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
-                            },
-                            tokens: tokensArray
-                        }).then(res => console.log("تم إرسال الإشعار بنجاح، العدد:", res.successCount))
-                          .catch(err => console.log("FCM Send Error:", err.message));
-                    }
+                    admin.messaging().sendEachForMulticast({
+                        notification: {
+                            title: `رسالة جديدة من ${senderName} 👑`,
+                            body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
+                        },
+                        tokens: tokensArray
+                    }).then(res => console.log("تم إرسال الإشعار بنجاح، النجاح:", res.successCount))
+                      .catch(err => console.log("FCM Send Error:", err.message));
+                } else {
+                    console.log("FCM تخطي: لا توجد أجهزة مسجلة حالياً في الـ Set");
                 }
             } catch (e) {
-                console.log("FCM Skip");
+                console.log("FCM Skip Error:", e.message);
             }
         } catch (err) {
             console.error("خطأ في حفظ أو إرسال الرسالة:", err);
