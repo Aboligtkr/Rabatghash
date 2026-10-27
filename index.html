@@ -8,9 +8,15 @@
   <style>
 @font-face {
   font-family: 'Zanjabeel';
-  src: url('assets/fonts/zanjabeel-black.ttf') format('opentype');
+  src: url('./assets/fonts/zanjabeel-black.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
+html, body, button, input, textarea, select {
+  font-family: 'Zanjabeel', sans-serif !important;
+}
 :root {
   --primary: #e11d48;
   --primary-hover: #f43f5e;
@@ -672,7 +678,9 @@ canvas {
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
 :root {--primary:#d6ad62;--primary-hover:#f0ca80;--primary-light:#302719;--primary-border:#72552c;--bg-main:#0b0e11;--card-bg:#171b20;--text-main:#f5f0e6;--text-muted:#9b9b9b;--border-color:#303238;--shadow-sm:0 8px 25px #0004;--shadow-md:0 22px 60px #0008;--radius-sm:18px;--radius-md:26px;--radius-lg:32px}
 html.light-mode{--primary:#8c5e20;--primary-hover:#68400e;--primary-light:#f8ecd7;--primary-border:#ddc39a;--bg-main:#f5f2eb;--card-bg:#fffdf9;--text-main:#22201c;--text-muted:#77716a;--border-color:#e8dfd1;--shadow-sm:0 8px 25px #34200a10;--shadow-md:0 22px 60px #34200a18}
-*,*::before,*::after{font-family:'Cairo',system-ui,sans-serif}
+*,*::before,*::after{
+  font-family:'Zanjabeel',sans-serif;
+}
 body{background:var(--bg-main);background-image:radial-gradient(ellipse at 95% 0%,#bd853012,transparent 40%)}
 .container{background:transparent}
 .header{background:color-mix(in srgb,var(--bg-main) 87%,transparent);backdrop-filter:blur(22px);box-shadow:none;border-bottom:1px solid var(--border-color);padding-bottom:18px}
@@ -1180,17 +1188,7 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
       }
     }
 
-    const users = {
-      "baybars": "ByB#9284",
-      "marwan": "MrW$5103",
-      "abdulrahman": "AbD@7391",
-      "mohammed khatteb": "MKh#4028",
-      "shehab": "ShB%6149",
-      "ziyad": "ZyD*8512",
-      "tareq": "TrQ#3940",
-      "mohammed alg": "MAl!7261"
-    };
-
+    
     const shuraMembers = ["marwan", "abdulrahman", "baybars", "tareq"];
 
     let citizensData = {
@@ -1351,23 +1349,38 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
       const passVal = document.getElementById('password').value.trim();
       const errorMsg = document.getElementById('error-msg');
 
-      if (users[userVal] && users[userVal] === passVal) {
-        currentUser = userVal;
-        isCitizenUser = true;
-        privatePassword = passVal;
-        sessionStorage.removeItem('rg_private_password');
-        if (typeof socket !== 'undefined' && socket.connected) authenticatePrivate();
-        
-        localStorage.setItem('saved_user', userVal);
-        localStorage.setItem('saved_role', 'مواطن');
-        localStorage.setItem('saved_is_citizen', 'true');
+      if (!userVal || !passVal) {
+        errorMsg.innerText = "الرجاء إدخال اسم المستخدم وكلمة المرور!";
+        errorMsg.style.display = 'block';
+        return;
+      }
 
-        showDashboard(userVal, "مواطن", true);
-        errorMsg.style.display = 'none';
-        requestNotificationPermission();
+      // إرسال طلب التحقق إلى السيرفر بأمان
+      if (typeof socket !== 'undefined' && socket.connected) {
+        socket.emit('citizen_login', { username: userVal, password: passVal }, (res) => {
+          if (res && res.ok) {
+            currentUser = res.user;
+            isCitizenUser = true;
+            privatePassword = passVal;
+            sessionStorage.removeItem('rg_private_password');
+            authenticatePrivate();
+            
+            localStorage.setItem('saved_user', res.user);
+            localStorage.setItem('saved_role', res.role);
+            localStorage.setItem('saved_is_citizen', 'true');
+
+            showDashboard(res.user, res.role, true);
+            errorMsg.style.display = 'none';
+            requestNotificationPermission();
+          } else {
+            errorMsg.innerText = "اسم المستخدم أو الكود غير صحيح!";
+            errorMsg.style.display = 'none';
+            void errorMsg.offsetWidth;
+            errorMsg.style.display = 'block';
+          }
+        });
       } else {
-        errorMsg.style.display = 'none';
-        void errorMsg.offsetWidth;
+        errorMsg.innerText = "لا يوجد اتصال بالسيرفر حالياً!";
         errorMsg.style.display = 'block';
       }
     }
@@ -1475,9 +1488,24 @@ localStorage.removeItem('rg_dm_token');
       
       const chatBox = document.getElementById(`chat-box-${type}`);
       if (chatBox) {
-        chatBox.innerHTML = '<div class="chat-msg"><b>النظام:</b> جاري تحميل الرسائل... 👑</div>';
+        // 1. تحميل الرسائل المخزنة محلياً فـوراً لمنع الانتظار
+        const cachedMessages = localStorage.getItem(`chat_history_${type}`);
+        if (cachedMessages) {
+          try {
+            const parsed = JSON.parse(cachedMessages);
+            chatBox.innerHTML = '';
+            parsed.forEach(msg => {
+              renderSingleMessage(msg, type);
+            });
+          } catch(e) {
+            chatBox.innerHTML = '<div class="chat-msg"><b>النظام:</b> أهلاً بك في الدردشة العامة للمملكة 👑</div>';
+          }
+        } else {
+          chatBox.innerHTML = '<div class="chat-msg"><b>النظام:</b> أهلاً بك في الدردشة العامة للمملكة 👑</div>';
+        }
       }
 
+      // 2. طلب التحديثات من السيرفر في الخلفية
       if (typeof socket !== 'undefined' && socket.connected) {
         socket.emit("fetch_history", type);
       }
@@ -2269,8 +2297,21 @@ localStorage.removeItem('rg_dm_token');
     authenticatePrivate();
   }
 });
-    socket.on("receive_message", (data) => {
-      renderSingleMessage(data);
+   socket.on("receive_message", (data) => {
+      renderSingleMessage(data, data.type);
+
+      // تحديث المخزون المحلي للرسائل
+      const chatType = data.type || 'public';
+      const cachedMessages = localStorage.getItem(`chat_history_${chatType}`);
+      let messagesList = [];
+      try {
+        if (cachedMessages) messagesList = JSON.parse(cachedMessages);
+      } catch(e) { messagesList = []; }
+
+      // منع التكرار وإضافة الرسالة الجديدة
+      messagesList.push(data);
+      if (messagesList.length > 200) messagesList.shift(); // الحفاظ على آخر 200 رسالة فقط
+      localStorage.setItem(`chat_history_${chatType}`, JSON.stringify(messagesList));
 
       if (data.sender !== currentUser) {
         playNotificationSound();
@@ -2280,16 +2321,58 @@ localStorage.removeItem('rg_dm_token');
       }
     });
 
-    socket.on("load_history", (res) => {
-      const chatBox = document.getElementById(`chat-box-${res.type}`);
+socket.on("load_history", (res) => {
+      const chatType = res.type;
+      const chatBox = document.getElementById(`chat-box-${chatType}`);
       if (!chatBox) return;
-      chatBox.innerHTML = '';
+
+      // حفظ التاريخ القادم من السيرفر في التخزين المحلي للمهاتفة السريعة
       if (res.history && res.history.length > 0) {
+        localStorage.setItem(`chat_history_${chatType}`, JSON.stringify(res.history));
+        
+        chatBox.innerHTML = '';
         res.history.forEach(msg => {
-          renderSingleMessage(msg);
+          renderSingleMessage(msg, chatType);
         });
       }
     });
+    
+    // تفعيل إشعارات الأندرويد الفورية عبر Capacitor
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.PushNotifications) {
+          const { PushNotifications } = Capacitor.Plugins;
+
+          // طلب إذن الإشعارات عند فتح التطبيق
+          let permStatus = await PushNotifications.checkPermissions();
+          if (permStatus.receive === 'prompt') {
+            permStatus = await PushNotifications.requestPermissions();
+          }
+
+          if (permStatus.receive === 'granted') {
+            PushNotifications.register();
+
+            // استقبال الـ Token وإرساله للسيرفر لربطه بحسابك
+            PushNotifications.addListener('registration', (token) => {
+              if (token && token.value) {
+                window.savedFcmToken = token.value;
+                if (typeof socket !== 'undefined' && socket.connected) {
+                  socket.emit("register_fcm_token", { token: token.value, user: currentUser });
+                }
+              }
+            });
+
+            // التعامل مع وصول إشعار وأنت تستخدم التطبيق
+            PushNotifications.addListener('pushNotificationReceived', (notification) => {
+              console.log('تم استلام إشعار فوراً:', notification);
+            });
+          }
+        }
+      } catch (e) {
+        console.log("بيئة المتصفح لا تدعم إشعارات Capacitor المحلية:", e);
+      }
+    });
+
   </script>
 
 </body>
