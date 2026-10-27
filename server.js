@@ -245,8 +245,14 @@ let citizensDB = {
   }
 };
 
-let citizenCredentials = defaultCredentials;
-try { if (process.env.CITIZEN_CREDENTIALS_JSON) citizenCredentials = JSON.parse(process.env.CITIZEN_CREDENTIALS_JSON); } catch (e) { console.error('Invalid CITIZEN_CREDENTIALS_JSON'); }
+let citizenCredentials = {};
+try { 
+  if (process.env.CITIZEN_CREDENTIALS_JSON) {
+    citizenCredentials = JSON.parse(process.env.CITIZEN_CREDENTIALS_JSON); 
+  } 
+} catch (e) { 
+  console.error('Invalid CITIZEN_CREDENTIALS_JSON'); 
+}
 const privateRoom = (a, b) => 'dm:' + [a, b].sort().join(':');
 const validCitizen = (name) => Object.prototype.hasOwnProperty.call(citizenCredentials, name);
 
