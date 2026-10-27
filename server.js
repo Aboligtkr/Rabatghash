@@ -25,13 +25,19 @@ const io = new Server(server, {
 });
 
 try {
-  const serviceAccount = require('./serviceAccountKey.json');
+  let serviceAccount;
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+  } else {
+    serviceAccount = require('./serviceAccountKey.json');
+  }
+  
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
   });
   console.log("تم تهيئة Firebase Admin بنجاح.");
 } catch (e) {
-  console.warn("تنبيه: لم يتم العثور على serviceAccountKey.json، سيتم الاعتماد على إشعارات Web/Socket المحلية.");
+  console.warn("تنبيه: لم يتم العثور على إعدادات Firebase Admin، سيتم الاعتماد على إشعارات Socket المحلية.", e);
 }
 
 const MONGO_URI = process.env.MONGO_URI;
