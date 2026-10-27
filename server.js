@@ -262,7 +262,7 @@ try {
 const privateRoom = (a, b) => 'dm:' + [a, b].sort().join(':');
 const validCitizen = (name) => Object.prototype.hasOwnProperty.call(citizenCredentials, name);
 
-let deviceTokens = new Set();
+const deviceTokens = new Set();
 
 io.on('connection', (socket) => {
   // حدث التحقق من تسجيل دخول المواطن من السيرفر مباشرة
@@ -420,11 +420,12 @@ socket.on('citizen_logout', async (payload, ack) => {
         } catch (err) { if (typeof ack === 'function') ack({ ok: false, error: 'فشل حفظ الرسالة' }); }
     });
 
-    socket.on("register_fcm_token", (data) => {
-        if (data && data.token) {
-            deviceTokens.add(data.token);
-        }
-    });
+   socket.on('register_fcm_token', (token) => {
+    if (token) {
+        deviceTokens.add(token);
+        console.log("تم تسجل FCM Token بنجاح:", token);
+    }
+});
 
     socket.on("fetch_history", async (type) => {
         try {
@@ -485,27 +486,20 @@ socket.on('citizen_logout', async (payload, ack) => {
             io.emit('receive_message', savedMsg);
 
             // محاولة إرسال إشعار FCM بأمان ت تام دون أي أخطاء
-            try {
-                if (typeof admin !== 'undefined' && admin.apps.length > 0 && typeof deviceTokens !== 'undefined' && deviceTokens && typeof deviceTokens.size === 'number' && deviceTokens.size > 0) {
-                    const tokensArray = Array.from(deviceTokens).filter(Boolean);
-                    if (tokensArray.length > 0) {
-                        const messagePayload = {
-                            notification: {
-                                title: `رسالة جديدة من ${senderName} 👑`,
-                                body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
-                            },
-                            data: {
-                                type: data.type || "public"
-                            },
-                            tokens: tokensArray
-                        };
-                        admin.messaging().sendEachForMulticast(messagePayload).catch(err => console.error("FCM Error:", err));
-                    }
+          try {
+                if (typeof admin !== 'undefined' && admin.apps.length > 0 && typeof deviceTokens !== 'undefined' && deviceTokens.size > 0) {
+                    const tokensArray = Array.from(deviceTokens);
+                    admin.messaging().sendEachForMulticast({
+                        notification: {
+                            title: `رسالة جديدة من ${senderName} 👑`,
+                            body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
+                        },
+                        tokens: tokensArray
+                    }).catch(err => console.log("FCM Send Error:", err.message));
                 }
-            } catch (fcmErr) {
-                console.log("تنبيه إشعارات:", fcmErr.message);
+            } catch (e) {
+                console.log("FCM Skip");
             }
-
         } catch (err) {
             console.error("خطأ في حفظ أو إرسال الرسالة:", err);
         }
