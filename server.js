@@ -34,7 +34,7 @@ try {
   console.warn("تنبيه: لم يتم العثور على serviceAccountKey.json، سيتم الاعتماد على إشعارات Web/Socket المحلية.");
 }
 
-const MONGO_URI = "mongodb+srv://baybarskgr:fie8jdk84jdh3@cluster0.ujpcrsl.mongodb.net/?appName=Cluster0";
+const MONGO_URI = process.env.MONGO_URI;
 
 mongoose.connect(MONGO_URI || "mongodb://127.0.0.1:27017/rabatghash")
     .then(() => console.log("تم الاتصال بنجاح بقاعدة البيانات MongoDB"))
@@ -245,17 +245,6 @@ let citizensDB = {
   }
 };
 
-// نقل المصادقة إلى السيرفر للدردشات الخاصة. غيّر الأكواد وانقلها لمتغير البيئة CITIZEN_CREDENTIALS_JSON.
-const defaultCredentials = {
-      "baybars": "ByB#9284",
-      "marwan": "MrW$5103",
-      "abdulrahman": "AbD@7391",
-      "mohammed khatteb": "MKh#4028",
-      "shehab": "ShB%6149",
-      "ziyad": "ZyD*8512",
-      "tareq": "TrQ#3940",
-      "mohammed alg": "MAl!7261"
-    };
 let citizenCredentials = defaultCredentials;
 try { if (process.env.CITIZEN_CREDENTIALS_JSON) citizenCredentials = JSON.parse(process.env.CITIZEN_CREDENTIALS_JSON); } catch (e) { console.error('Invalid CITIZEN_CREDENTIALS_JSON'); }
 const privateRoom = (a, b) => 'dm:' + [a, b].sort().join(':');
@@ -264,6 +253,27 @@ const validCitizen = (name) => Object.prototype.hasOwnProperty.call(citizenCrede
 let deviceTokens = new Set();
 
 io.on('connection', (socket) => {
+  // حدث التحقق من تسجيل دخول المواطن من السيرفر مباشرة
+    socket.on('citizen_login', (payload, ack) => {
+        try {
+            const username = String(payload?.username || '').trim().toLowerCase();
+            const password = String(payload?.password || '').trim();
+
+            // التحقق من القائمة الموجودة في السيرفر
+            if (citizenCredentials[username] && citizenCredentials[username] === password) {
+                if (typeof ack === 'function') {
+                    ack({ ok: true, user: username, role: 'مواطن' });
+                }
+            } else {
+                if (typeof ack === 'function') {
+                    ack({ ok: false, error: 'اسم المستخدم أو الكود غير صحيح!' });
+                }
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            if (typeof ack === 'function') ack({ ok: false, error: 'خطأ في السيرفر' });
+        }
+    });
     console.log('مستخدم جديد اتصل بالتطبيق:', socket.id);
 
     socket.emit("update_reputation_state", citizensDB);
