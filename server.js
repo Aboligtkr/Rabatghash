@@ -486,16 +486,21 @@ socket.on('citizen_logout', async (payload, ack) => {
             io.emit('receive_message', savedMsg);
 
             // محاولة إرسال إشعار FCM بأمان ت تام دون أي أخطاء
-          try {
-                if (typeof admin !== 'undefined' && admin.apps.length > 0 && typeof deviceTokens !== 'undefined' && deviceTokens.size > 0) {
-                    const tokensArray = Array.from(deviceTokens);
-                    admin.messaging().sendEachForMulticast({
-                        notification: {
-                            title: `رسالة جديدة من ${senderName} 👑`,
-                            body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
-                        },
-                        tokens: tokensArray
-                    }).catch(err => console.log("FCM Send Error:", err.message));
+        // محاولة إرسال إشعار FCM بأمان تام
+            try {
+                if (typeof admin !== 'undefined' && admin.apps.length > 0 && typeof deviceTokens !== 'undefined') {
+                    const tokensArray = Array.isArray(deviceTokens) ? deviceTokens : Array.from(deviceTokens);
+                    
+                    if (tokensArray.length > 0) {
+                        admin.messaging().sendEachForMulticast({
+                            notification: {
+                                title: `رسالة جديدة من ${senderName} 👑`,
+                                body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
+                            },
+                            tokens: tokensArray
+                        }).then(res => console.log("تم إرسال الإشعار بنجاح، العدد:", res.successCount))
+                          .catch(err => console.log("FCM Send Error:", err.message));
+                    }
                 }
             } catch (e) {
                 console.log("FCM Skip");
