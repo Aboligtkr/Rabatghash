@@ -2357,16 +2357,16 @@ socket.on("load_history", (res) => {
           if (permStatus.receive === 'granted') {
             PushNotifications.register();
 
-            // استقبال الـ Token وإرساله للسيرفر لربطه بحسابك
+            
             PushNotifications.addListener('registration', (token) => {
-              if (token && token.value) {
-                window.savedFcmToken = token.value;
-                if (typeof socket !== 'undefined' && socket.connected) {
-                  socket.emit("register_fcm_token", { token: token.value, user: currentUser });
+                if (token && token.value) {
+                    window.savedFcmToken = token.value;
+                    console.log("تم استلام FCM Token بنجاح:", token.value);
+                    if (typeof socket !== 'undefined') {
+                        socket.emit("register_fcm_token", token.value);
+                    }
                 }
-              }
             });
-
             // التعامل مع وصول إشعار وأنت تستخدم التطبيق
             PushNotifications.addListener('pushNotificationReceived', (notification) => {
               console.log('تم استلام إشعار فوراً:', notification);
