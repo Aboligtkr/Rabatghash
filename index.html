@@ -2302,10 +2302,9 @@ localStorage.removeItem('rg_dm_token');
     authenticatePrivate();
   }
 });
-   socket.on("receive_message", (data) => {
+      socket.on("receive_message", (data) => {
       renderSingleMessage(data, data.type);
 
-      // تحديث المخزون المحلي للرسائل
       const chatType = data.type || 'public';
       const cachedMessages = localStorage.getItem(`chat_history_${chatType}`);
       let messagesList = [];
@@ -2313,16 +2312,17 @@ localStorage.removeItem('rg_dm_token');
         if (cachedMessages) messagesList = JSON.parse(cachedMessages);
       } catch(e) { messagesList = []; }
 
-      // منع التكرار وإضافة الرسالة الجديدة
       messagesList.push(data);
-      if (messagesList.length > 200) messagesList.shift(); // الحفاظ على آخر 200 رسالة فقط
+      if (messagesList.length > 200) messagesList.shift();
       localStorage.setItem(`chat_history_${chatType}`, JSON.stringify(messagesList));
 
       if (data.sender !== currentUser) {
-        playNotificationSound();
-        if (document.hidden || activeChatType !== data.type) {
-          showBrowserNotification(data);
-        }
+        // تشغيل آمن للصوت بدون أخطاء
+        try {
+          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+          audio.volume = 0.5;
+          audio.play().catch(e => {});
+        } catch (err) {}
       }
     });
 
