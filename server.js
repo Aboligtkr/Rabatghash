@@ -55,8 +55,6 @@ const messageSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-// الرسائل الخاصة محفوظة دون انتهاء تلقائي. انتبه: فهرس TTL القديم في MongoDB
-// قد يظل موجوداً؛ احذفه من مجموعة messages إذا رغبت في حفظ الرسائل الخاصة دائماً.
 const Message = mongoose.model("Message", messageSchema);
 
 const gameStateSchema = new mongoose.Schema({
@@ -95,7 +93,7 @@ let globalLeaderboard = {
   bird: { name: 'لا يوجد', score: 0 },
   dino: { name: 'لا يوجد', score: 0 },
   snake: { name: 'لا يوجد', score: 0 },
-  memory: { name: 'لا يوجد', score: 999999 } // تم تعيين قيمة ابتدائية مرتفعة للأدوار
+  memory: { name: 'لا يوجد', score: 999999 }
 };
 
 let streakData = { count: 0, lastActiveDay: null, participants: [], todayParticipants: [] };
@@ -120,7 +118,6 @@ async function recordStreakMessage(data) {
     streakData.todayParticipants = [];
   }
   if (!streakData.todayParticipants.includes(sender)) streakData.todayParticipants.push(sender);
-  // لا يُحتسب اليوم إلا بعد مشاركة شخصين مختلفين في المجلس العام.
   if (streakData.todayParticipants.length >= 2 && streakData.lastActiveDay !== today) {
     streakData.count = streakData.lastActiveDay === dayBefore(today) ? streakData.count + 1 : 1;
     streakData.lastActiveDay = today;
@@ -270,13 +267,11 @@ const fcmTokenSchema = new mongoose.Schema({
 const FcmToken = mongoose.model("FcmToken", fcmTokenSchema);
 
 io.on('connection', (socket) => {
-  // حدث التحقق من تسجيل دخول المواطن من السيرفر مباشرة
     socket.on('citizen_login', (payload, ack) => {
         try {
             const username = String(payload?.username || '').trim().toLowerCase();
             const password = String(payload?.password || '').trim();
 
-            // التحقق من القائمة الموجودة في السيرفر
             if (citizenCredentials[username] && citizenCredentials[username] === password) {
                 if (typeof ack === 'function') {
                     ack({ ok: true, user: username, role: 'مواطن' });
@@ -299,98 +294,73 @@ io.on('connection', (socket) => {
     socket.emit("update_leaderboard_state", globalLeaderboard);
 
     socket.on('citizen_auth', async (payload, ack) => {
-  try {
-    const name = String(payload?.username || '')
-      .trim()
-      .toLowerCase();
+      try {
+        const name = String(payload?.username || '').trim().toLowerCase();
+        const password = String(payload?.password || '');
+        const token = String(payload?.token || '');
 
-    const password = String(payload?.password || '');
-    const token = String(payload?.token || '');
+        let citizen = null;
+        let issuedToken = null;
 
-    let citizen = null;
-    let issuedToken = null;
+        if (token && token.length <= 256) {
+          const session = await CitizenSession.findOne({
+            tokenHash: hashSession(token),
+            expiresAt: { $gt: new Date() }
+          });
 
-    if (token && token.length <= 256) {
-      const session = await CitizenSession.findOne({
-        tokenHash: hashSession(token),
-        expiresAt: { $gt: new Date() }
-      });
+          if (
+            session &&
+            validCitizen(session.citizen) &&
+            (!name || name === session.citizen)
+          ) {
+            citizen = session.citizen;
+          }
 
-      if (
-        session &&
-        validCitizen(session.citizen) &&
-        (!name || name === session.citizen)
-      ) {
-        citizen = session.citizen;
+        } else if (
+          validCitizen(name) &&
+          citizenCredentials[name] === password
+        ) {
+          citizen = name;
+          issuedToken = crypto.randomBytes(32).toString('hex');
+          await CitizenSession.create({
+            tokenHash: hashSession(issuedToken),
+            citizen,
+            expiresAt: new Date(Date.now() + 30 * 86400000)
+          });
+        }
+
+        if (citizen) {
+          if (socket.data.citizen && socket.data.citizen !== citizen) {
+            socket.leave('citizen:' + socket.data.citizen);
+          }
+          socket.data.citizen = citizen;
+          socket.join('citizen:' + citizen);
+        }
+
+        if (typeof ack === 'function') {
+          ack({
+            ok: !!citizen,
+            user: citizen,
+            token: issuedToken
+          });
+        }
+      } catch (err) {
+        console.error('Citizen auth error:', err);
+        if (typeof ack === 'function') ack({ ok: false });
       }
+    });
 
-    } else if (
-      validCitizen(name) &&
-      citizenCredentials[name] === password
-    ) {
-      citizen = name;
-
-      issuedToken = crypto.randomBytes(32).toString('hex');
-
-      await CitizenSession.create({
-        tokenHash: hashSession(issuedToken),
-        citizen,
-        expiresAt: new Date(Date.now() + 30 * 86400000)
-      });
-    }
-
-    if (citizen) {
-      if (
-        socket.data.citizen &&
-        socket.data.citizen !== citizen
-      ) {
-        socket.leave('citizen:' + socket.data.citizen);
+    socket.on('citizen_logout', async (payload, ack) => {
+      const token = String(payload?.token || '');
+      if (token && token.length <= 256) {
+        try {
+          await CitizenSession.deleteOne({ tokenHash: hashSession(token) });
+        } catch (e) { console.error(e); }
       }
-
-      socket.data.citizen = citizen;
-      socket.join('citizen:' + citizen);
-    }
-
-    if (typeof ack === 'function') {
-      ack({
-        ok: !!citizen,
-        user: citizen,
-        token: issuedToken
-      });
-    }
-
-  } catch (err) {
-    console.error('Citizen auth error:', err);
-
-    if (typeof ack === 'function') {
-      ack({ ok: false });
-    }
-  }
-});
-
-socket.on('citizen_logout', async (payload, ack) => {
-  const token = String(payload?.token || '');
-
-  if (token && token.length <= 256) {
-    try {
-      await CitizenSession.deleteOne({
-        tokenHash: hashSession(token)
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  if (socket.data.citizen) {
-    socket.leave('citizen:' + socket.data.citizen);
-  }
-
-  socket.data.citizen = null;
-
-  if (typeof ack === 'function') {
-    ack({ ok: true });
-  }
-});
+      if (socket.data.citizen) socket.leave('citizen:' + socket.data.citizen);
+      socket.data.citizen = null;
+      if (typeof ack === 'function') ack({ ok: true });
+    });
 
     socket.on('private_contacts', (_payload, ack) => {
         if (typeof ack !== 'function') return;
@@ -425,22 +395,23 @@ socket.on('citizen_logout', async (payload, ack) => {
         } catch (err) { if (typeof ack === 'function') ack({ ok: false, error: 'فشل حفظ الرسالة' }); }
     });
 
-   socket.on('register_fcm_token', async (payload) => {
-    const token = typeof payload === 'string' ? payload : payload?.token;
-    const user = payload?.user || socket.data.citizen || 'unknown';
-    if (token) {
-        try {
-            await FcmToken.findOneAndUpdate(
-                { token },
-                { user, updatedAt: new Date() },
-                { upsert: true, new: true }
-            );
-            console.log("تم حفظ وتحديث FCM Token في قاعدة البيانات بنجاح للمستخدم:", user);
-        } catch (err) {
-            console.error("خطأ في حفظ الرمز بقاعدة البيانات:", err);
+    socket.on('register_fcm_token', async (payload) => {
+        const token = typeof payload === 'string' ? payload : payload?.token;
+        const user = payload?.user || socket.data.citizen || 'unknown';
+        if (token) {
+            try {
+                await FcmToken.findOneAndUpdate(
+                    { token },
+                    { user, updatedAt: new Date() },
+                    { upsert: true, new: true }
+                );
+                console.log("تم حفظ وتحديث FCM Token في قاعدة البيانات بنجاح للمستخدم:", user);
+            } catch (err) {
+                console.error("خطأ في حفظ الرمز بقاعدة البيانات:", err);
+            }
         }
-    }
-});
+    });
+
     socket.on("fetch_history", async (type) => {
         try {
             const chatType = type === 'shura' ? 'shura' : 'public';
@@ -500,12 +471,12 @@ socket.on('citizen_logout', async (payload, ack) => {
             io.emit('receive_message', savedMsg);
 
             // ==========================================
-            // إرسال إشعار FCM بالطريقة الآمنة والمبسطة
+            // التعديل الصحيح: جلب الرموز من قاعدة البيانات FcmToken مباشرة
             // ==========================================
             try {
                 if (typeof admin !== 'undefined' && admin.apps.length > 0) {
-                    // تحويل الرموز المخزنة في الذاكرة إلى مصفوفة نظيفة
-                    const tokensArray = Array.from(deviceTokens || []);
+                    const tokensDocs = await FcmToken.find({}).lean() || [];
+                    const tokensArray = tokensDocs.map(doc => doc.token).filter(t => typeof t === 'string' && t.trim().length > 0);
 
                     if (tokensArray.length > 0) {
                         const messagePayload = {
@@ -523,28 +494,20 @@ socket.on('citizen_logout', async (payload, ack) => {
                         };
 
                         const response = await admin.messaging().sendEachForMulticast(messagePayload);
-                        console.log("نجح إرسال الإشعارات:", response.successCount, "فشل:", response.failureCount);
-                        
-                        // تنظيف الرموز غير التالفة أو المنتهية إذا لزم الأمر
-                        if (response.failureCount > 0) {
-                            response.responses.forEach((resp, idx) => {
-                                if (!resp.success) {
-                                    deviceTokens.delete(tokensArray[idx]);
-                                }
-                            });
-                        }
+                        console.log("نتائج إرسال إشعارات الشات - نجاح:", response.successCount, "فشل:", response.failureCount);
                     } else {
-                        console.log("لا توجد رموز FCM متصلة بالذاكرة حالياً.");
+                        console.log("تنبيه: لا توجد رموز FCM في قاعدة البيانات للإرسال.");
                     }
                 }
             } catch (fcmErr) {
-                console.log("خطأ في إرسال إشعار FCM:", fcmErr.message);
+                console.log("خطأ في إرسال FCM:", fcmErr.message);
             }
 
         } catch (err) {
             console.error("خطأ في حفظ أو إرسال الرسالة:", err);
         }
     });
+
     socket.on('disconnect', () => {
         console.log('مستخدم قطع الاتصال:', socket.id);
     });
