@@ -485,26 +485,25 @@ socket.on('citizen_logout', async (payload, ack) => {
             const savedMsg = await newMessage.save();
             io.emit('receive_message', savedMsg);
 
-      
+    
             try {
-                console.log("حالة الـ tokens حالياً:", deviceTokens.size);
-                if (typeof admin !== 'undefined' && admin.apps.length > 0 && deviceTokens && deviceTokens.size > 0) {
+                if (typeof admin !== 'undefined' && admin.apps.length > 0 && typeof deviceTokens !== 'undefined' && deviceTokens.size > 0) {
                     const tokensArray = Array.from(deviceTokens);
-                    console.log("جاري إرسال إشعار إلى عدد أجهزة:", tokensArray.length);
+                    console.log("جاري إرسال إشعار إلى الأجهزة:", tokensArray.length);
                     
-                    admin.messaging().sendEachForMulticast({
-                        notification: {
-                            title: `رسالة جديدة من ${senderName} 👑`,
-                            body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
-                        },
-                        tokens: tokensArray
-                    }).then(res => console.log("تم إرسال الإشعار بنجاح، النجاح:", res.successCount))
-                      .catch(err => console.log("FCM Send Error:", err.message));
-                } else {
-                    console.log("FCM تخطي: لا توجد أجهزة مسجلة حالياً في الـ Set");
+                    if (tokensArray.length > 0) {
+                        await admin.messaging().sendEachForMulticast({
+                            notification: {
+                                title: `رسالة جديدة من ${senderName} 👑`,
+                                body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
+                            },
+                            tokens: tokensArray
+                        });
+                        console.log("تم إرسال الإشعار بنجاح تام!");
+                    }
                 }
-            } catch (e) {
-                console.log("FCM Skip Error:", e.message);
+            } catch (fcmErr) {
+                console.log("تخطي مؤقت للإشعار:", fcmErr.message);
             }
         } catch (err) {
             console.error("خطأ في حفظ أو إرسال الرسالة:", err);
