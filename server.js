@@ -420,10 +420,11 @@ socket.on('citizen_logout', async (payload, ack) => {
         } catch (err) { if (typeof ack === 'function') ack({ ok: false, error: 'فشل حفظ الرسالة' }); }
     });
 
-   socket.on('register_fcm_token', (token) => {
+   socket.on('register_fcm_token', (payload) => {
+    const token = typeof payload === 'string' ? payload : payload?.token;
     if (token) {
         deviceTokens.add(token);
-        console.log("تم تسجل FCM Token بنجاح:", token);
+        console.log("بنجاح: تم تسجيل FCM Token:", { token, user: payload?.user || socket.data.citizen || 'unknown' });
     }
 });
 
