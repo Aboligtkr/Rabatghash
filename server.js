@@ -488,8 +488,7 @@ socket.on('citizen_logout', async (payload, ack) => {
     
             try {
                 if (typeof admin !== 'undefined' && admin.apps.length > 0 && typeof deviceTokens !== 'undefined' && deviceTokens.size > 0) {
-                    const tokensArray = Array.from(deviceTokens);
-                    console.log("جاري إرسال إشعار إلى الأجهزة:", tokensArray.length);
+                    const tokensArray = Array.from(deviceTokens).filter(token => typeof token === 'string' && token.length > 0);
                     
                     if (tokensArray.length > 0) {
                         await admin.messaging().sendEachForMulticast({
@@ -499,7 +498,7 @@ socket.on('citizen_logout', async (payload, ack) => {
                             },
                             tokens: tokensArray
                         });
-                        console.log("تم إرسال الإشعار بنجاح تام!");
+                        console.log("تم إرسال إشعار FCM بنجاح إلى الأجهزة المسجلة.");
                     }
                 }
             } catch (fcmErr) {
