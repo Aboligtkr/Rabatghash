@@ -486,10 +486,17 @@ socket.on('citizen_logout', async (payload, ack) => {
             io.emit('receive_message', savedMsg);
 
     
+// إرسال إشعار FCM بأمان مطلق وتجنب أي خطأ في الخصائص
             try {
                 if (typeof admin !== 'undefined' && admin.apps.length > 0 && typeof deviceTokens !== 'undefined' && deviceTokens.size > 0) {
-                    const tokensArray = Array.from(deviceTokens).filter(token => typeof token === 'string' && token.length > 0);
-                    
+                    // تحويل الـ Set إلى مصفوفة نصية بشكل آمن تماماً
+                    const tokensArray = [];
+                    deviceTokens.forEach(t => {
+                        if (typeof t === 'string' && t.trim().length > 0) {
+                            tokensArray.push(t);
+                        }
+                    });
+
                     if (tokensArray.length > 0) {
                         await admin.messaging().sendEachForMulticast({
                             notification: {
@@ -498,11 +505,11 @@ socket.on('citizen_logout', async (payload, ack) => {
                             },
                             tokens: tokensArray
                         });
-                        console.log("تم إرسال إشعار FCM بنجاح إلى الأجهزة المسجلة.");
+                        console.log("تم إرسال إشعار FCM بنجاح تام إلى:", tokensArray.length, "جهاز");
                     }
                 }
             } catch (fcmErr) {
-                console.log("تخطي مؤقت للإشعار:", fcmErr.message);
+                console.log("تخطي الإشعار:", fcmErr.message);
             }
         } catch (err) {
             console.error("خطأ في حفظ أو إرسال الرسالة:", err);
