@@ -262,7 +262,12 @@ try {
 const privateRoom = (a, b) => 'dm:' + [a, b].sort().join(':');
 const validCitizen = (name) => Object.prototype.hasOwnProperty.call(citizenCredentials, name);
 
-const deviceTokens = new Set();
+const fcmTokenSchema = new mongoose.Schema({
+    token: { type: String, unique: true, required: true },
+    user: String,
+    updatedAt: { type: Date, default: Date.now }
+});
+const FcmToken = mongoose.model("FcmToken", fcmTokenSchema);
 
 io.on('connection', (socket) => {
   // حدث التحقق من تسجيل دخول المواطن من السيرفر مباشرة
@@ -420,14 +425,22 @@ socket.on('citizen_logout', async (payload, ack) => {
         } catch (err) { if (typeof ack === 'function') ack({ ok: false, error: 'فشل حفظ الرسالة' }); }
     });
 
-   socket.on('register_fcm_token', (payload) => {
+   socket.on('register_fcm_token', async (payload) => {
     const token = typeof payload === 'string' ? payload : payload?.token;
+    const user = payload?.user || socket.data.citizen || 'unknown';
     if (token) {
-        deviceTokens.add(token);
-        console.log("بنجاح: تم تسجيل FCM Token:", { token, user: payload?.user || socket.data.citizen || 'unknown' });
+        try {
+            await FcmToken.findOneAndUpdate(
+                { token },
+                { user, updatedAt: new Date() },
+                { upsert: true, new: true }
+            );
+            console.log("تم حفظ وتحديث FCM Token في قاعدة البيانات بنجاح للمستخدم:", user);
+        } catch (err) {
+            console.error("خطأ في حفظ الرمز بقاعدة البيانات:", err);
+        }
     }
 });
-
     socket.on("fetch_history", async (type) => {
         try {
             const chatType = type === 'shura' ? 'shura' : 'public';
@@ -488,42 +501,38 @@ socket.on('citizen_logout', async (payload, ack) => {
 
     
           // إرسال إشعار FCM بأمان مطلق وتجنب أي خطأ في الخصائص
-            try {
-                if (typeof admin !== 'undefined' && admin.apps.length > 0 && typeof deviceTokens !== 'undefined' && deviceTokens.size > 0) {
-                    const tokensArray = [];
-                    deviceTokens.forEach(t => {
-                        if (typeof t === 'string' && t.trim().length > 0) {
-                            tokensArray.push(t);
-                        }
-                    });
+        try {
+    if (typeof admin !== 'undefined' && admin.apps.length > 0) {
+        const tokensDocs = await FcmToken.find({});
+        const tokensArray = tokensDocs.map(doc => doc.token);
 
-                    if (tokensArray.length > 0) {
-                        const messagePayload = {
-                            tokens: tokensArray,
-                            notification: {
-                                title: `رسالة جديدة من ${senderName} 👑`,
-                                body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
-                            },
-                            android: {
-                                notification: {
-                                    sound: "default",
-                                    priority: "high"
-                                }
-                            }
-                        };
-
-                        admin.messaging().sendEachForMulticast(messagePayload)
-                            .then(response => {
-                                console.log("نتائج إرسال إشعارات الشات - نجاح:", response.successCount, "فشل:", response.failureCount);
-                            })
-                            .catch(err => {
-                                console.log("خطأ في بث FCM:", err.message);
-                            });
+        if (tokensArray.length > 0) {
+            const messagePayload = {
+                tokens: tokensArray,
+                notification: {
+                    title: `رسالة جديدة من ${senderName} 👑`,
+                    body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
+                },
+                android: {
+                    notification: {
+                        sound: "default",
+                        priority: "high"
                     }
                 }
-            } catch (fcmErr) {
-                console.log("تخطي الإشعار:", fcmErr.message);
-            }
+            };
+
+            admin.messaging().sendEachForMulticast(messagePayload)
+                .then(response => {
+                    console.log("نتائج إرسال إشعارات الشات - نجاح:", response.successCount, "فشل:", response.failureCount);
+                })
+                .catch(err => {
+                    console.log("خطأ في بث FCM:", err.message);
+                });
+        }
+    }
+} catch (fcmErr) {
+    console.log("تخطي الإشعار:", fcmErr.message);
+}
         } catch (err) {
             console.error("خطأ في حفظ أو إرسال الرسالة:", err);
         }
