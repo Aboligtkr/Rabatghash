@@ -486,10 +486,9 @@ socket.on('citizen_logout', async (payload, ack) => {
             io.emit('receive_message', savedMsg);
 
     
-// إرسال إشعار FCM بأمان مطلق وتجنب أي خطأ في الخصائص
+          // إرسال إشعار FCM بأمان مطلق وتجنب أي خطأ في الخصائص
             try {
                 if (typeof admin !== 'undefined' && admin.apps.length > 0 && typeof deviceTokens !== 'undefined' && deviceTokens.size > 0) {
-                    // تحويل الـ Set إلى مصفوفة نصية بشكل آمن تماماً
                     const tokensArray = [];
                     deviceTokens.forEach(t => {
                         if (typeof t === 'string' && t.trim().length > 0) {
@@ -498,14 +497,27 @@ socket.on('citizen_logout', async (payload, ack) => {
                     });
 
                     if (tokensArray.length > 0) {
-                        await admin.messaging().sendEachForMulticast({
+                        const messagePayload = {
+                            tokens: tokensArray,
                             notification: {
                                 title: `رسالة جديدة من ${senderName} 👑`,
                                 body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
                             },
-                            tokens: tokensArray
-                        });
-                        console.log("تم إرسال إشعار FCM بنجاح تام إلى:", tokensArray.length, "جهاز");
+                            android: {
+                                notification: {
+                                    sound: "default",
+                                    priority: "high"
+                                }
+                            }
+                        };
+
+                        admin.messaging().sendEachForMulticast(messagePayload)
+                            .then(response => {
+                                console.log("نتائج إرسال إشعارات الشات - نجاح:", response.successCount, "فشل:", response.failureCount);
+                            })
+                            .catch(err => {
+                                console.log("خطأ في بث FCM:", err.message);
+                            });
                     }
                 }
             } catch (fcmErr) {
