@@ -499,45 +499,52 @@ socket.on('citizen_logout', async (payload, ack) => {
             const savedMsg = await newMessage.save();
             io.emit('receive_message', savedMsg);
 
-    
-          // إرسال إشعار FCM بأمان مطلق وتجنب أي خطأ في الخصائص
-        try {
-    if (typeof admin !== 'undefined' && admin.apps.length > 0) {
-        const tokensDocs = await FcmToken.find({});
-        const tokensArray = tokensDocs.map(doc => doc.token);
+            // ==========================================
+            // إرسال إشعار FCM بالطريقة الآمنة والمبسطة
+            // ==========================================
+            try {
+                if (typeof admin !== 'undefined' && admin.apps.length > 0) {
+                    // تحويل الرموز المخزنة في الذاكرة إلى مصفوفة نظيفة
+                    const tokensArray = Array.from(deviceTokens || []);
 
-        if (tokensArray.length > 0) {
-            const messagePayload = {
-                tokens: tokensArray,
-                notification: {
-                    title: `رسالة جديدة من ${senderName} 👑`,
-                    body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
-                },
-                android: {
-                    notification: {
-                        sound: "default",
-                        priority: "high"
+                    if (tokensArray.length > 0) {
+                        const messagePayload = {
+                            tokens: tokensArray,
+                            notification: {
+                                title: `رسالة جديدة من ${senderName} 👑`,
+                                body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
+                            },
+                            android: {
+                                notification: {
+                                    sound: "default",
+                                    priority: "high"
+                                }
+                            }
+                        };
+
+                        const response = await admin.messaging().sendEachForMulticast(messagePayload);
+                        console.log("نجح إرسال الإشعارات:", response.successCount, "فشل:", response.failureCount);
+                        
+                        // تنظيف الرموز غير التالفة أو المنتهية إذا لزم الأمر
+                        if (response.failureCount > 0) {
+                            response.responses.forEach((resp, idx) => {
+                                if (!resp.success) {
+                                    deviceTokens.delete(tokensArray[idx]);
+                                }
+                            });
+                        }
+                    } else {
+                        console.log("لا توجد رموز FCM متصلة بالذاكرة حالياً.");
                     }
                 }
-            };
+            } catch (fcmErr) {
+                console.log("خطأ في إرسال إشعار FCM:", fcmErr.message);
+            }
 
-            admin.messaging().sendEachForMulticast(messagePayload)
-                .then(response => {
-                    console.log("نتائج إرسال إشعارات الشات - نجاح:", response.successCount, "فشل:", response.failureCount);
-                })
-                .catch(err => {
-                    console.log("خطأ في بث FCM:", err.message);
-                });
-        }
-    }
-} catch (fcmErr) {
-    console.log("تخطي الإشعار:", fcmErr.message);
-}
         } catch (err) {
             console.error("خطأ في حفظ أو إرسال الرسالة:", err);
         }
     });
-
     socket.on('disconnect', () => {
         console.log('مستخدم قطع الاتصال:', socket.id);
     });
