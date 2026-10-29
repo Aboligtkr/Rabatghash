@@ -1372,6 +1372,9 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
             localStorage.setItem('saved_is_citizen', 'true');
 
             showDashboard(res.user, res.role, true);
+            if (window.savedFcmToken && socket.connected) {
+              socket.emit('register_fcm_token', { token: window.savedFcmToken, user: currentUser });
+            }
             errorMsg.style.display = 'none';
             if (typeof requestNotificationPermission === 'function') {
               requestNotificationPermission();
@@ -2355,24 +2358,19 @@ socket.on("load_history", (res) => {
           }
 
           if (permStatus.receive === 'granted') {
-   PushNotifications.addListener('registration', (token) => {
-    if (token?.value) {
-        window.savedFcmToken = token.value;
-
-        if (socket.connected) {
-            socket.emit("register_fcm_token", {
-                token: token.value,
-                user: currentUser
+            PushNotifications.addListener('registration', (token) => {
+                if (token && token.value) {
+                    window.savedFcmToken = token.value;
+                    console.log("تم استلام FCM Token بنجاح");
+                    if (typeof socket !== 'undefined' && socket.connected && window.savedFcmToken) {
+                    socket.emit("register_fcm_token", { token: window.savedFcmToken, user: currentUser });
+                    }
+                }
             });
-        }
-    }
-});
-
-PushNotifications.addListener('registrationError', (error) => {
-    console.error("FCM Registration Error:", error);
-});
-
-await PushNotifications.register();
+            PushNotifications.addListener('registrationError', (error) => {
+              console.error('فشل تسجيل إشعارات أندرويد:', error);
+            });
+            await PushNotifications.register();
             // التعامل مع وصول إشعار وأنت تستخدم التطبيق
             PushNotifications.addListener('pushNotificationReceived', (notification) => {
               console.log('تم استلام إشعار فوراً:', notification);
