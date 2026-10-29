@@ -266,6 +266,48 @@ const fcmTokenSchema = new mongoose.Schema({
 });
 const FcmToken = mongoose.model("FcmToken", fcmTokenSchema);
 
+// FCM push delivery shared by public, council and private messages.
+async function sendChatPush({ sender, recipient = null, text = '', image = '', chatType = 'public' }) {
+  if (!admin.apps.length) {
+    console.warn('[FCM] Firebase Admin is not initialized');
+    return;
+  }
+  const senderId = String(sender || '').trim().toLowerCase();
+  const filter = recipient ? { user: String(recipient).trim().toLowerCase() } : {};
+  const docs = await FcmToken.find(filter).lean();
+  const targets = docs.filter(d => d.token && String(d.user || '').trim().toLowerCase() !== senderId);
+  if (!targets.length) {
+    console.log('[FCM] No eligible device tokens for', chatType);
+    return;
+  }
+  const uniqueTokens = [...new Set(targets.map(d => d.token))];
+  for (let offset = 0; offset < uniqueTokens.length; offset += 500) {
+    const tokens = uniqueTokens.slice(offset, offset + 500);
+    try {
+      const response = await admin.messaging().sendEachForMulticast({
+        tokens,
+        notification: {
+          title: chatType === 'private' ? `رسالة خاصة من ${sender}` : `رسالة جديدة من ${sender} 👑`,
+          body: image ? '📷 أرسل صورة جديدة' : String(text || 'رسالة جديدة').slice(0, 180)
+        },
+        data: { chatType },
+        android: { priority: 'high', notification: { sound: 'default' } }
+      });
+      console.log(`[FCM] ${chatType}: success=${response.successCount} failure=${response.failureCount}`);
+      const invalid = [];
+      response.responses.forEach((item, i) => {
+        if (item.success) return;
+        const code = item.error?.code || 'unknown';
+        console.error(`[FCM] token failure: ${code} - ${item.error?.message || ''}`);
+        if (['messaging/registration-token-not-registered', 'messaging/invalid-registration-token'].includes(code)) invalid.push(tokens[i]);
+      });
+      if (invalid.length) await FcmToken.deleteMany({ token: { $in: invalid } });
+    } catch (err) {
+      console.error('[FCM] delivery error:', err);
+    }
+  }
+}
+
 io.on('connection', (socket) => {
     socket.on('citizen_login', (payload, ack) => {
         try {
@@ -391,13 +433,14 @@ io.on('connection', (socket) => {
             const saved = await new Message({ type: privateRoom(me, other), sender: me, senderId: me, text, image, createdAt: new Date() }).save();
             const data = saved.toObject();
             io.to('citizen:' + me).to('citizen:' + other).emit('private_receive', { ...data, peer: other });
+            sendChatPush({ sender: me, recipient: other, text, image, chatType: 'private' }).catch(err => console.error('[FCM] private:', err));
             if (typeof ack === 'function') ack({ ok: true });
         } catch (err) { if (typeof ack === 'function') ack({ ok: false, error: 'فشل حفظ الرسالة' }); }
     });
 
     socket.on('register_fcm_token', async (payload) => {
         const token = typeof payload === 'string' ? payload : payload?.token;
-        const user = payload?.user || socket.data.citizen || 'unknown';
+        const user = String(payload?.user || socket.data.citizen || 'unknown').trim().toLowerCase();
         if (token) {
             try {
                 await FcmToken.findOneAndUpdate(
@@ -470,38 +513,7 @@ io.on('connection', (socket) => {
             const savedMsg = await newMessage.save();
             io.emit('receive_message', savedMsg);
 
-            // ==========================================
-            // التعديل الصحيح: جلب الرموز من قاعدة البيانات FcmToken مباشرة
-            // ==========================================
-            try {
-                if (typeof admin !== 'undefined' && admin.apps.length > 0) {
-                    const tokensDocs = await FcmToken.find({}).lean() || [];
-                    const tokensArray = tokensDocs.map(doc => doc.token).filter(t => typeof t === 'string' && t.trim().length > 0);
-
-                    if (tokensArray.length > 0) {
-                        const messagePayload = {
-                            tokens: tokensArray,
-                            notification: {
-                                title: `رسالة جديدة من ${senderName} 👑`,
-                                body: data.image ? "📷 أرسل صورة جديدة" : (data.text || "")
-                            },
-                            android: {
-                                notification: {
-                                    sound: "default",
-                                    priority: "high"
-                                }
-                            }
-                        };
-
-                        const response = await admin.messaging().sendEachForMulticast(messagePayload);
-                        console.log("نتائج إرسال إشعارات الشات - نجاح:", response.successCount, "فشل:", response.failureCount);
-                    } else {
-                        console.log("تنبيه: لا توجد رموز FCM في قاعدة البيانات للإرسال.");
-                    }
-                }
-            } catch (fcmErr) {
-                console.log("خطأ في إرسال FCM:", fcmErr.message);
-            }
+            sendChatPush({ sender: senderName, text: data.text, image: data.image, chatType: data.type }).catch(err => console.error('[FCM] chat:', err));
 
         } catch (err) {
             console.error("خطأ في حفظ أو إرسال الرسالة:", err);
