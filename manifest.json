@@ -1,0 +1,20 @@
+{
+  "name": "IKR Service",
+  "short_name": "IKR Service",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#e11d48",
+  "icons": [
+    {
+      "src": "assets/logo/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/logo/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
