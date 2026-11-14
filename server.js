@@ -7,12 +7,8 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const admin = require('firebase-admin');
-console.log('[FCM DEBUG]', {
-  adminExists: !!admin,
-  appsExists: !!admin.apps,
-  messagingExists: !!admin.messaging
-});
+const { initializeApp, cert, getApps } = require('firebase-admin/app');
+const { getMessaging } = require('firebase-admin/messaging');
 const app = express();
 app.use(cors());
 app.use(express.static(__dirname));
@@ -30,18 +26,22 @@ const io = new Server(server, {
 
 try {
   let serviceAccount;
+
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
   } else {
     serviceAccount = require('./serviceAccountKey.json');
   }
-  
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
-  console.log("تم تهيئة Firebase Admin بنجاح.");
+
+  if (!getApps().length) {
+    initializeApp({
+      credential: cert(serviceAccount)
+    });
+  }
+
+  console.log('[FCM] تم تهيئة Firebase Admin بنجاح.');
 } catch (e) {
-  console.warn("تنبيه: لم يتم العثور على إعدادات Firebase Admin، سيتم الاعتماد على إشعارات Socket المحلية.", e);
+  console.error('[FCM] فشلت تهيئة Firebase Admin:', e);
 }
 
 const MONGO_URI = process.env.MONGO_URI;
@@ -272,7 +272,7 @@ const FcmToken = mongoose.model("FcmToken", fcmTokenSchema);
 
 // FCM push delivery shared by public, council and private messages.
 async function sendChatPush({ sender, recipient = null, text = '', image = '', chatType = 'public' }) {
-  if (!admin.apps.length) {
+  if (!getApps().length) {
     console.warn('[FCM] Firebase Admin is not initialized');
     return;
   }
@@ -288,7 +288,7 @@ async function sendChatPush({ sender, recipient = null, text = '', image = '', c
   for (let offset = 0; offset < uniqueTokens.length; offset += 500) {
     const tokens = uniqueTokens.slice(offset, offset + 500);
     try {
-      const response = await admin.messaging().sendEachForMulticast({
+      const response = await getMessaging().sendEachForMulticast({
         tokens,
         notification: {
           title: chatType === 'private' ? `رسالة خاصة من ${sender}` : `رسالة جديدة من ${sender} 👑`,
