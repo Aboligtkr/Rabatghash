@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="light-mode">
 <head>
- <link rel="manifest" href="manifest.json">
+  <!-- ربط ملف الـ Manifest -->
+<link rel="manifest" href="manifest.json">
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -681,60 +682,25 @@ canvas {
   border-radius: var(--radius-sm);
 }
   
-/* RABATGHASH — Royal Edition | non-invasive design system */
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
-:root {--primary:#d6ad62;--primary-hover:#f0ca80;--primary-light:#302719;--primary-border:#72552c;--bg-main:#0b0e11;--card-bg:#171b20;--text-main:#f5f0e6;--text-muted:#9b9b9b;--border-color:#303238;--shadow-sm:0 8px 25px #0004;--shadow-md:0 22px 60px #0008;--radius-sm:18px;--radius-md:26px;--radius-lg:32px}
-html.light-mode{--primary:#8c5e20;--primary-hover:#68400e;--primary-light:#f8ecd7;--primary-border:#ddc39a;--bg-main:#f5f2eb;--card-bg:#fffdf9;--text-main:#22201c;--text-muted:#77716a;--border-color:#e8dfd1;--shadow-sm:0 8px 25px #34200a10;--shadow-md:0 22px 60px #34200a18}
-*,*::before,*::after{
-  font-family:'Zanjabeel',sans-serif;
-}
-body{background:var(--bg-main);background-image:radial-gradient(ellipse at 95% 0%,#bd853012,transparent 40%)}
-.container{background:transparent}
-.header{background:color-mix(in srgb,var(--bg-main) 87%,transparent);backdrop-filter:blur(22px);box-shadow:none;border-bottom:1px solid var(--border-color);padding-bottom:18px}
-.header:before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(to left,#e6b744 0 33%,#f5f3ed 33% 66%,#b42c32 66% 100%)}
-.header-logo,.app-logo{border:1px solid var(--primary-border);background:var(--card-bg);box-shadow:0 0 0 5px #d6ad6214}
-.header-logo{width:48px;height:48px}
-.header h3{letter-spacing:-.3px}
-.user-badge{background:transparent;border:0;padding:0;color:var(--primary);font-size:11px}
-.app-screen-section{max-width:1100px;padding:28px 22px 130px;animation:appear .35s ease both}
-@keyframes appear{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
-.profile-card{position:relative;text-align:right;overflow:hidden;background:linear-gradient(120deg,#2b241a,#17191c 65%,#35261b)!important;border:1px solid #6d552f;color:#fff7e8;padding:35px 30px;min-height:155px;border-radius:28px;box-shadow:0 15px 50px #0003}
-.profile-card:after{content:'✦';position:absolute;left:22px;top:-47px;font-size:180px;color:#d6ad6219;pointer-events:none}
-.profile-card:before{content:'RABATGHASH  •  2023';display:block;color:#e6bc76;letter-spacing:3px;font:700 10px system-ui;margin-bottom:14px;direction:ltr;text-align:right}
-.profile-card h2{font-size:clamp(22px,4vw,32px);line-height:1.5;position:relative;z-index:1}
-.profile-card p{color:#d2c5b2;font-size:13px;position:relative;z-index:1}
-.services-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:15px}
-.service-card,.citizen-item,.leaderboard-item,.adhkar-card-item{background:var(--card-bg);border:1px solid var(--border-color);box-shadow:none;border-radius:22px;padding:21px;transition:transform .2s,border-color .2s,background .2s}
-.service-card:hover{transform:translateY(-4px);border-color:var(--primary-border);background:var(--primary-light);box-shadow:0 15px 35px #0002}
-.service-icon{width:56px;height:56px;border-radius:17px;background:var(--primary-light);border:1px solid var(--primary-border);font-size:25px}
-.service-header h4{font-size:15px;font-weight:800}.service-header p{font-size:12px;line-height:1.8}
-.bottom-nav{max-width:570px;bottom:max(15px,env(safe-area-inset-bottom));padding:8px 10px;border-radius:24px;background:#1a1c20ee;border:1px solid #6a542f66;box-shadow:0 15px 50px #0009}
-html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
-.nav-item{padding:8px 2px;border-radius:16px;gap:0;font-size:11px}
-.nav-item span:first-child{font-family:system-ui;font-size:26px;font-weight:700;line-height:1.35}
-.nav-item.active{background:var(--primary-light);color:var(--primary)}
-.nav-item.active span:first-child{transform:none}
-.btn{background:linear-gradient(135deg,#d5a95a,#ae7a32);color:#16120c;border-radius:14px;box-shadow:none;font-weight:800}
-.btn:hover{background:linear-gradient(135deg,#efc778,#bd893f)}
-.logout-btn,.close-chat-btn{border-radius:12px;background:var(--primary-light);color:var(--primary);border:1px solid var(--primary-border)}
-.input-group input,textarea,input[type=text],input[type=password]{font-family:'Cairo',sans-serif}
-.input-group input:focus,textarea:focus{box-shadow:0 0 0 3px #d6ad6220}
-#login-screen{margin:auto;max-width:500px;background:var(--card-bg);border:1px solid var(--border-color);border-radius:30px;padding:35px 30px;box-shadow:0 35px 80px #0004;position:relative;overflow:hidden}
-#login-screen:before{content:'';position:absolute;top:0;right:0;left:0;height:5px;background:linear-gradient(to left,#e6b744 0 33%,#fff 33% 66%,#b42c32 66%)}
-#login-screen .app-logo{width:108px;height:108px}#login-screen .title{font-size:27px;color:var(--text-main);line-height:1.5}
-#login-screen .subtitle{font-size:12px;color:var(--primary);margin-bottom:32px}
-.modal-header{background:var(--card-bg);box-shadow:none;padding:18px 22px}.modal-header h3{color:var(--text-main);font-size:17px}
-.fullscreen-modal{background:var(--bg-main)}.chat-box-body{background:var(--bg-main);gap:14px}
-.chat-msg{border-radius:19px 19px 5px 19px;box-shadow:none;line-height:1.8;padding:12px 17px}
-.chat-footer{background:var(--card-bg);box-shadow:none;border-color:var(--border-color);gap:8px}
-.chat-footer input[type=text]{border-radius:16px;background:var(--bg-main)}.chat-footer .btn{border-radius:15px}
-.img-upload-btn{border-radius:14px;background:var(--primary-light);color:var(--primary)}
-.streak-pill{display:inline-flex;margin-top:6px;padding:5px 12px;border-radius:100px;background:#edaa3920;border:1px solid #d6ad6240;color:#e5b85e;font-size:11px;font-weight:800}
-.profile-modal-card{border-top:3px solid var(--primary);border-radius:22px}
-.social-btn{border-radius:16px}.twitter{background:#20242b}.instagram{background:#9c345f}.tiktok{background:#252525}
-@media(min-width:900px){.app-screen-section{padding-top:40px}.profile-card{padding:42px}.services-grid{gap:20px}}
-@media(max-width:420px){.app-screen-section{padding:19px 15px 125px}.profile-card{padding:27px 21px}.bottom-nav{width:calc(100% - 18px)}.nav-item{font-size:10px}.modal-body{padding:16px}.chat-footer{padding-inline:10px}.chat-footer .btn{min-width:60px;padding-inline:10px}}
-
+/* RABATGHASH — Modern, calm interface */
+:root{--primary:#16866f;--primary-hover:#0f705d;--primary-light:#e5f5ef;--primary-border:#b8dfd1;--bg-main:#f4f8f6;--card-bg:#fff;--text-main:#1e302b;--text-muted:#71827c;--border-color:#e0ebe5;--shadow-sm:0 5px 18px #173c2c0b;--shadow-md:0 18px 45px #173c2c12;--radius-sm:18px;--radius-md:24px;--radius-lg:30px}
+html:not(.light-mode){--primary:#56c5a4;--primary-hover:#75d7b9;--primary-light:#173b32;--primary-border:#2b6253;--bg-main:#101b19;--card-bg:#172522;--text-main:#edf7f2;--text-muted:#a1b6ad;--border-color:#293b35;--shadow-sm:0 5px 18px #0002;--shadow-md:0 18px 45px #0003}
+html.light-mode{--primary:#16866f;--primary-hover:#0f705d;--primary-light:#e5f5ef;--primary-border:#b8dfd1;--bg-main:#f4f8f6;--card-bg:#fff;--text-main:#1e302b;--text-muted:#71827c;--border-color:#e0ebe5}
+body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0%,#56c5a414,transparent 42%)}
+.container{background:transparent}.header{background:color-mix(in srgb,var(--card-bg) 88%,transparent);backdrop-filter:blur(18px);box-shadow:0 3px 18px #00000008;border-bottom:1px solid var(--border-color)}
+.header:before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(90deg,#16866f,#80c9a8,#e6c77c)}
+.header-logo,.app-logo{border:1px solid var(--primary-border);background:var(--card-bg);box-shadow:0 0 0 5px var(--primary-light)}
+.app-screen-section{max-width:1100px;padding:28px 22px 130px;animation:appear .3s ease both}@keyframes appear{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.profile-card{position:relative;text-align:right;overflow:hidden;background:linear-gradient(120deg,#176c5b,#23977c 65%,#5eb99a)!important;border:1px solid #ffffff20;color:white;padding:34px 28px;min-height:145px;border-radius:26px;box-shadow:0 14px 35px #14634b25}
+.profile-card:after{content:'✧';position:absolute;left:22px;top:-52px;font-size:180px;color:#ffffff18;pointer-events:none}.profile-card:before{content:'RABATGHASH  •  COMMUNITY';display:block;color:#d9f6e9;letter-spacing:2px;font:700 9px system-ui;margin-bottom:13px;direction:ltr;text-align:right}.profile-card h2{font-size:clamp(22px,4vw,30px);line-height:1.5}.profile-card p{color:#e0f4eb;font-size:13px;line-height:1.8}
+.services-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:15px}.service-card,.citizen-item,.leaderboard-item,.adhkar-card-item{background:var(--card-bg);border:1px solid var(--border-color);box-shadow:var(--shadow-sm);border-radius:21px;padding:20px;transition:transform .2s,border-color .2s,background .2s}.service-card:hover{transform:translateY(-3px);border-color:var(--primary-border);background:var(--primary-light)}.service-icon{width:54px;height:54px;border-radius:17px;background:var(--primary-light);border:1px solid var(--primary-border);font-size:0;color:var(--primary);display:grid;place-items:center;flex-shrink:0}.service-icon svg{width:25px;height:25px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.service-header h4{font-size:15px;font-weight:800}.service-header p{font-size:12px;line-height:1.8}.bottom-nav{max-width:570px;bottom:max(15px,env(safe-area-inset-bottom));padding:8px 10px;border-radius:23px;background:color-mix(in srgb,var(--card-bg) 91%,transparent);backdrop-filter:blur(18px);border:1px solid var(--border-color);box-shadow:0 12px 35px #0002}.nav-item{padding:8px 2px;border-radius:15px;gap:2px;font-size:11px}.nav-item span:first-child{font-family:system-ui;font-size:22px;font-weight:600;line-height:1.3}.nav-item.active{background:var(--primary-light);color:var(--primary)}.nav-item.active span:first-child{transform:none}
+.btn{background:linear-gradient(135deg,#1a987d,#14745f);color:white;border-radius:14px;box-shadow:none;font-weight:800}.btn:hover{background:linear-gradient(135deg,#28a98c,#16836b)}.logout-btn,.close-chat-btn{border-radius:12px;background:var(--primary-light);color:var(--primary);border:1px solid var(--primary-border)}
+.input-group input,textarea,input[type=text],input[type=password]{font-family:'Cairo',sans-serif}.input-group input:focus,textarea:focus{box-shadow:0 0 0 3px #16866f20}#login-screen{margin:auto;max-width:500px;background:var(--card-bg);border:1px solid var(--border-color);border-radius:28px;padding:35px 30px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}#login-screen:before{content:'';position:absolute;top:0;right:0;left:0;height:4px;background:linear-gradient(90deg,#16866f,#80c9a8,#e6c77c)}#login-screen .app-logo{width:108px;height:108px}#login-screen .title{font-size:27px;color:var(--text-main)}#login-screen .subtitle{font-size:12px;color:var(--primary);margin-bottom:32px}
+.modal-header{background:var(--card-bg);box-shadow:none;padding:18px 22px}.modal-header h3{color:var(--text-main)}.fullscreen-modal{background:var(--bg-main)}.chat-box-body{background:var(--bg-main);gap:14px}.chat-msg{border-radius:18px 18px 5px 18px;box-shadow:none;line-height:1.8;padding:12px 17px}.chat-footer{background:var(--card-bg);box-shadow:none;border-color:var(--border-color);gap:8px}.chat-footer input[type=text]{border-radius:16px;background:var(--bg-main)}.chat-footer .btn{border-radius:15px}.img-upload-btn{border-radius:14px;background:var(--primary-light);color:var(--primary)}.profile-modal-card{border-top:3px solid var(--primary);border-radius:22px}.social-btn{border-radius:16px}
+/* Dhikr reader */
+.adhkar-hero{background:linear-gradient(125deg,#176b58,#22977a);color:#fff;border-radius:25px;padding:25px;margin-bottom:18px;position:relative;overflow:hidden}.adhkar-hero:after{content:'۞';position:absolute;left:16px;top:-24px;font-size:130px;color:#ffffff12}.adhkar-hero h2{font-size:25px;margin-bottom:5px}.adhkar-hero p{color:#e0f4eb;font-size:13px;line-height:1.8}.adhkar-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}.adhkar-tab{border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-muted);border-radius:14px;padding:12px 7px;font-weight:800;cursor:pointer}.adhkar-tab.active{background:var(--primary-light);color:var(--primary);border-color:var(--primary-border)}.adhkar-progress{background:var(--card-bg);border:1px solid var(--border-color);border-radius:17px;padding:14px 16px;margin-bottom:14px}.adhkar-progress-top{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--text-muted);margin-bottom:9px}.adhkar-progress-track{height:7px;background:var(--bg-main);border-radius:9px;overflow:hidden}.adhkar-progress-fill{height:100%;background:linear-gradient(90deg,#16866f,#77cba9);border-radius:9px;transition:width .25s}.adhkar-entry{background:var(--card-bg);border:1px solid var(--border-color);border-radius:19px;padding:19px;margin-bottom:12px;box-shadow:var(--shadow-sm)}.adhkar-entry-text{font-size:19px;line-height:2.15;text-align:center;color:var(--text-main);margin:2px 0 14px}.adhkar-entry-meta{display:flex;justify-content:space-between;align-items:center;color:var(--text-muted);font-size:11px;margin-bottom:12px}.adhkar-entry-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}.adhkar-count{font-size:13px;color:var(--primary);font-weight:800;background:var(--primary-light);padding:8px 12px;border-radius:11px;white-space:nowrap}.adhkar-count-btn{border:0;background:var(--primary);color:white;border-radius:13px;padding:11px 20px;font:inherit;font-weight:800;cursor:pointer;min-width:112px}.adhkar-count-btn:active{transform:scale(.97)}.adhkar-reset{background:transparent;border:1px solid var(--border-color);color:var(--text-muted);border-radius:11px;padding:9px 12px;font:inherit;font-size:12px;cursor:pointer}.adhkar-note{font-size:11px;color:var(--text-muted);line-height:1.8;margin:12px 3px}
+@media(min-width:900px){.app-screen-section{padding-top:40px}.profile-card{padding:40px}.services-grid{gap:20px}}@media(max-width:420px){.app-screen-section{padding:19px 15px 125px}.profile-card{padding:27px 21px}.bottom-nav{width:calc(100% - 18px)}.nav-item{font-size:10px}.modal-body{padding:16px}.chat-footer{padding-inline:10px}.chat-footer .btn{min-width:60px;padding-inline:10px}.adhkar-entry{padding:15px}.adhkar-entry-text{font-size:17px}}
 </style>
 </head>
 <body>
@@ -798,7 +764,7 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
         <div class="services-grid">
           <div class="service-card citizen-only" onclick="openFullscreenModal('passport-fullscreen-modal')">
             <div class="service-header">
-              <div class="service-icon">📜</div>
+              <div class="service-icon"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6zM15 3v4h4M9 11h6M9 15h6"/></svg></div>
               <div>
                 <h4>التقديم على الجواز الربطخشاوي</h4>
                 <p>طلب إصدار أو تجديد الجواز الرسمي</p>
@@ -808,7 +774,7 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
 
           <div class="service-card citizen-only" onclick="openFullscreenModal('complaint-fullscreen-modal')">
             <div class="service-header">
-              <div class="service-icon">📩</div>
+              <div class="service-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></div>
               <div>
                 <h4>الشكاوى والمقترحات</h4>
                 <p>مراسلة الإدارة عبر البريد الإلكتروني مباشرة</p>
@@ -818,7 +784,7 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
 
           <div class="service-card" id="shura-card" onclick="openFullscreenModal('shura-fullscreen-modal')">
             <div class="service-header">
-              <div class="service-icon">🏛️</div>
+              <div class="service-icon"><svg viewBox="0 0 24 24"><path d="m3 9 9-6 9 6M5 10v9m4-9v9m6-9v9m4-9v9M3 21h18M2 10h20"/></svg></div>
               <div>
                 <h4 id="shura-title">طلب الانضمام</h4>
                 <p id="shura-desc">تفاصيل الطلب</p>
@@ -831,7 +797,7 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
       <!-- 2. قسم الألعاب -->
       <div id="tab-games" class="app-screen-section">
         <div class="profile-card" style="background: linear-gradient(135deg, #0f172a, #334155);">
-          <h2>🎮 ميدان التحديات</h2>
+          <h2>ميدان التحديات</h2>
           <p>تحدى أصدقاءك وحقق أفضل النتائج وسجلها في لوحة الصدارة</p>
         </div>
 
@@ -889,14 +855,14 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
       <!-- 3. قسم خيارات الدردشة -->
       <div id="tab-chat" class="app-screen-section">
         <div class="profile-card" style="background: linear-gradient(135deg, #334155, #475569);">
-          <h2>💬 مجالس المملكة</h2>
+          <h2>مجالس المملكة</h2>
           <p>تواصل مع أبناء المملكة وانضم للمجالس المباشرة</p>
         </div>
 
         <div class="services-grid">
           <div class="service-card" onclick="openChat('public')">
             <div class="service-header">
-              <div class="service-icon">💬</div>
+              <div class="service-icon"><svg viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 9 9 0 0 1-4-.9L3 20l1.5-4A7.2 7.2 0 0 1 4 12c0-4.4 3.6-8 8-8s8 3.1 8 7.5Z"/></svg></div>
               <div>
                 <h4>دردشة المملكة المباشرة</h4>
                 <p>المجلس العام لجميع المواطنين (شاشة كاملة وإرسال صور)</p>
@@ -906,11 +872,11 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
 
 
           <div class="service-card citizen-only" onclick="openPrivateContacts()">
-            <div class="service-header"><div class="service-icon">✉️</div><div><h4>الرسائل الخاصة</h4><p>محادثات مستقلة وآمنة الوصول بين مواطني المملكة، متصلة بالسيرفر</p></div></div>
+            <div class="service-header"><div class="service-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></div><div><h4>الرسائل الخاصة</h4><p>محادثات مستقلة وآمنة الوصول بين مواطني المملكة، متصلة بالسيرفر</p></div></div>
           </div>
           <div class="service-card shura-only" id="shura-chat-option" style="display:none;" onclick="openChat('shura')">
             <div class="service-header">
-              <div class="service-icon">👑</div>
+              <div class="service-icon"><svg viewBox="0 0 24 24"><path d="m3 8 5 4 4-7 4 7 5-4-2 11H5zM5 22h14"/></svg></div>
               <div>
                 <h4>شات مجلس الشورى الخاص</h4>
                 <p>مخصص لأعضاء المجلس الاربعة فقط (مغلق ومحمي)</p>
@@ -922,11 +888,18 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
 
       <!-- 4. قسم الأذكار -->
       <div id="tab-adhkar" class="app-screen-section">
-        <div class="profile-card" style="background: linear-gradient(135deg, #047857, #065f46);">
-          <h2>📿 واحة الذكر</h2>
-          <p>سبحة إلكترونية للتسبيح والاستغفار والذكر اليومي</p>
+        <section class="adhkar-hero">
+          <h2>الأذكار اليومية</h2>
+          <p>وردك من الذكر والطمأنينة؛ أذكار الصباح والمساء وأذكار متنوعة في مكان واحد.</p>
+        </section>
+        <div class="adhkar-tabs" role="tablist" aria-label="أقسام الأذكار">
+          <button class="adhkar-tab active" data-kind="morning" onclick="selectAdhkarCategory('morning',this)">أذكار الصباح</button>
+          <button class="adhkar-tab" data-kind="evening" onclick="selectAdhkarCategory('evening',this)">أذكار المساء</button>
+          <button class="adhkar-tab" data-kind="general" onclick="selectAdhkarCategory('general',this)">أذكار متنوعة</button>
         </div>
+        <div id="adhkar-progress" class="adhkar-progress"></div>
         <div id="adhkar-list-container"></div>
+        <p class="adhkar-note">تنبيه: أعداد التكرار المعروضة إرشادية بحسب الذكر، ويمكنك تصفير العدّاد في أي وقت. يُستحسن مراجعة النصوص والأعداد مع مصدر موثوق قبل اعتمادها كورد ثابت.</p>
       </div>
 
       <!-- 5. قسم الإعدادات -->
@@ -939,7 +912,7 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
         <div class="services-grid">
           <div class="service-card" onclick="toggleDarkMode()">
             <div class="service-header">
-              <div class="service-icon">🌙</div>
+              <div class="service-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.7 8.7 0 1 0 20.5 14.2Z"/></svg></div>
               <div>
                 <h4>تبديل الوضع (ليلي / نهاري)</h4>
                 <p>تغيير مظهر السمة بين الوضع الفاتح والداكن</p>
@@ -949,7 +922,7 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
 
           <div class="service-card citizen-only" onclick="openFullscreenModal('citizens-fullscreen-modal')">
             <div class="service-header">
-              <div class="service-icon">🎖️</div>
+              <div class="service-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="m8.5 12-1.5 9 5-2.8 5 2.8-1.5-9"/></svg></div>
               <div>
                 <h4>سجل السيرة الملكية والأوسمة</h4>
                 <p>استعراض البطولات، البروفايلات، والأوسمة الرسمية</p>
@@ -959,7 +932,7 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
 
           <div class="service-card" onclick="openFullscreenModal('social-fullscreen-modal')">
             <div class="service-header">
-              <div class="service-icon">🌐</div>
+              <div class="service-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div>
               <div>
                 <h4>حسابات المملكة الربطخشاوية</h4>
                 <p>متابعة الحسابات الرسمية على المنصات</p>
@@ -1159,7 +1132,9 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
 
     document.addEventListener("DOMContentLoaded", function() {
       const savedTheme = localStorage.getItem('theme_mode');
-      if (savedTheme === 'light') {
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.remove('light-mode');
+      } else {
         document.documentElement.classList.add('light-mode');
       }
 
@@ -1285,64 +1260,66 @@ html.light-mode .bottom-nav{background:#fffdf9ee;border-color:#e8dfd1}
     let isCitizenUser = false;
     let activeChatType = null;
 
-    let adhkarList = [
-      { id: 'subhan', title: 'سُبْحَانَ اللَّهِ', count: 0 },
-      { id: 'praise', title: 'الْحَمْدُ لِلَّهِ', count: 0 },
-      { id: 'akbar', title: 'اللَّهُ أَكْبَرُ', count: 0 },
-      { id: 'istighfar', title: 'أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ', count: 0 },
-      { id: 'hawqala', title: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ', count: 0 },
-      { id: 'tahleel', title: 'لَا إِلهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ', count: 0 },
-      { id: 'salat', title: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ', count: 0 },
-      { id: 'baqi', title: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ', count: 0 },
-      { id: 'hasbi', title: 'حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ', count: 0 },
-      { id: 'mulk', title: 'لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', count: 0 }
-    ];
+    const adhkarData = {
+      morning: [
+        {id:'m_falaq',text:'قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ',count:3,source:'سورة الإخلاص'},
+        {id:'m_falaq2',text:'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ',count:3,source:'سورة الفلق'},
+        {id:'m_nas',text:'قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ',count:3,source:'سورة الناس'},
+        {id:'m_asbahna',text:'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',count:1,source:'ذكر الصباح'},
+        {id:'m_radi',text:'رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا',count:3,source:'ذكر مأثور'},
+        {id:'m_bismillah',text:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',count:3,source:'ذكر مأثور'},
+        {id:'m_sayyid',text:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',count:1,source:'سيد الاستغفار'}
+      ],
+      evening: [
+        {id:'e_ikhlas',text:'قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ',count:3,source:'سورة الإخلاص'},
+        {id:'e_falaq',text:'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ',count:3,source:'سورة الفلق'},
+        {id:'e_nas',text:'قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ',count:3,source:'سورة الناس'},
+        {id:'e_amsayna',text:'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',count:1,source:'ذكر المساء'},
+        {id:'e_radi',text:'رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا',count:3,source:'ذكر مأثور'},
+        {id:'e_bismillah',text:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',count:3,source:'ذكر مأثور'},
+        {id:'e_sayyid',text:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ',count:1,source:'سيد الاستغفار'}
+      ],
+      general: [
+        {id:'g_subhan',text:'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',count:100,source:'ذكر مطلق'},
+        {id:'g_istighfar',text:'أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ',count:100,source:'استغفار'},
+        {id:'g_tahleel',text:'لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',count:100,source:'ذكر وتهليل'},
+        {id:'g_hawqala',text:'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',count:0,source:'كنز من كنوز الجنة'},
+        {id:'g_salawat',text:'اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ',count:0,source:'الصلاة على النبي ﷺ'}
+      ]
+    };
+    let activeAdhkarCategory = 'morning';
+    let adhkarCounts = JSON.parse(localStorage.getItem('rg_adhkar_counts') || '{}');
 
-    function openFullscreenModal(modalId) {
-      const modal = document.getElementById(modalId);
-      if (!modal) return;
-      modal.classList.remove('closing');
-      modal.classList.add('open');
+    function selectAdhkarCategory(category, button) {
+      activeAdhkarCategory = category;
+      document.querySelectorAll('.adhkar-tab').forEach(el => el.classList.toggle('active', el.dataset.kind === category));
+      renderAdhkar();
     }
-
-    function closeFullscreenModal(modalId) {
-      const modal = document.getElementById(modalId);
-      if (!modal) return;
-      modal.classList.add('closing');
-      setTimeout(() => {
-        modal.classList.remove('open', 'closing');
-      }, 180);
-    }
-
     function renderAdhkar() {
       const container = document.getElementById('adhkar-list-container');
+      const progress = document.getElementById('adhkar-progress');
       if (!container) return;
-      container.innerHTML = adhkarList.map(item => `
-        <div class="adhkar-card-item">
-          <div><strong style="color:var(--text-main); font-size:14px;">${item.title}</strong></div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="background:var(--primary-light); color:var(--primary); padding:6px 12px; border-radius:8px; font-weight:700; min-width:40px; text-align:center; border:1px solid var(--primary-border);">${item.count}</span>
-            <button class="btn" style="width:auto; padding:8px 14px; margin:0; font-size:13px;" onclick="incrementDhikr('${item.id}')">تسبيح ➕</button>
-            <button class="logout-btn" style="padding:8px 10px; font-size:12px;" onclick="resetDhikr('${item.id}')">تصفير 🔄</button>
-          </div>
-        </div>
-      `).join('');
+      const items = adhkarData[activeAdhkarCategory] || [];
+      const completed = items.filter(item => (adhkarCounts[item.id] || 0) >= item.count && item.count > 0).length;
+      progress.innerHTML = `<div class="adhkar-progress-top"><strong>${activeAdhkarCategory === 'morning' ? 'ورد الصباح' : activeAdhkarCategory === 'evening' ? 'ورد المساء' : 'أذكار متنوعة'}</strong><span>${completed} من ${items.filter(x=>x.count>0).length} مكتملة</span></div><div class="adhkar-progress-track"><div class="adhkar-progress-fill" style="width:${items.filter(x=>x.count>0).length ? completed/items.filter(x=>x.count>0).length*100 : 0}%"></div></div>`;
+      container.innerHTML = items.map(item => {
+        const count = adhkarCounts[item.id] || 0;
+        const target = item.count || 'مفتوح';
+        return `<article class="adhkar-entry"><div class="adhkar-entry-meta"><span>${item.source}</span><span>التكرار: ${target}</span></div><p class="adhkar-entry-text">${item.text}</p><div class="adhkar-entry-actions"><span class="adhkar-count">${count}${item.count ? ' / '+item.count : ''}</span><button class="adhkar-count-btn" onclick="incrementDhikr('${item.id}')">تسبيح · +1</button><button class="adhkar-reset" onclick="resetDhikr('${item.id}')">إعادة</button></div></article>`;
+      }).join('');
     }
-
     function incrementDhikr(id) {
-      const target = adhkarList.find(d => d.id === id);
-      if (target) {
-        target.count++;
-        renderAdhkar();
-      }
+      const item = Object.values(adhkarData).flat().find(d => d.id === id);
+      if (!item) return;
+      const current = adhkarCounts[id] || 0;
+      adhkarCounts[id] = item.count > 0 ? Math.min(current + 1, item.count) : current + 1;
+      localStorage.setItem('rg_adhkar_counts', JSON.stringify(adhkarCounts));
+      renderAdhkar();
     }
-
     function resetDhikr(id) {
-      const target = adhkarList.find(d => d.id === id);
-      if (target) {
-        target.count = 0;
-        renderAdhkar();
-      }
+      adhkarCounts[id] = 0;
+      localStorage.setItem('rg_adhkar_counts', JSON.stringify(adhkarCounts));
+      renderAdhkar();
     }
 
     function requestNotificationPermission() {
@@ -1486,11 +1463,36 @@ localStorage.removeItem('rg_dm_token');
       closeAllFullscreenModals();
     }
 
+    // إدارة النوافذ المنبثقة؛ كانت دوال الفتح والإغلاق غير موجودة في النسخة السابقة.
+    function openFullscreenModal(id) {
+      const modal = document.getElementById(id);
+      if (!modal) {
+        console.warn('Modal not found:', id);
+        return;
+      }
+      document.querySelectorAll('.fullscreen-modal.open').forEach(openModal => {
+        if (openModal !== modal) openModal.classList.remove('open', 'closing');
+      });
+      modal.classList.remove('closing');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeFullscreenModal(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.remove('open', 'closing');
+      if (!document.querySelector('.fullscreen-modal.open')) {
+        document.body.style.overflow = '';
+      }
+    }
+
     function closeAllFullscreenModals() {
       const modals = document.querySelectorAll('.fullscreen-modal');
       modals.forEach(m => {
         m.classList.remove('open', 'closing');
       });
+      document.body.style.overflow = '';
       activeChatType = null;
     }
 
@@ -2388,16 +2390,7 @@ socket.on("load_history", (res) => {
         console.log("بيئة المتصفح لا تدعم إشعارات Capacitor المحلية:", e);
       }
     });
-function playNotificationSound() {
-      try {
-        // صوت تنبيه اختياري أو تركها فارغة لمنع الخطأ
-        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-        audio.volume = 0.5;
-        audio.play().catch(e => console.log("الصوت يحتاج تفاعل مستخدم:", e));
-      } catch (err) {
-        console.log("Audio not supported");
-      }
-    }
+
   </script>
 
 </body>
