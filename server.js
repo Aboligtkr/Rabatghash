@@ -8,7 +8,11 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const admin = require('firebase-admin');
-
+console.log('[FCM DEBUG]', {
+  adminExists: !!admin,
+  appsExists: !!admin.apps,
+  messagingExists: !!admin.messaging
+});
 const app = express();
 app.use(cors());
 app.use(express.static(__dirname));
