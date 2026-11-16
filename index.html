@@ -701,6 +701,280 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
 /* Dhikr reader */
 .adhkar-hero{background:linear-gradient(125deg,#176b58,#22977a);color:#fff;border-radius:25px;padding:25px;margin-bottom:18px;position:relative;overflow:hidden}.adhkar-hero:after{content:'۞';position:absolute;left:16px;top:-24px;font-size:130px;color:#ffffff12}.adhkar-hero h2{font-size:25px;margin-bottom:5px}.adhkar-hero p{color:#e0f4eb;font-size:13px;line-height:1.8}.adhkar-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}.adhkar-tab{border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-muted);border-radius:14px;padding:12px 7px;font-weight:800;cursor:pointer}.adhkar-tab.active{background:var(--primary-light);color:var(--primary);border-color:var(--primary-border)}.adhkar-progress{background:var(--card-bg);border:1px solid var(--border-color);border-radius:17px;padding:14px 16px;margin-bottom:14px}.adhkar-progress-top{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--text-muted);margin-bottom:9px}.adhkar-progress-track{height:7px;background:var(--bg-main);border-radius:9px;overflow:hidden}.adhkar-progress-fill{height:100%;background:linear-gradient(90deg,#16866f,#77cba9);border-radius:9px;transition:width .25s}.adhkar-entry{background:var(--card-bg);border:1px solid var(--border-color);border-radius:19px;padding:19px;margin-bottom:12px;box-shadow:var(--shadow-sm)}.adhkar-entry-text{font-size:19px;line-height:2.15;text-align:center;color:var(--text-main);margin:2px 0 14px}.adhkar-entry-meta{display:flex;justify-content:space-between;align-items:center;color:var(--text-muted);font-size:11px;margin-bottom:12px}.adhkar-entry-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}.adhkar-count{font-size:13px;color:var(--primary);font-weight:800;background:var(--primary-light);padding:8px 12px;border-radius:11px;white-space:nowrap}.adhkar-count-btn{border:0;background:var(--primary);color:white;border-radius:13px;padding:11px 20px;font:inherit;font-weight:800;cursor:pointer;min-width:112px}.adhkar-count-btn:active{transform:scale(.97)}.adhkar-reset{background:transparent;border:1px solid var(--border-color);color:var(--text-muted);border-radius:11px;padding:9px 12px;font:inherit;font-size:12px;cursor:pointer}.adhkar-note{font-size:11px;color:var(--text-muted);line-height:1.8;margin:12px 3px}
 @media(min-width:900px){.app-screen-section{padding-top:40px}.profile-card{padding:40px}.services-grid{gap:20px}}@media(max-width:420px){.app-screen-section{padding:19px 15px 125px}.profile-card{padding:27px 21px}.bottom-nav{width:calc(100% - 18px)}.nav-item{font-size:10px}.modal-body{padding:16px}.chat-footer{padding-inline:10px}.chat-footer .btn{min-width:60px;padding-inline:10px}.adhkar-entry{padding:15px}.adhkar-entry-text{font-size:17px}}
+
+/* تنسيقات المحادثات الحديثة وتجميع الرسائل */
+.chat-box-body {
+  gap: 0 !important;
+  padding: 14px 16px !important;
+}
+
+.msg-row {
+  display: flex;
+  flex-direction: column;
+  max-width: 78%;
+  margin-top: 12px;
+  position: relative;
+  transition: transform 0.15s ease;
+}
+
+.msg-row.grouped {
+  margin-top: 3px !important;
+}
+
+.msg-row.me {
+  align-self: flex-start; /* في RTL flex-start هو اليمين */
+  align-items: flex-start;
+}
+
+.msg-row.other {
+  align-self: flex-end; /* في RTL flex-end هو اليسار */
+  align-items: flex-end;
+}
+
+.msg-sender-name {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  padding: 0 6px;
+}
+
+.msg-row.grouped .msg-sender-name {
+  display: none;
+}
+
+.msg-bubble {
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.55;
+  word-break: break-word;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.msg-bubble:active {
+  transform: scale(0.97);
+}
+
+.msg-row.me .msg-bubble {
+  background: var(--primary);
+  color: #ffffff;
+  border-bottom-right-radius: 6px;
+}
+
+.msg-row.me.grouped .msg-bubble {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.msg-row.other .msg-bubble {
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-bottom-left-radius: 6px;
+}
+
+.msg-row.other.grouped .msg-bubble {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+/* الصور بحواف عصرية بدون حشوة كبيرة */
+.msg-bubble.image-only {
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  overflow: hidden;
+  border-radius: 18px !important;
+}
+
+.msg-bubble img.chat-img-modern {
+  display: block;
+  max-width: 240px;
+  max-height: 300px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.msg-bubble:not(.image-only) img.chat-img-modern {
+  margin-top: 6px;
+  border-radius: 12px;
+}
+
+.msg-meta-footer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  opacity: 0.72;
+  margin-top: 4px;
+  justify-content: flex-end;
+}
+
+.msg-bubble.image-only .msg-meta-footer {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 10px;
+  opacity: 1;
+}
+
+/* اقتباس الرد داخل الرسالة */
+.msg-reply-quote {
+  background: rgba(0, 0, 0, 0.12);
+  border-right: 3px solid rgba(255, 255, 255, 0.8);
+  padding: 6px 10px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.msg-row.other .msg-reply-quote {
+  background: var(--bg-main);
+  border-right-color: var(--primary);
+}
+
+.msg-reply-quote strong {
+  display: block;
+  font-size: 11px;
+  margin-bottom: 2px;
+}
+
+/* شريط التفاعلات أسفل الفقاعة */
+.msg-reactions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: -6px;
+  z-index: 2;
+  padding: 0 6px;
+}
+
+.reaction-pill {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 2px 7px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  color: var(--text-main);
+}
+
+.reaction-pill.active-react {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* قائمة الضغط المطول (مثل إنستغرام) */
+#ig-action-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 13, 22, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 12000;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+#ig-action-overlay.open {
+  display: flex;
+}
+
+.ig-emoji-bar {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 30px;
+  padding: 8px 14px;
+  display: flex;
+  gap: 10px;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 12px;
+  animation: popIn 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ig-emoji-btn {
+  font-size: 26px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  padding: 2px;
+}
+
+.ig-emoji-btn:hover, .ig-emoji-btn:active {
+  transform: scale(1.3);
+}
+
+.ig-menu-box {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  width: 230px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  animation: popIn 0.18s ease;
+}
+
+.ig-menu-item {
+  width: 100%;
+  padding: 13px 16px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.ig-menu-item:last-child {
+  border-bottom: none;
+}
+
+.ig-menu-item:active {
+  background: var(--primary-light);
+}
+
+/* شريط الرد / التعديل فوق حقل الإدخال */
+.reply-edit-banner {
+  display: none;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 8px 18px;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-main);
+}
+
+.reply-edit-banner.active {
+  display: flex;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 </style>
 </head>
 <body>
@@ -853,36 +1127,39 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
       </div>
 
       <!-- 3. قسم خيارات الدردشة -->
+     <!-- 3. قسم خيارات الدردشة -->
       <div id="tab-chat" class="app-screen-section">
         <div class="profile-card" style="background: linear-gradient(135deg, #334155, #475569);">
           <h2>مجالس المملكة</h2>
-          <p>تواصل مع أبناء المملكة وانضم للمجالس المباشرة</p>
+          <p>تواصل مع أبناء المملكة في المجالس أو المحادثات الخاصة مباشرة</p>
         </div>
 
-        <div class="services-grid">
+        <h4 style="margin-bottom: 12px; color: var(--text-muted); font-size: 13px; font-weight: 800;">🏛️ المجالس والمجموعات:</h4>
+        <div class="services-grid" style="margin-bottom: 24px;">
           <div class="service-card" onclick="openChat('public')">
             <div class="service-header">
               <div class="service-icon"><svg viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 9 9 0 0 1-4-.9L3 20l1.5-4A7.2 7.2 0 0 1 4 12c0-4.4 3.6-8 8-8s8 3.1 8 7.5Z"/></svg></div>
               <div>
                 <h4>دردشة المملكة المباشرة</h4>
-                <p>المجلس العام لجميع المواطنين (شاشة كاملة وإرسال صور)</p>
+                <p>المجلس العام لجميع المواطنين</p>
               </div>
             </div>
           </div>
 
-
-          <div class="service-card citizen-only" onclick="openPrivateContacts()">
-            <div class="service-header"><div class="service-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></div><div><h4>الرسائل الخاصة</h4><p>محادثات مستقلة وآمنة الوصول بين مواطني المملكة، متصلة بالسيرفر</p></div></div>
-          </div>
           <div class="service-card shura-only" id="shura-chat-option" style="display:none;" onclick="openChat('shura')">
             <div class="service-header">
               <div class="service-icon"><svg viewBox="0 0 24 24"><path d="m3 8 5 4 4-7 4 7 5-4-2 11H5zM5 22h14"/></svg></div>
               <div>
                 <h4>شات مجلس الشورى الخاص</h4>
-                <p>مخصص لأعضاء المجلس الاربعة فقط (مغلق ومحمي)</p>
+                <p>مخصص لأعضاء مجلس الشورى الأربعة فقط</p>
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="citizen-only">
+          <h4 style="margin-bottom: 12px; color: var(--text-muted); font-size: 13px; font-weight: 800;">✉️ المحادثات الخاصة مع المواطنين:</h4>
+          <div id="direct-citizens-chat-list" class="services-grid"></div>
         </div>
       </div>
 
@@ -899,7 +1176,7 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
         </div>
         <div id="adhkar-progress" class="adhkar-progress"></div>
         <div id="adhkar-list-container"></div>
-        <p class="adhkar-note">تنبيه: أعداد التكرار المعروضة إرشادية بحسب الذكر، ويمكنك تصفير العدّاد في أي وقت. يُستحسن مراجعة النصوص والأعداد مع مصدر موثوق قبل اعتمادها كورد ثابت.</p>
+        <p class="adhkar-note" ا نس </p>
       </div>
 
       <!-- 5. قسم الإعدادات -->
@@ -1056,62 +1333,71 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
     <div class="modal-header"><h3>✉️ رسائل المواطنين</h3><button class="close-chat-btn" onclick="closeFullscreenModal('private-contacts-modal')">إغلاق ✕</button></div>
     <div class="modal-body"><p style="color:var(--text-muted);margin-bottom:18px">اختر مواطناً لفتح محادثتكما الخاصة.</p><div id="private-contacts-list"></div></div>
   </div>
+ <!-- نافذة المحادثة الخاصة -->
   <div id="private-chat-modal" class="fullscreen-modal">
     <div class="modal-header"><h3 id="private-chat-title">محادثة خاصة</h3><button class="close-chat-btn" onclick="closePrivateChat()">رجوع ✕</button></div>
     <div id="private-chat-box" class="chat-box-body" aria-live="polite"></div>
-    <div class="chat-footer"><label class="img-upload-btn" title="إرفاق صورة">📷<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="sendPrivateImage(event)"></label><input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة..." onkeydown="if(event.key==='Enter')sendPrivateMessage()"><button class="btn" onclick="sendPrivateMessage()">إرسال</button></div>
+    <div id="banner-private" class="reply-edit-banner">
+      <div><strong id="banner-title-private" style="color:var(--primary); display:block;"></strong><span id="banner-text-private" style="color:var(--text-muted);"></span></div>
+      <button onclick="cancelReplyOrEdit('private')" style="background:none; border:none; font-size:16px; cursor:pointer; color:var(--text-muted);">✕</button>
+    </div>
+    <div class="chat-footer">
+      <label class="img-upload-btn" title="إرفاق صورة">📷<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="sendPrivateImage(event)"></label>
+      <input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة..." onkeydown="if(event.key==='Enter')sendPrivateMessage()">
+      <button class="btn" id="btn-send-private" onclick="sendPrivateMessage()">إرسال</button>
+    </div>
   </div>
+
+  <!-- نافذة الشات العام -->
   <div id="chat-modal-public" class="fullscreen-modal">
     <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
-      <div>
-        <h3>💬 الدردشة العامة للمملكة</h3>
-        <span id="streak-counter" class="streak-pill">🔥 سلسلة المجلس · 0 يوم</span>
-      </div>
+      <div><h3>💬 الدردشة العامة للمملكة</h3></div>
       <button class="close-chat-btn" onclick="closeChat('public')">إغلاق ✕</button>
     </div>
-
-    <div id="chat-box-public" class="chat-box-body">
-      <div class="chat-msg"><b>النظام:</b> أهلاً بك في الدردشة العامة للمملكة 👑</div>
+    <div id="chat-box-public" class="chat-box-body"></div>
+    <div id="banner-public" class="reply-edit-banner">
+      <div><strong id="banner-title-public" style="color:var(--primary); display:block;"></strong><span id="banner-text-public" style="color:var(--text-muted);"></span></div>
+      <button onclick="cancelReplyOrEdit('public')" style="background:none; border:none; font-size:16px; cursor:pointer; color:var(--text-muted);">✕</button>
     </div>
-
     <div class="chat-footer">
-      <label class="img-upload-btn" title="إرفاق صورة">
-        📷
-        <input type="file" accept="image/*" style="display:none;" onchange="sendImage(event, 'public')">
-      </label>
+      <label class="img-upload-btn" title="إرفاق صورة">📷<input type="file" accept="image/*" style="display:none;" onchange="sendImage(event, 'public')"></label>
       <input type="text" id="chat-input-public" placeholder="اكتب رسالتك هنا..." onkeypress="handleKeyPress(event, 'public')">
-      <button class="btn" onclick="sendMessage('public')">إرسال</button>
+      <button class="btn" id="btn-send-public" onclick="sendMessage('public')">إرسال</button>
     </div>
   </div>
 
+  <!-- نافذة شات الشورى -->
   <div id="chat-modal-shura" class="fullscreen-modal">
     <div class="modal-header">
       <h3 style="color:var(--primary);">👑 شات مجلس الشورى الخاص</h3>
       <button class="close-chat-btn" onclick="closeChat('shura')">إغلاق ✕</button>
     </div>
-
-    <div id="chat-box-shura" class="chat-box-body">
-      <div class="chat-msg"><b>النظام:</b> مرحباً بكم أعضاء مجلس الشورى المحترمين 🏛️</div>
+    <div id="chat-box-shura" class="chat-box-body"></div>
+    <div id="banner-shura" class="reply-edit-banner">
+      <div><strong id="banner-title-shura" style="color:var(--primary); display:block;"></strong><span id="banner-text-shura" style="color:var(--text-muted);"></span></div>
+      <button onclick="cancelReplyOrEdit('shura')" style="background:none; border:none; font-size:16px; cursor:pointer; color:var(--text-muted);">✕</button>
     </div>
-
     <div class="chat-footer">
-      <label class="img-upload-btn" title="إرفاق صورة">
-        📷
-        <input type="file" accept="image/*" style="display:none;" onchange="sendImage(event, 'shura')">
-      </label>
+      <label class="img-upload-btn" title="إرفاق صورة">📷<input type="file" accept="image/*" style="display:none;" onchange="sendImage(event, 'shura')"></label>
       <input type="text" id="chat-input-shura" placeholder="اكتب رسالتك لأعضاء المجلس..." onkeypress="handleKeyPress(event, 'shura')">
-      <button class="btn" style="background-color: var(--primary);" onclick="sendMessage('shura')">إرسال</button>
+      <button class="btn" id="btn-send-shura" style="background-color: var(--primary);" onclick="sendMessage('shura')">إرسال</button>
     </div>
   </div>
 
-  <div id="leaderboard-modal" class="fullscreen-modal">
-    <div class="modal-header">
-      <h3>🏆 لوحة صدارة الألعاب والبطولات</h3>
-      <button class="close-chat-btn" onclick="closeLeaderboard()">إغلاق ✕</button>
+  <!-- قائمة الضغط المطول على الرسالة (مثل إنستغرام) -->
+  <div id="ig-action-overlay" onclick="if(event.target===this) closeIgMenu()">
+    <div class="ig-emoji-bar">
+      <button class="ig-emoji-btn" onclick="triggerReaction('❤️')">❤️</button>
+      <button class="ig-emoji-btn" onclick="triggerReaction('😂')">😂</button>
+      <button class="ig-emoji-btn" onclick="triggerReaction('😮')">😮</button>
+      <button class="ig-emoji-btn" onclick="triggerReaction('😢')">😢</button>
+      <button class="ig-emoji-btn" onclick="triggerReaction('🔥')">🔥</button>
+      <button class="ig-emoji-btn" onclick="triggerReaction('👍')">👍</button>
     </div>
-    <div class="modal-body" style="background: var(--bg-main);">
-      <h4 style="color:var(--primary); margin-bottom: 14px; font-weight:700;">أفضل النتائج المسجلة للمواطنين والزوار:</h4>
-      <div id="leaderboard-list-content"></div>
+    <div class="ig-menu-box">
+      <button class="ig-menu-item" onclick="triggerReply()"><span>رد على الرسالة</span><span>↩️</span></button>
+      <button class="ig-menu-item" id="ig-edit-btn" onclick="triggerEdit()"><span>تعديل الرسالة</span><span>✏️</span></button>
+      <button class="ig-menu-item" onclick="triggerCopy()"><span>نسخ النص</span><span>📋</span></button>
     </div>
   </div>
 
@@ -1434,6 +1720,7 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
       }
 
       renderCitizens();
+      renderDirectCitizensList();
     }
 
     function logout() {
@@ -2105,20 +2392,259 @@ localStorage.removeItem('rg_dm_token');
       }
     });
 
+    // عرض قائمة المواطنين مباشرة أسفل المجموعات
+    function renderDirectCitizensList() {
+      const container = document.getElementById('direct-citizens-chat-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      Object.entries(citizensData).forEach(([key, val]) => {
+        if (key === currentUser.toLowerCase()) return;
+        const card = document.createElement('div');
+        card.className = 'service-card';
+        card.onclick = () => startDirectPrivateChat({ id: key, name: val.name, title: val.title });
+        card.innerHTML = `
+          <div class="service-header">
+            <div class="service-icon" style="font-size:20px;">👤</div>
+            <div>
+              <h4>${val.name}</h4>
+              <p>${val.title}</p>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function startDirectPrivateChat(contact) {
+      if (!isCitizenUser) return;
+      if (privateAuth) {
+        openPrivateChat(contact);
+      } else {
+        authenticatePrivate(ok => {
+          if (ok) openPrivateChat(contact);
+          else alert('يرجى تسجيل الخروج والدخول بكود المواطن لتفعيل المحادثات الخاصة.');
+        });
+      }
+    }
+
+    // حالة الرد والتعديل والضغط المطول
+    let chatActionState = {
+      public: { replyTo: null, editingId: null },
+      shura: { replyTo: null, editingId: null },
+      private: { replyTo: null, editingId: null }
+    };
+    let selectedMsgContext = null;
+    let longPressTimer = null;
+
+    function attachLongPress(element, msgData, contextType) {
+      const startPress = () => {
+        longPressTimer = setTimeout(() => {
+          if (navigator.vibrate) navigator.vibrate(35);
+          openIgMenu(msgData, contextType);
+        }, 420);
+      };
+      const cancelPress = () => clearTimeout(longPressTimer);
+
+      element.addEventListener('touchstart', startPress, { passive: true });
+      element.addEventListener('touchend', cancelPress);
+      element.addEventListener('touchmove', cancelPress);
+      element.addEventListener('mousedown', startPress);
+      element.addEventListener('mouseup', cancelPress);
+      element.addEventListener('mouseleave', cancelPress);
+      element.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        openIgMenu(msgData, contextType);
+      });
+    }
+
+    function openIgMenu(msgData, contextType) {
+      selectedMsgContext = { msg: msgData, context: contextType };
+      const editBtn = document.getElementById('ig-edit-btn');
+      const isMine = String(msgData.sender).toLowerCase() === String(currentUser).toLowerCase();
+      editBtn.style.display = (isMine && msgData.text) ? 'flex' : 'none';
+      document.getElementById('ig-action-overlay').classList.add('open');
+    }
+
+    function closeIgMenu() {
+      document.getElementById('ig-action-overlay').classList.remove('open');
+    }
+
+    function triggerReaction(emoji) {
+      if (!selectedMsgContext || !selectedMsgContext.msg._id) return closeIgMenu();
+      socket.emit('react_message', {
+        messageId: selectedMsgContext.msg._id,
+        emoji: emoji,
+        user: currentUser
+      });
+      closeIgMenu();
+    }
+
+    function triggerReply() {
+      if (!selectedMsgContext) return closeIgMenu();
+      const { msg, context } = selectedMsgContext;
+      cancelReplyOrEdit(context);
+      chatActionState[context].replyTo = {
+        id: msg._id || '',
+        sender: msg.sender,
+        text: msg.text || (msg.image ? '📷 صورة' : ''),
+        image: !!msg.image
+      };
+      document.getElementById(`banner-title-${context}`).innerText = `الرد على ${msg.sender}`;
+      document.getElementById(`banner-text-${context}`).innerText = msg.text || '📷 صورة';
+      document.getElementById(`banner-${context}`).classList.add('active');
+      const inputId = context === 'private' ? 'private-chat-input' : `chat-input-${context}`;
+      document.getElementById(inputId).focus();
+      closeIgMenu();
+    }
+
+    function triggerEdit() {
+      if (!selectedMsgContext || !selectedMsgContext.msg._id) return closeIgMenu();
+      const { msg, context } = selectedMsgContext;
+      cancelReplyOrEdit(context);
+      chatActionState[context].editingId = msg._id;
+      document.getElementById(`banner-title-${context}`).innerText = 'تعديل الرسالة ✏️';
+      document.getElementById(`banner-text-${context}`).innerText = msg.text;
+      document.getElementById(`banner-${context}`).classList.add('active');
+      const inputId = context === 'private' ? 'private-chat-input' : `chat-input-${context}`;
+      const inputEl = document.getElementById(inputId);
+      inputEl.value = msg.text;
+      inputEl.focus();
+      document.getElementById(`btn-send-${context}`).innerText = 'حفظ';
+      closeIgMenu();
+    }
+
+    function triggerCopy() {
+      if (selectedMsgContext?.msg?.text) {
+        navigator.clipboard?.writeText(selectedMsgContext.msg.text);
+      }
+      closeIgMenu();
+    }
+
+    function cancelReplyOrEdit(context) {
+      chatActionState[context] = { replyTo: null, editingId: null };
+      const banner = document.getElementById(`banner-${context}`);
+      if (banner) banner.classList.remove('active');
+      const btn = document.getElementById(`btn-send-${context}`);
+      if (btn) btn.innerText = 'إرسال';
+      if (context === 'private') document.getElementById('private-chat-input').value = '';
+      else document.getElementById(`chat-input-${context}`).value = '';
+    }
+
+    // بناء عنصر الرسالة الموحد (مع تجميع الرسائل المتتالية + الصور العصرية + التفاعلات)
+    function buildMessageElement(data, container, contextType) {
+      const msgId = data._id || ('temp-' + Date.now() + Math.random());
+      const isMe = String(data.sender).toLowerCase() === String(currentUser).toLowerCase();
+
+      // التحقق مما إذا كانت الرسالة السابقة لنفس المرسل لتقريبها بصرياً
+      const lastRow = container.lastElementChild;
+      const isGrouped = lastRow && lastRow.classList.contains('msg-row') && lastRow.dataset.sender === String(data.sender).toLowerCase();
+
+      const row = document.createElement('div');
+      row.className = `msg-row ${isMe ? 'me' : 'other'} ${isGrouped ? 'grouped' : ''}`;
+      row.dataset.sender = String(data.sender).toLowerCase();
+      row.dataset.msgId = msgId;
+
+      if (!isMe) {
+        const senderLabel = document.createElement('div');
+        senderLabel.className = 'msg-sender-name';
+        senderLabel.textContent = citizensData[data.sender]?.name || data.sender || 'مواطن';
+        row.appendChild(senderLabel);
+      }
+
+      const isImageOnly = !data.text && !!data.image && !data.replyTo;
+      const bubble = document.createElement('div');
+      bubble.className = `msg-bubble ${isImageOnly ? 'image-only' : ''}`;
+
+      // عرض اقتباس الرد إن وجد
+      if (data.replyTo && (data.replyTo.text || data.replyTo.image)) {
+        const quote = document.createElement('div');
+        quote.className = 'msg-reply-quote';
+        const qSender = document.createElement('strong');
+        qSender.textContent = data.replyTo.sender || 'رسالة';
+        const qText = document.createElement('span');
+        qText.textContent = data.replyTo.text || '📷 صورة';
+        quote.append(qSender, qText);
+        bubble.appendChild(quote);
+      }
+
+      if (data.text) {
+        const textDiv = document.createElement('div');
+        textDiv.className = 'msg-text-body';
+        textDiv.style.whiteSpace = 'pre-wrap';
+        textDiv.textContent = data.text;
+        bubble.appendChild(textDiv);
+      }
+
+      if (data.image) {
+        const img = document.createElement('img');
+        img.src = data.image;
+        img.className = 'chat-img-modern';
+        bubble.appendChild(img);
+      }
+
+      const timeStr = data.createdAt
+        ? new Date(data.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      const meta = document.createElement('div');
+      meta.className = 'msg-meta-footer';
+      meta.innerHTML = `${data.edited ? '<span class="edited-tag">(معدّلة)</span>' : ''}<span>${timeStr}</span>`;
+      bubble.appendChild(meta);
+
+      attachLongPress(bubble, data, contextType);
+      row.appendChild(bubble);
+
+      // شريط التفاعلات
+      const reactionsBar = document.createElement('div');
+      reactionsBar.className = 'msg-reactions-bar';
+      renderReactionsIntoBar(reactionsBar, data.reactions, msgId);
+      row.appendChild(reactionsBar);
+
+      container.appendChild(row);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function renderReactionsIntoBar(bar, reactions, msgId) {
+      bar.innerHTML = '';
+      if (!reactions) return;
+      Object.entries(reactions).forEach(([emoji, users]) => {
+        if (!Array.isArray(users) || users.length === 0) return;
+        const pill = document.createElement('button');
+        const hasReacted = users.includes(String(currentUser).toLowerCase());
+        pill.className = `reaction-pill ${hasReacted ? 'active-react' : ''}`;
+        pill.innerHTML = `<span>${emoji}</span><span>${users.length}</span>`;
+        pill.onclick = () => {
+          if (msgId && !String(msgId).startsWith('temp-')) {
+            socket.emit('react_message', { messageId: msgId, emoji, user: currentUser });
+          }
+        };
+        bar.appendChild(pill);
+      });
+    }
+
     function sendMessage(type) {
       const activeType = type || activeChatType || 'public';
       const input = document.getElementById(`chat-input-${activeType}`);
       if (!input) return;
       const text = input.value.trim();
+      if (!text || typeof socket === 'undefined' || !socket.connected) return;
 
-      if (text !== "" && typeof socket !== 'undefined' && socket.connected) {
-        socket.emit("send_message", {
-          type: activeType,
-          text: text,
-          sender: currentUser || "مواطن"
+      const state = chatActionState[activeType];
+      if (state.editingId) {
+        socket.emit('edit_message', { messageId: state.editingId, newText: text, user: currentUser }, (res) => {
+          if (res?.ok) cancelReplyOrEdit(activeType);
         });
-        input.value = "";
+        return;
       }
+
+      socket.emit("send_message", {
+        type: activeType,
+        text: text,
+        sender: currentUser || "مواطن",
+        replyTo: state.replyTo
+      });
+      cancelReplyOrEdit(activeType);
     }
 
     function sendImage(event, type) {
@@ -2129,229 +2655,66 @@ localStorage.removeItem('rg_dm_token');
           socket.emit("send_message", {
             type: type || "public",
             image: e.target.result,
-            sender: currentUser || "مواطن"
+            sender: currentUser || "مواطن",
+            replyTo: chatActionState[type || 'public']?.replyTo
           });
+          cancelReplyOrEdit(type || 'public');
           event.target.value = '';
         };
         reader.readAsDataURL(file);
       }
     }
 
-    function renderSingleMessage(data) {
-      const chatBox = document.getElementById(`chat-box-${data.type}`) || document.getElementById("chat-box-public");
+    function renderSingleMessage(data, forcedType) {
+      const type = forcedType || data.type || 'public';
+      const chatBox = document.getElementById(`chat-box-${type}`) || document.getElementById("chat-box-public");
       if (!chatBox) return;
-
-      const msgDiv = document.createElement("div");
-      const isMe = (data.sender === currentUser);
-
-      msgDiv.style.margin = "8px 0";
-      msgDiv.style.padding = "12px 16px";
-      msgDiv.style.borderRadius = "14px";
-      msgDiv.style.maxWidth = "75%";
-      msgDiv.style.wordBreak = "break-word";
-
-      if (isMe) {
-        msgDiv.style.marginLeft = "auto";
-        msgDiv.style.marginRight = "0";
-        msgDiv.style.backgroundColor = "var(--primary)";
-        msgDiv.style.color = "#ffffff";
-        msgDiv.style.fontWeight = "600";
-        msgDiv.style.textAlign = "right";
-      } else {
-        msgDiv.style.marginRight = "auto";
-        msgDiv.style.marginLeft = "0";
-        msgDiv.style.backgroundColor = "var(--card-bg)";
-        msgDiv.style.color = "var(--text-main)";
-        msgDiv.style.border = "1px solid var(--border-color)";
-        msgDiv.style.fontWeight = "normal";
-        msgDiv.style.textAlign = "right";
-      }
-
-      let timeString = "";
-      if (data.createdAt) {
-        const msgDate = new Date(data.createdAt);
-        timeString = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      } else {
-        const now = new Date();
-        timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      }
-
-      let htmlContent = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 10px;">
-          <span style="font-size: 11px; font-weight:700; opacity: 0.9;">${data.sender || 'مواطن'}</span>
-          <span style="font-size: 10px; opacity: 0.7;">${timeString}</span>
-        </div>
-      `;
-
-      if (data.text) {
-        htmlContent += `<div>${data.text}</div>`;
-      }
-      if (data.image) {
-        htmlContent += `<img src="${data.image}" style="max-width:100%; border-radius:10px; margin-top:6px;">`;
-      }
-
-      msgDiv.innerHTML = htmlContent;
-      chatBox.appendChild(msgDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
+      buildMessageElement(data, chatBox, type);
     }
 
-
-    // الرسائل الخاصة: المصادقة والجلب والإرسال تتم عبر Socket.IO والسيرفر فقط.
-    let privatePeer = null;
-    let privateAuth = false;
-    let privatePassword = '';
-    function authenticatePrivate(callback) {
-  if (!isCitizenUser || !currentUser || !socket.connected) {
-    privateAuth = false;
-    if (callback) callback(false);
-    return;
-  }
-
-  const token = localStorage.getItem('rg_dm_token');
-
-  const payload = token
-    ? { username: currentUser, token }
-    : privatePassword
-      ? { username: currentUser, password: privatePassword }
-      : null;
-
-  if (!payload) {
-    privateAuth = false;
-    if (callback) callback(false);
-    return;
-  }
-
-  socket.emit('citizen_auth', payload, res => {
-    privateAuth = !!res?.ok;
-
-    if (res?.token) {
-      localStorage.setItem('rg_dm_token', res.token);
-      privatePassword = '';
-    }
-
-    if (!privateAuth && token) {
-      localStorage.removeItem('rg_dm_token');
-    }
-
-    if (callback) callback(privateAuth);
-  });
-}
-    function openPrivateContacts() {
-      if (!isCitizenUser) return;
-      openFullscreenModal('private-contacts-modal');
-      const box = document.getElementById('private-contacts-list');
-      box.textContent = 'جاري تحميل المواطنين...';
-      authenticatePrivate(ok => {
-        if (!ok) { box.textContent = 'لتفعيل الرسائل الخاصة، سجّل خروجاً ثم ادخل بكود المواطن مجدداً.'; return; }
-        socket.emit('private_contacts', {}, res => {
-          box.replaceChildren();
-          if (!res?.ok) { box.textContent = res?.error || 'تعذر تحميل المواطنين'; return; }
-          res.contacts.forEach(contact => {
-            const item = document.createElement('button');
-            item.className = 'service-card';
-            item.style.cssText = 'width:100%;text-align:right;color:var(--text-main);margin-bottom:10px';
-            const title = document.createElement('strong'); title.textContent = '✉️ ' + contact.name;
-            const sub = document.createElement('p'); sub.textContent = contact.title || 'مواطن'; sub.style.color = 'var(--text-muted)';
-            item.append(title, sub);
-            item.onclick = () => openPrivateChat(contact);
-            box.appendChild(item);
-          });
-        });
-      });
-    }
-    function openPrivateChat(contact) {
-      privatePeer = contact.id;
-      document.getElementById('private-chat-title').textContent = '✉️ ' + contact.name;
-      const box = document.getElementById('private-chat-box');
-      box.textContent = 'جاري تحميل المحادثة...';
-      openFullscreenModal('private-chat-modal');
-      socket.emit('private_history', { with: privatePeer }, res => {
-        if (privatePeer !== contact.id) return;
-        box.replaceChildren();
-        if (!res?.ok) { box.textContent = res?.error || 'تعذر التحميل'; return; }
-        res.history.forEach(renderPrivateMessage);
-      });
-    }
-    function closePrivateChat() { closeFullscreenModal('private-chat-modal'); privatePeer = null; }
     function renderPrivateMessage(data) {
-      if (!privatePeer || ![data.sender, data.type?.split(':').pop()].includes(privatePeer) && data.sender !== currentUser) return;
+      if (!privatePeer) return;
       const box = document.getElementById('private-chat-box');
-      const bubble = document.createElement('div');
-      bubble.className = 'chat-msg';
-      bubble.style.cssText = 'margin:5px 0;max-width:80%;align-self:' + (data.sender === currentUser ? 'flex-end;background:var(--primary);color:white' : 'flex-start');
-      const meta = document.createElement('small'); meta.textContent = (data.sender === currentUser ? 'أنت' : data.sender) + ' · ' + new Date(data.createdAt).toLocaleTimeString('ar', {hour:'2-digit',minute:'2-digit'});
-      bubble.appendChild(meta);
-      if (data.text) { const line = document.createElement('div'); line.textContent = data.text; line.style.whiteSpace = 'pre-wrap'; bubble.appendChild(line); }
-      if (data.image && /^data:image\/(png|jpeg|webp|gif);base64,/.test(data.image)) { const img = document.createElement('img'); img.src = data.image; img.style.cssText='max-width:100%;border-radius:12px;margin-top:8px'; bubble.appendChild(img); }
-      box.appendChild(bubble); box.scrollTop = box.scrollHeight;
+      buildMessageElement(data, box, 'private');
     }
+
     function sendPrivateMessage(image) {
       if (!privatePeer || !privateAuth) return;
       const input = document.getElementById('private-chat-input');
       const text = image ? '' : input.value.trim();
       if (!text && !image) return;
+
+      const state = chatActionState.private;
+      if (!image && state.editingId) {
+        socket.emit('edit_message', { messageId: state.editingId, newText: text, user: currentUser }, (res) => {
+          if (res?.ok) cancelReplyOrEdit('private');
+        });
+        return;
+      }
+
       const to = privatePeer;
-      socket.emit('private_send', { to, text, image: image || '' }, res => {
+      socket.emit('private_send', { to, text, image: image || '', replyTo: state.replyTo }, res => {
         if (!res?.ok) alert(res?.error || 'فشل إرسال الرسالة');
-        else if (!image) input.value = '';
+        else cancelReplyOrEdit('private');
       });
     }
-    function sendPrivateImage(event) {
-      const file = event.target.files?.[0];
-      if (!file) return;
-      if (file.size > 4 * 1024 * 1024 || !/^image\/(png|jpeg|webp|gif)$/.test(file.type)) { alert('اختر صورة بحجم أقل من 4 ميغابايت'); return; }
-      const reader = new FileReader(); reader.onload = () => sendPrivateMessage(reader.result); reader.readAsDataURL(file); event.target.value = '';
-    }
-    socket.on('private_receive', data => {
-      const room = 'dm:' + [currentUser, privatePeer].sort().join(':');
-      if (privatePeer && data.type === room) renderPrivateMessage(data);
-    });
-   socket.on('connect', () => {
-  if (
-    isCitizenUser &&
-    (privatePassword || localStorage.getItem('rg_dm_token'))
-  ) {
-    authenticatePrivate();
-  }
-});
-   socket.on("receive_message", (data) => {
-      renderSingleMessage(data, data.type);
 
-      const chatType = data.type || 'public';
-      const cachedMessages = localStorage.getItem(`chat_history_${chatType}`);
-      let messagesList = [];
-      try {
-        if (cachedMessages) messagesList = JSON.parse(cachedMessages);
-      } catch(e) { messagesList = []; }
-
-      messagesList.push(data);
-      if (messagesList.length > 200) messagesList.shift();
-      localStorage.setItem(`chat_history_${chatType}`, JSON.stringify(messagesList));
-
-      if (data.sender !== currentUser) {
-        // تشغيل آمن للصوت بدون أخطاء
-        try {
-          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-          audio.volume = 0.5;
-          audio.play().catch(e => {});
-        } catch (err) {}
-      }
+    // استقبال تحديثات التفاعل والتعديل الفورية
+    socket.on('message_reacted', ({ messageId, reactions }) => {
+      document.querySelectorAll(`.msg-row[data-msg-id="${messageId}"] .msg-reactions-bar`).forEach(bar => {
+        renderReactionsIntoBar(bar, reactions, messageId);
+      });
     });
 
-socket.on("load_history", (res) => {
-      const chatType = res.type;
-      const chatBox = document.getElementById(`chat-box-${chatType}`);
-      if (!chatBox) return;
-
-      // حفظ التاريخ القادم من السيرفر في التخزين المحلي للمهاتفة السريعة
-      if (res.history && res.history.length > 0) {
-        localStorage.setItem(`chat_history_${chatType}`, JSON.stringify(res.history));
-        
-        chatBox.innerHTML = '';
-        res.history.forEach(msg => {
-          renderSingleMessage(msg, chatType);
-        });
-      }
+    socket.on('message_edited', ({ messageId, text, edited }) => {
+      document.querySelectorAll(`.msg-row[data-msg-id="${messageId}"]`).forEach(row => {
+        const textEl = row.querySelector('.msg-text-body');
+        if (textEl) textEl.textContent = text;
+        const meta = row.querySelector('.msg-meta-footer');
+        if (meta && edited && !meta.querySelector('.edited-tag')) {
+          meta.insertAdjacentHTML('afterbegin', '<span class="edited-tag">(معدّلة)</span>');
+        }
+      });
     });
     
     // تفعيل إشعارات الأندرويد الفورية عبر Capacitor
