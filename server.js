@@ -56,6 +56,18 @@ const messageSchema = new mongoose.Schema({
     image: String,
     sender: String,
     senderId: String,
+    replyTo: {
+        id: String,
+        sender: String,
+        text: String,
+        image: Boolean
+    },
+    reactions: {
+        type: Map,
+        of: [String],
+        default: {}
+    },
+    edited: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
 });
 
@@ -100,36 +112,6 @@ let globalLeaderboard = {
   memory: { name: 'لا يوجد', score: 999999 }
 };
 
-let streakData = { count: 0, lastActiveDay: null, participants: [], todayParticipants: [] };
-const utcDay = (date = new Date()) => date.toISOString().slice(0, 10);
-const dayBefore = (day) => new Date(Date.parse(day + 'T00:00:00Z') - 86400000).toISOString().slice(0, 10);
-function refreshStreakDay() {
-  const today = utcDay();
-  if (streakData.lastActiveDay && streakData.lastActiveDay !== today && streakData.lastActiveDay !== dayBefore(today)) {
-    streakData.count = 0;
-    streakData.participants = [];
-    streakData.todayParticipants = [];
-    streakData.lastActiveDay = null;
-  }
-}
-async function recordStreakMessage(data) {
-  if ((data.type || 'public') !== 'public') return;
-  refreshStreakDay();
-  const today = utcDay();
-  const sender = String(data.sender || '').trim().toLowerCase();
-  if (!sender) return;
-  if (streakData.lastActiveDay !== today) {
-    streakData.todayParticipants = [];
-  }
-  if (!streakData.todayParticipants.includes(sender)) streakData.todayParticipants.push(sender);
-  if (streakData.todayParticipants.length >= 2 && streakData.lastActiveDay !== today) {
-    streakData.count = streakData.lastActiveDay === dayBefore(today) ? streakData.count + 1 : 1;
-    streakData.lastActiveDay = today;
-  }
-  streakData.participants = [...streakData.todayParticipants];
-  await saveStreakToDB();
-  io.emit('update_streak_state', streakData);
-}
 
 async function loadPersistentState() {
   try {
@@ -425,21 +407,38 @@ io.on('connection', (socket) => {
         } catch (err) { ack({ ok: false, error: 'تعذر تحميل المحادثة' }); }
     });
 
-    socket.on('private_send', async (payload, ack) => {
+   socket.on('private_send', async (payload, ack) => {
         const me = socket.data.citizen, other = String(payload?.to || '').trim().toLowerCase();
         const text = typeof payload?.text === 'string' ? payload.text.trim().slice(0, 4000) : '';
         const image = typeof payload?.image === 'string' && /^data:image\/(png|jpeg|webp|gif);base64,/.test(payload.image) && payload.image.length < 7_000_000 ? payload.image : '';
+        const replyTo = payload?.replyTo && typeof payload.replyTo === 'object' ? {
+            id: String(payload.replyTo.id || ''),
+            sender: String(payload.replyTo.sender || ''),
+            text: String(payload.replyTo.text || '').slice(0, 200),
+            image: !!payload.replyTo.image
+        } : null;
+
         if (!me || !validCitizen(other) || other === me || (!text && !image)) {
             if (typeof ack === 'function') ack({ ok: false, error: 'تعذر إرسال الرسالة' });
             return;
         }
         try {
-            const saved = await new Message({ type: privateRoom(me, other), sender: me, senderId: me, text, image, createdAt: new Date() }).save();
+            const saved = await new Message({
+                type: privateRoom(me, other),
+                sender: me,
+                senderId: me,
+                text,
+                image,
+                replyTo,
+                createdAt: new Date()
+            }).save();
             const data = saved.toObject();
             io.to('citizen:' + me).to('citizen:' + other).emit('private_receive', { ...data, peer: other });
             sendChatPush({ sender: me, recipient: other, text, image, chatType: 'private' }).catch(err => console.error('[FCM] private:', err));
             if (typeof ack === 'function') ack({ ok: true });
-        } catch (err) { if (typeof ack === 'function') ack({ ok: false, error: 'فشل حفظ الرسالة' }); }
+        } catch (err) {
+            if (typeof ack === 'function') ack({ ok: false, error: 'فشل حفظ الرسالة' });
+        }
     });
 
     socket.on('register_fcm_token', async (payload) => {
@@ -503,7 +502,14 @@ io.on('connection', (socket) => {
         try {
             if (!data || !['public', 'shura'].includes(data.type)) return;
             const senderName = data.sender || "مواطن";
-            if (data.type === 'public') await recordStreakMessage(data);
+            if (data.type === 'public' && typeof recordStreakMessage === 'function') await recordStreakMessage(data);
+
+            const replyTo = data.replyTo && typeof data.replyTo === 'object' ? {
+                id: String(data.replyTo.id || ''),
+                sender: String(data.replyTo.sender || ''),
+                text: String(data.replyTo.text || '').slice(0, 200),
+                image: !!data.replyTo.image
+            } : null;
 
             const newMessage = new Message({
                 type: data.type || "public",
@@ -511,6 +517,7 @@ io.on('connection', (socket) => {
                 image: data.image || "",
                 sender: senderName,
                 senderId: socket.id,
+                replyTo,
                 createdAt: new Date()
             });
 
@@ -518,12 +525,97 @@ io.on('connection', (socket) => {
             io.emit('receive_message', savedMsg);
 
             sendChatPush({ sender: senderName, text: data.text, image: data.image, chatType: data.type }).catch(err => console.error('[FCM] chat:', err));
-
         } catch (err) {
             console.error("خطأ في حفظ أو إرسال الرسالة:", err);
         }
     });
 
+    socket.on('react_message', async (payload) => {
+        try {
+            const { messageId, emoji, user } = payload || {};
+            const actor = String(socket.data.citizen || user || '').trim().toLowerCase();
+            if (!messageId || !emoji || !actor) return;
+
+            const msg = await Message.findById(messageId);
+            if (!msg) return;
+
+            if (!msg.reactions) msg.reactions = new Map();
+            const currentUsers = msg.reactions.get(emoji) || [];
+
+            if (currentUsers.includes(actor)) {
+                const updated = currentUsers.filter(u => u !== actor);
+                if (updated.length > 0) msg.reactions.set(emoji, updated);
+                else msg.reactions.delete(emoji);
+            } else {
+                msg.reactions.set(emoji, [...currentUsers, actor]);
+            }
+
+            await msg.save();
+            const reactionsObj = Object.fromEntries(msg.reactions);
+
+            if (msg.type.startsWith('dm:')) {
+                const parts = msg.type.split(':');
+                io.to('citizen:' + parts[1]).to('citizen:' + parts[2]).emit('message_reacted', {
+                    messageId: msg._id,
+                    type: msg.type,
+                    reactions: reactionsObj
+                });
+            } else {
+                io.emit('message_reacted', {
+                    messageId: msg._id,
+                    type: msg.type,
+                    reactions: reactionsObj
+                });
+            }
+        } catch (err) {
+            console.error("خطأ في التفاعل مع الرسالة:", err);
+        }
+    });
+
+    // تعديل رسالة (شامل للعام والخاص)
+    socket.on('edit_message', async (payload, ack) => {
+        try {
+            const { messageId, newText, user } = payload || {};
+            const actor = String(socket.data.citizen || user || '').trim().toLowerCase();
+            const cleanText = String(newText || '').trim().slice(0, 4000);
+            if (!messageId || !cleanText || !actor) {
+                if (typeof ack === 'function') ack({ ok: false });
+                return;
+            }
+
+            const msg = await Message.findById(messageId);
+            if (!msg || String(msg.sender).toLowerCase() !== actor) {
+                if (typeof ack === 'function') ack({ ok: false, error: 'غير مصرح بتعديل هذه الرسالة' });
+                return;
+            }
+
+            msg.text = cleanText;
+            msg.edited = true;
+            await msg.save();
+
+            if (msg.type.startsWith('dm:')) {
+                const parts = msg.type.split(':');
+                io.to('citizen:' + parts[1]).to('citizen:' + parts[2]).emit('message_edited', {
+                    messageId: msg._id,
+                    type: msg.type,
+                    text: msg.text,
+                    edited: true
+                });
+            } else {
+                io.emit('message_edited', {
+                    messageId: msg._id,
+                    type: msg.type,
+                    text: msg.text,
+                    edited: true
+                });
+            }
+            if (typeof ack === 'function') ack({ ok: true });
+        } catch (err) {
+            console.error("خطأ في تعديل الرسالة:", err);
+            if (typeof ack === 'function') ack({ ok: false });
+        }
+    });
+    
     socket.on('disconnect', () => {
         console.log('مستخدم قطع الاتصال:', socket.id);
     });
