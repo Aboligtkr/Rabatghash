@@ -100,6 +100,36 @@ let globalLeaderboard = {
   memory: { name: 'لا يوجد', score: 999999 }
 };
 
+let streakData = { count: 0, lastActiveDay: null, participants: [], todayParticipants: [] };
+const utcDay = (date = new Date()) => date.toISOString().slice(0, 10);
+const dayBefore = (day) => new Date(Date.parse(day + 'T00:00:00Z') - 86400000).toISOString().slice(0, 10);
+function refreshStreakDay() {
+  const today = utcDay();
+  if (streakData.lastActiveDay && streakData.lastActiveDay !== today && streakData.lastActiveDay !== dayBefore(today)) {
+    streakData.count = 0;
+    streakData.participants = [];
+    streakData.todayParticipants = [];
+    streakData.lastActiveDay = null;
+  }
+}
+async function recordStreakMessage(data) {
+  if ((data.type || 'public') !== 'public') return;
+  refreshStreakDay();
+  const today = utcDay();
+  const sender = String(data.sender || '').trim().toLowerCase();
+  if (!sender) return;
+  if (streakData.lastActiveDay !== today) {
+    streakData.todayParticipants = [];
+  }
+  if (!streakData.todayParticipants.includes(sender)) streakData.todayParticipants.push(sender);
+  if (streakData.todayParticipants.length >= 2 && streakData.lastActiveDay !== today) {
+    streakData.count = streakData.lastActiveDay === dayBefore(today) ? streakData.count + 1 : 1;
+    streakData.lastActiveDay = today;
+  }
+  streakData.participants = [...streakData.todayParticipants];
+  await saveStreakToDB();
+  io.emit('update_streak_state', streakData);
+}
 
 async function loadPersistentState() {
   try {
