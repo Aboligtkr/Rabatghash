@@ -54,6 +54,7 @@ const messageSchema = new mongoose.Schema({
     type: { type: String, default: "public" },
     text: String,
     image: String,
+    audio: String,
     sender: String,
     senderId: String,
     replyTo: { id: String, sender: String, text: String },
@@ -298,7 +299,7 @@ async function sendChatPush({ sender, recipient = null, text = '', image = '', c
         tokens,
         notification: {
           title: chatType === 'private' ? `رسالة خاصة من ${sender}` : `رسالة جديدة من ${sender} 👑`,
-          body: image ? '📷 أرسل صورة جديدة' : String(text || 'رسالة جديدة').slice(0, 180)
+          body: image === 'audio' ? '🎙️ أرسل رسالة صوتية' : (image ? '📷 أرسل صورة جديدة' : String(text || 'رسالة جديدة').slice(0, 180))
         },
         data: { chatType },
         android: { priority: 'high', notification: { sound: 'default' } }
@@ -440,15 +441,16 @@ io.on('connection', (socket) => {
         const me = socket.data.citizen, other = String(payload?.to || '').trim().toLowerCase();
         const text = typeof payload?.text === 'string' ? payload.text.trim().slice(0, 4000) : '';
         const image = typeof payload?.image === 'string' && /^data:image\/(png|jpeg|webp|gif);base64,/.test(payload.image) && payload.image.length < 7_000_000 ? payload.image : '';
-        if (!me || !validCitizen(other) || other === me || (!text && !image)) {
+        const audio = typeof payload?.audio === 'string' && /^data:audio\/(webm|ogg|mp4|mpeg|wav);base64,/.test(payload.audio) && payload.audio.length < 3_500_000 ? payload.audio : '';
+        if (!me || !validCitizen(other) || other === me || (!text && !image && !audio)) {
             if (typeof ack === 'function') ack({ ok: false, error: 'تعذر إرسال الرسالة' });
             return;
         }
         try {
-            const saved = await new Message({ type: privateRoom(me, other), sender: me, senderId: me, text, image, replyTo: payload?.replyTo && typeof payload.replyTo.text === 'string' ? { id: String(payload.replyTo.id || ''), sender: String(payload.replyTo.sender || '').slice(0, 100), text: String(payload.replyTo.text).slice(0, 500) } : undefined, createdAt: new Date(), updatedAt: new Date() }).save();
+            const saved = await new Message({ type: privateRoom(me, other), sender: me, senderId: me, text, image, audio, replyTo: payload?.replyTo && typeof payload.replyTo.text === 'string' ? { id: String(payload.replyTo.id || ''), sender: String(payload.replyTo.sender || '').slice(0, 100), text: String(payload.replyTo.text).slice(0, 500) } : undefined, createdAt: new Date(), updatedAt: new Date() }).save();
             const data = saved.toObject();
             io.to('citizen:' + me).to('citizen:' + other).emit('private_receive', { ...data, peer: other });
-            sendChatPush({ sender: me, recipient: other, text, image, chatType: 'private' }).catch(err => console.error('[FCM] private:', err));
+            sendChatPush({ sender: me, recipient: other, text, image: image || (audio ? 'audio' : ''), chatType: 'private' }).catch(err => console.error('[FCM] private:', err));
             if (typeof ack === 'function') ack({ ok: true });
         } catch (err) { if (typeof ack === 'function') ack({ ok: false, error: 'فشل حفظ الرسالة' }); }
     });
@@ -495,6 +497,21 @@ io.on('connection', (socket) => {
             await message.save();
             broadcastUpdatedMessage(message);
         } catch (err) { console.error('Message reaction error:', err); }
+    });
+
+    socket.on('message_delete', async (payload) => {
+        try {
+            const message = await findAuthorizedChatMessage(payload, true);
+            if (!message) return;
+            const data = { type: message.type, messageId: String(message._id) };
+            await message.deleteOne();
+            if (String(data.type).startsWith('dm:')) {
+                const members = String(data.type).slice(3).split(':');
+                if (members.length === 2) io.to('citizen:' + members[0]).to('citizen:' + members[1]).emit('message_deleted', data);
+            } else {
+                io.emit('message_deleted', data);
+            }
+        } catch (err) { console.error('Message delete error:', err); }
     });
 
     socket.on('message_edit', async (payload) => {
@@ -579,12 +596,16 @@ io.on('connection', (socket) => {
         try {
             if (!data || !['public', 'shura'].includes(data.type)) return;
             const senderName = data.sender || "مواطن";
+            const audio = typeof data.audio === 'string' && /^data:audio\/(webm|ogg|mp4|mpeg|wav);base64,/.test(data.audio) && data.audio.length < 3_500_000 ? data.audio : '';
+            const image = typeof data.image === 'string' && /^data:image\/(png|jpeg|webp|gif);base64,/.test(data.image) && data.image.length < 7_000_000 ? data.image : '';
+            if (!data.text && !image && !audio) return;
             if (data.type === 'public') await recordStreakMessage(data);
 
             const newMessage = new Message({
                 type: data.type || "public",
                 text: data.text || "",
-                image: data.image || "",
+                image,
+                audio,
                 sender: senderName,
                 senderId: socket.id,
                 replyTo: data.replyTo && typeof data.replyTo.text === 'string' ? { id: String(data.replyTo.id || ''), sender: String(data.replyTo.sender || '').slice(0, 100), text: String(data.replyTo.text).slice(0, 500) } : undefined,
@@ -595,7 +616,7 @@ io.on('connection', (socket) => {
             const savedMsg = await newMessage.save();
             io.emit('receive_message', savedMsg);
 
-            sendChatPush({ sender: senderName, text: data.text, image: data.image, chatType: data.type }).catch(err => console.error('[FCM] chat:', err));
+            sendChatPush({ sender: senderName, text: data.text, image: image || (audio ? 'audio' : ''), chatType: data.type }).catch(err => console.error('[FCM] chat:', err));
 
         } catch (err) {
             console.error("خطأ في حفظ أو إرسال الرسالة:", err);
