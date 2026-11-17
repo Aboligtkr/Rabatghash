@@ -59,6 +59,7 @@ const messageSchema = new mongoose.Schema({
     senderId: String,
     replyTo: { id: String, sender: String, text: String },
     reactions: [{ _id: false, user: String, emoji: String }],
+    seenBy: [{ type: String }], //
     editedAt: Date,
     updatedAt: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now }
