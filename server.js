@@ -483,6 +483,17 @@ io.on('connection', (socket) => {
         }
     }
 
+// مؤشر الكتابة في الشات
+    socket.on('typing', (data) => {
+        const chatType = data?.type || 'public';
+        socket.broadcast.emit('user_typing', { sender: socket.data.citizen || data.sender, type: chatType });
+    });
+
+    socket.on('stop_typing', (data) => {
+        const chatType = data?.type || 'public';
+        socket.broadcast.emit('user_stop_typing', { sender: socket.data.citizen || data.sender, type: chatType });
+    });
+    
     socket.on('message_react', async (payload) => {
         try {
             const emoji = String(payload?.emoji || '');
