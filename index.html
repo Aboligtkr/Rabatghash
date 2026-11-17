@@ -698,13 +698,42 @@ canvas {
 .voice-preview-bar audio { height: 34px; flex: 1; }
 .voice-action-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px; }
 
-/* مؤشر من قاعد يكتب */
-.typing-indicator-bar {
+.typing-indicator-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
   font-size: 11px;
   color: var(--primary);
-  padding: 2px 16px;
-  min-height: 18px;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
   font-weight: 700;
+}
+.typing-dots {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.typing-dots span {
+  width: 5px;
+  height: 5px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite ease-in-out both;
+}
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1.0); }
+}
+
+/* تنسيق قسم المشاهدين في الضغطة المطولة */
+.message-seen-section {
+  padding: 8px 4px;
+  border-top: 1px solid var(--border-color);
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
 /* RABATGHASH — Modern, calm interface */
