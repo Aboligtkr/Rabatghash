@@ -102,10 +102,12 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: max(40px, env(safe-area-inset-top)) 24px 16px 24px;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--card-bg);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  padding: calc(env(safe-area-inset-top, 0px) + 12px) 24px 16px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border-color) 28%, transparent);
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   width: 100%;
 }
 
@@ -698,42 +700,13 @@ canvas {
 .voice-preview-bar audio { height: 34px; flex: 1; }
 .voice-action-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px; }
 
-.typing-indicator-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 18px;
+/* مؤشر من قاعد يكتب */
+.typing-indicator-bar {
   font-size: 11px;
   color: var(--primary);
-  background: var(--card-bg);
-  border-top: 1px solid var(--border-color);
+  padding: 2px 16px;
+  min-height: 18px;
   font-weight: 700;
-}
-.typing-dots {
-  display: flex;
-  gap: 3px;
-  align-items: center;
-}
-.typing-dots span {
-  width: 5px;
-  height: 5px;
-  background-color: var(--primary);
-  border-radius: 50%;
-  animation: typingBounce 1.4s infinite ease-in-out both;
-}
-.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-@keyframes typingBounce {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1.0); }
-}
-
-/* تنسيق قسم المشاهدين في الضغطة المطولة */
-.message-seen-section {
-  padding: 8px 4px;
-  border-top: 1px solid var(--border-color);
-  font-size: 11px;
-  color: var(--text-muted);
 }
 
 /* RABATGHASH — Modern, calm interface */
@@ -741,8 +714,8 @@ canvas {
 html:not(.light-mode){--primary:#56c5a4;--primary-hover:#75d7b9;--primary-light:#173b32;--primary-border:#2b6253;--bg-main:#101b19;--card-bg:#172522;--text-main:#edf7f2;--text-muted:#a1b6ad;--border-color:#293b35;--shadow-sm:0 5px 18px #0002;--shadow-md:0 18px 45px #0003}
 html.light-mode{--primary:#16866f;--primary-hover:#0f705d;--primary-light:#e5f5ef;--primary-border:#b8dfd1;--bg-main:#f4f8f6;--card-bg:#fff;--text-main:#1e302b;--text-muted:#71827c;--border-color:#e0ebe5}
 body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0%,#56c5a414,transparent 42%)}
-.container{background:transparent}.header{background:color-mix(in srgb,var(--card-bg) 88%,transparent);backdrop-filter:blur(18px);box-shadow:0 3px 18px #00000008;border-bottom:1px solid var(--border-color)}
-.header:before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(90deg,#16866f,#80c9a8,#e6c77c)}
+.container{background:transparent}.header{background:color-mix(in srgb,var(--bg-main) 18%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:none;border-bottom:1px solid color-mix(in srgb,var(--border-color) 25%,transparent)}
+.header:before{content:none}
 .header-logo,.app-logo{border:1px solid var(--primary-border);background:var(--card-bg);box-shadow:0 0 0 5px var(--primary-light)}
 .app-screen-section{max-width:1100px;padding:28px 22px 130px;animation:appear .3s ease both}@keyframes appear{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
 .profile-card{position:relative;text-align:right;overflow:hidden;background:linear-gradient(120deg,#176c5b,#23977c 65%,#5eb99a)!important;border:1px solid #ffffff20;color:white;padding:34px 28px;min-height:145px;border-radius:26px;box-shadow:0 14px 35px #14634b25}
@@ -761,6 +734,21 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
 .private-section-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.private-section-heading h3{font-size:17px;color:var(--text-main);font-weight:900}.private-section-heading p{font-size:11px;color:var(--text-muted);margin-top:3px}.private-section-icon{width:42px;height:42px;border-radius:14px;background:var(--primary-light);display:grid;place-items:center;color:var(--primary);font-size:20px}
 .private-contacts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:9px}.private-contact-item{display:flex;align-items:center;gap:11px;width:100%;padding:12px;text-align:right;border:1px solid var(--border-color);border-radius:16px;background:var(--bg-main);color:var(--text-main);cursor:pointer;transition:.18s}.private-contact-item:active{transform:scale(.985)}.private-contact-avatar{width:42px;height:42px;flex:0 0 42px;border-radius:50%;display:grid;place-items:center;background:var(--primary-light);color:var(--primary);font-weight:900}.private-contact-copy{min-width:0;flex:1}.private-contact-copy strong{display:block;font-size:13px}.private-contact-copy small{display:block;color:var(--text-muted);font-size:10px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.private-contact-arrow{color:var(--text-muted)}.private-list-loading{padding:14px;color:var(--text-muted);font-size:12px;text-align:center}
 .chat-box-body{display:flex;flex-direction:column;align-items:stretch;direction:ltr;gap:4px!important;padding:16px 15px 22px!important;overflow-x:hidden;box-sizing:border-box}.chat-message{position:relative;direction:rtl;display:flex;flex-direction:column;width:max-content;max-width:min(78%,520px);min-width:0;box-sizing:border-box;padding:9px 12px 7px;margin:7px 0 3px;border:1px solid var(--border-color);border-radius:18px;background:var(--card-bg);color:var(--text-main);box-shadow:0 2px 8px #00000008;overflow-wrap:anywhere;word-break:break-word;touch-action:pan-y;align-self:flex-start}.chat-message.is-mine{align-self:flex-end;margin-inline-start:0;margin-inline-end:0;background:var(--primary);color:#fff;border-color:transparent;border-radius:18px}.chat-message:not(.is-mine){align-self:flex-start}.chat-message.is-grouped{margin-top:2px;border-radius:15px}.chat-message.is-mine.is-grouped{border-radius:15px}.chat-message .chat-message-meta{display:flex;align-items:center;gap:9px;font-size:10px;opacity:.78;margin-bottom:3px}.chat-message.is-grouped .chat-message-meta .chat-sender{display:none}.chat-message .chat-message-text{font-size:14px;line-height:1.7;white-space:pre-wrap;user-select:text}.chat-message-image{display:block;width:auto;max-width:min(68vw,320px);max-height:360px;object-fit:contain;border:0!important;outline:0;box-shadow:none!important;border-radius:14px;margin:5px 0 0;overflow:hidden}.chat-message-audio{display:block;width:min(280px,68vw);max-width:100%;height:42px;margin:7px 0 2px;border-radius:22px}.chat-image-wrap{position:relative;display:inline-flex;flex-direction:column;align-items:flex-start;max-width:100%}.chat-image-save{display:grid;place-items:center;width:27px;height:27px;margin-top:5px;padding:0;border:1px solid var(--border-color);border-radius:50%;background:var(--card-bg);color:var(--text-main);text-decoration:none;user-select:none;-webkit-user-select:none}.chat-image-save svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.chat-send-btn,.chat-voice-btn{width:43px;height:43px;min-width:43px;padding:0!important;display:grid;place-items:center;border:0;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}.chat-send-btn svg,.chat-voice-btn svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}.chat-voice-btn{background:var(--primary-light)!important;color:var(--primary)!important;border:1px solid var(--primary-border)!important;border-radius:50%!important}.chat-voice-btn.is-recording{background:#fee2e2!important;color:#dc2626!important;border-color:#fca5a5!important;animation:voicePulse 1s infinite}@keyframes voicePulse{50%{box-shadow:0 0 0 5px #ef444422}}.chat-recording-label{font-size:10px;color:#dc2626;display:none;align-self:center;white-space:nowrap}.chat-recording-label.active{display:inline}.chat-footer .chat-send-btn{flex:0 0 43px}.chat-footer .chat-voice-btn{flex:0 0 43px}.chat-footer .chat-send-btn:focus,.chat-footer .chat-voice-btn:focus{outline:2px solid var(--primary);outline-offset:2px}.chat-message .chat-reply-quote{padding:7px 9px;margin:0 0 7px;border-right:3px solid var(--primary);border-radius:8px;background:#0000000c;font-size:11px;line-height:1.5;opacity:.9}.chat-message.is-mine .chat-reply-quote{border-right-color:#fff;background:#ffffff20}.chat-message .chat-edited{font-size:9px;opacity:.65;margin-right:5px}.chat-reactions{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}.chat-reaction-chip{border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-main);border-radius:20px;padding:2px 7px;font-size:12px;line-height:1.5;display:inline-flex;align-items:center;gap:4px}.chat-reaction-names{font-size:9px;opacity:.72;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chat-message.is-mine .chat-reaction-chip{background:#ffffff20;border-color:#ffffff55;color:#fff}.chat-reply-preview{padding:9px 14px;background:var(--primary-light);border-top:1px solid var(--border-color);color:var(--text-main);font-size:11px;display:flex;align-items:center;justify-content:space-between;gap:10px}.chat-reply-preview[hidden]{display:none}.chat-reply-preview button{border:0;background:transparent;color:var(--primary);font-size:18px;cursor:pointer}.chat-footer{flex-shrink:0}.chat-footer input[type=text]{min-width:0}.chat-message-actions-hint{font-size:9px;opacity:.55;margin-top:2px}
+
+/* Native-looking prompts are replaced with dialogs rendered inside the WebView */
+.app-dialog-backdrop{display:none;position:fixed;inset:0;z-index:13000;align-items:center;justify-content:center;padding:24px;background:#0008;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.app-dialog-backdrop.open{display:flex;animation:appDialogFade .16s ease both}
+.app-dialog-card{width:min(100%,360px);max-height:min(78dvh,560px);overflow:auto;background:var(--card-bg);color:var(--text-main);border:1px solid var(--border-color);border-radius:23px;padding:20px;box-shadow:0 22px 70px #0005;animation:appDialogPop .2s cubic-bezier(.2,.8,.2,1) both}
+.app-dialog-title{font-size:17px;font-weight:900;margin:0 0 8px}
+.app-dialog-message{font-size:13px;line-height:1.9;color:var(--text-muted);white-space:pre-wrap;margin:0 0 17px}
+.app-dialog-list{display:flex;flex-direction:column;gap:8px;max-height:42dvh;overflow:auto;margin:12px 0 18px}
+.app-dialog-person{padding:10px 12px;border:1px solid var(--border-color);border-radius:13px;background:var(--bg-main);font-size:13px}
+.app-dialog-actions{display:flex;gap:9px;justify-content:flex-start}
+.app-dialog-actions button{border:0;border-radius:13px;padding:10px 17px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.app-dialog-cancel{background:var(--bg-main);color:var(--text-main);border:1px solid var(--border-color)!important}
+.app-dialog-confirm{background:var(--primary);color:white}
+@keyframes appDialogFade{from{opacity:0}to{opacity:1}}@keyframes appDialogPop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+
 .message-actions-backdrop{display:none;position:fixed;inset:0;z-index:12000;background:transparent;align-items:flex-start;justify-content:flex-start;padding:0}.message-actions-backdrop.open{display:block}.message-actions-sheet{position:fixed;width:max-content;max-width:min(92vw,330px);background:var(--card-bg);border:1px solid var(--border-color);border-radius:17px;padding:8px 10px;box-shadow:0 10px 35px #0004;animation:messageSheetIn .12s ease}.message-actions-handle{display:none}.message-reaction-row{display:flex;justify-content:center;gap:5px;padding:2px 0 8px;border-bottom:1px solid var(--border-color)}.message-reaction-row button{border:0;background:var(--bg-main);border-radius:50%;width:35px;height:35px;font-size:18px;cursor:pointer}.message-action-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 7px;background:transparent;border:0;border-bottom:1px solid var(--border-color);color:var(--text-main);font:inherit;text-align:right;font-size:13px;cursor:pointer}.message-action-cancel{display:none}.chat-editing-hint{display:none;padding:6px 12px;background:var(--primary-light);color:var(--primary);font-size:11px;align-items:center;justify-content:space-between}.chat-editing-hint.active{display:flex}.chat-editing-hint button{border:0;background:transparent;color:var(--primary);font-size:17px}@media(max-width:420px){.chat-message{max-width:88%;padding:8px 11px}.private-inline-section{padding:14px}.chat-box-body{padding-inline:11px!important}.message-reaction-row button{width:38px;height:38px;font-size:19px}}
 
 
@@ -776,6 +764,31 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
 .selected-reaction-line .selected-reaction-emoji{flex:0 0 22px;font-size:15px}
 .selected-reaction-empty{font-size:10px;color:var(--text-muted);text-align:center;padding:4px}
 @media(prefers-reduced-motion:reduce){.chat-message.chat-message-enter{animation:none}}
+
+
+
+/* Floating Telegram-inspired chat chrome */
+.fullscreen-modal[id^="chat-modal-"],#private-chat-modal{height:100dvh;min-height:100%;padding-top:env(safe-area-inset-top);padding-bottom:0;overflow:hidden;background:var(--bg-main)}
+.chat-topbar{position:relative;z-index:5;display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:10px;flex:0 0 auto;padding:9px 14px 12px!important;background:color-mix(in srgb,var(--bg-main) 68%,transparent)!important;border:0!important;box-shadow:0 5px 22px #00000008!important;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.chat-topbar:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,color-mix(in srgb,var(--card-bg) 72%,transparent),transparent);pointer-events:none}
+.chat-top-close{width:42px;height:42px;border:1px solid var(--border-color);border-radius:15px;background:color-mix(in srgb,var(--card-bg) 72%,transparent);color:var(--text-main);font-size:29px;line-height:1;cursor:pointer;backdrop-filter:blur(12px)}
+.chat-top-title{justify-self:center;min-width:0;max-width:min(70vw,360px);padding:7px 22px;border:1px solid color-mix(in srgb,var(--primary-border) 72%,transparent);border-radius:16px;background:color-mix(in srgb,var(--card-bg) 72%,transparent);text-align:center;box-shadow:0 5px 18px #0000000a;backdrop-filter:blur(12px)}
+.chat-top-title strong{display:block;color:var(--text-main);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-top-title small{display:block;color:var(--text-muted);font-size:9px;margin-top:1px}
+.chat-top-logo{width:42px;height:42px;object-fit:cover;border-radius:50%;border:1px solid var(--primary-border);box-shadow:0 0 0 4px var(--primary-light)}
+.fullscreen-modal[id^="chat-modal-"] .chat-box-body,#private-chat-modal .chat-box-body{flex:1;min-height:0;width:100%;max-width:900px;padding:15px 16px 125px!important;margin:0 auto;overflow-y:auto;overscroll-behavior:contain;background:transparent}
+.chat-footer{position:absolute!important;left:0;right:0;bottom:max(13px,env(safe-area-inset-bottom));z-index:8;width:min(900px,calc(100% - 24px))!important;margin:0 auto!important;padding:9px!important;display:flex;align-items:center;gap:9px!important;background:color-mix(in srgb,var(--card-bg) 70%,transparent)!important;border:1px solid color-mix(in srgb,var(--border-color) 85%,transparent)!important;border-radius:25px!important;box-shadow:0 12px 35px #0002!important;backdrop-filter:blur(24px) saturate(1.35);-webkit-backdrop-filter:blur(24px) saturate(1.35)}
+.chat-footer>*{flex-shrink:0}.chat-footer input[type="text"]{flex:1;min-width:0;height:43px;padding:0 15px!important;border:1px solid var(--border-color)!important;border-radius:15px!important;background:color-mix(in srgb,var(--bg-main) 70%,transparent)!important;color:var(--text-main)}
+.chat-footer .img-upload-btn,.chat-footer .chat-voice-btn,.chat-footer .chat-send-btn{width:43px;height:43px;min-width:43px;flex:0 0 43px;border-radius:15px!important;background:color-mix(in srgb,var(--card-bg) 65%,transparent)!important;border:1px solid var(--border-color)!important;color:var(--primary)!important;box-shadow:0 3px 12px #0000000a}
+.chat-footer .chat-send-btn{background:linear-gradient(135deg,var(--primary),var(--primary-hover))!important;color:white!important;border:0!important;border-radius:15px!important}
+.chat-footer .chat-recording-label{position:absolute;bottom:calc(100% + 7px);right:16px;padding:5px 10px;border-radius:10px;background:var(--card-bg);box-shadow:0 4px 15px #0002}
+.typing-indicator-bar{position:absolute;z-index:7;bottom:calc(max(13px,env(safe-area-inset-bottom)) + 70px);left:18px;right:18px;width:max-content;max-width:calc(100% - 36px);margin:auto;padding:5px 12px;border:1px solid var(--primary-border);border-radius:14px;background:color-mix(in srgb,var(--card-bg) 78%,transparent);backdrop-filter:blur(15px);font-size:11px;box-shadow:0 4px 14px #0000000b;pointer-events:none}
+.typing-indicator-bar:empty{display:none}.typing-indicator-bar:not(:empty):before{content:"•••";display:inline-block;letter-spacing:2px;margin-left:7px;animation:typingDots 1s infinite}
+@keyframes typingDots{0%,60%,100%{opacity:.35}30%{opacity:1}}
+.fullscreen-modal.open{animation:chatScreenIn .28s cubic-bezier(.2,.75,.25,1) both}@keyframes chatScreenIn{from{opacity:0;transform:translateY(14px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+.app-screen-section.active-tab{animation:sectionEnter .32s cubic-bezier(.2,.75,.25,1) both}@keyframes sectionEnter{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.chat-seen-status{font-size:9px;opacity:.72;margin-top:3px;text-align:left;direction:rtl}.chat-message.is-mine .chat-seen-status{color:#fff}.chat-seen-status button{border:0;background:none;color:inherit;font:inherit;text-decoration:underline;cursor:pointer}
+@media(max-width:520px){.chat-topbar{padding-inline:11px!important}.chat-footer{width:calc(100% - 18px)!important;gap:6px!important;padding:7px!important}.chat-footer .img-upload-btn,.chat-footer .chat-voice-btn,.chat-footer .chat-send-btn{width:40px;height:40px;min-width:40px;flex-basis:40px}.chat-footer input[type="text"]{height:40px;padding-inline:11px!important;font-size:13px}.chat-box-body{padding-bottom:115px!important}}
+@media(orientation:landscape) and (max-height:560px){.chat-topbar{padding-block:5px!important}.chat-top-logo,.chat-top-close{width:35px;height:35px}.chat-top-title{padding:4px 18px}.chat-footer{bottom:6px;padding:5px!important}.chat-box-body{padding-bottom:75px!important}.typing-indicator-bar{bottom:62px}}
 
 </style>
 </head>
@@ -1130,20 +1143,15 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
 
 
   <div id="private-chat-modal" class="fullscreen-modal">
-    <div class="modal-header"><h3 id="private-chat-title">محادثة خاصة</h3><button class="close-chat-btn" onclick="closePrivateChat()">رجوع ✕</button></div>
+    <div class="modal-header chat-topbar"><button class="chat-top-close" onclick="closePrivateChat()" aria-label="إغلاق">‹</button><div class="chat-top-title"><strong id="private-chat-title">محادثة خاصة</strong><small id="private-chat-subtitle">محادثة خاصة</small></div><img class="chat-top-logo" src="assets/logo/logo.png" alt="شعار المملكة"></div>
     <div id="private-chat-box" class="chat-box-body" aria-live="polite"></div>
     <div id="private-editing-hint" class="chat-editing-hint">تعديل الرسالة <button onclick="cancelChatEdit()">×</button></div>
     <div id="private-reply-preview" class="chat-reply-preview" hidden></div>
-    <div id="typing-indicator-public" class="typing-indicator-bar"></div>
+    <div id="typing-indicator-private" class="typing-indicator-bar"></div>
     <div class="chat-footer"><label class="img-upload-btn" title="إرفاق صورة" aria-label="إرفاق صورة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4H10L8.5 6H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L14 4Z"></path><circle cx="12" cy="13" r="3.5"></circle></svg><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="sendPrivateImage(event)"></label><input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة..." onkeydown="if(event.key==='Enter')sendPrivateMessage()"><span id="private-recording-label" class="chat-recording-label">جارٍ التسجيل</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('private')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" aria-label="إرسال" title="إرسال" onclick="sendPrivateMessage()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button></div>
   </div>
   <div id="chat-modal-public" class="fullscreen-modal">
-    <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
-      <div>
-        <h3>💬 الدردشة العامة للمملكة</h3>
-      </div>
-      <button class="close-chat-btn" onclick="closeChat('public')">إغلاق ✕</button>
-    </div>
+    <div class="modal-header chat-topbar"><button class="chat-top-close" onclick="closeChat('public')" aria-label="إغلاق">‹</button><div class="chat-top-title"><strong>الدردشة العامة</strong><small>مجتمع المملكة الربطخشاوية</small></div><img class="chat-top-logo" src="assets/logo/logo.png" alt="شعار المملكة"></div>
 
     <div id="chat-box-public" class="chat-box-body">
       <div class="chat-msg"><b>النظام:</b> أهلاً بك في الدردشة العامة للمملكة 👑</div>
@@ -1162,10 +1170,7 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
   </div>
 
   <div id="chat-modal-shura" class="fullscreen-modal">
-    <div class="modal-header">
-      <h3 style="color:var(--primary);">👑 شات مجلس الشورى الخاص</h3>
-      <button class="close-chat-btn" onclick="closeChat('shura')">إغلاق ✕</button>
-    </div>
+    <div class="modal-header chat-topbar"><button class="chat-top-close" onclick="closeChat('shura')" aria-label="إغلاق">‹</button><div class="chat-top-title"><strong>مجلس الشورى</strong><small>المحادثة الخاصة بالأعضاء</small></div><img class="chat-top-logo" src="assets/logo/logo.png" alt="شعار المملكة"></div>
 
     <div id="chat-box-shura" class="chat-box-body">
       <div class="chat-msg"><b>النظام:</b> مرحباً بكم أعضاء مجلس الشورى المحترمين 🏛️</div>
@@ -1190,11 +1195,21 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
         <button onclick="reactToSelectedMessage('❤️')">❤️</button><button onclick="reactToSelectedMessage('😂')">😂</button><button onclick="reactToSelectedMessage('😮')">😮</button><button onclick="reactToSelectedMessage('😢')">😢</button><button onclick="reactToSelectedMessage('👍')">👍</button><button onclick="reactToSelectedMessage('🔥')">🔥</button>
       </div>
       <div id="selected-reaction-details" class="selected-reaction-details" aria-live="polite"></div>
+      <button class="message-action-item" onclick="showSelectedMessageSeen()">👁️ <span>من شاهد الرسالة؟</span></button>
       <button class="message-action-item" onclick="replyToSelectedMessage()">↩️ <span>الرد على الرسالة</span></button>
       <button class="message-action-item" onclick="copySelectedMessage()">⧉ <span>نسخ النص</span></button>
       <button class="message-action-item" id="edit-message-action" onclick="editSelectedMessage()">✏️ <span>تعديل الرسالة</span></button>
       <button class="message-action-item" id="delete-message-action" onclick="deleteSelectedMessage()" style="color:#dc2626;display:none">🗑️ <span>حذف الرسالة</span></button>
     </div>
+  </div>
+
+  <div id="app-dialog" class="app-dialog-backdrop" role="presentation" onclick="if(event.target===this)closeAppDialog()">
+    <section class="app-dialog-card" role="dialog" aria-modal="true" aria-labelledby="app-dialog-title">
+      <h3 id="app-dialog-title" class="app-dialog-title"></h3>
+      <p id="app-dialog-message" class="app-dialog-message"></p>
+      <div id="app-dialog-list" class="app-dialog-list" hidden></div>
+      <div id="app-dialog-actions" class="app-dialog-actions"></div>
+    </section>
   </div>
 
   <div id="leaderboard-modal" class="fullscreen-modal">
@@ -1357,7 +1372,7 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
         badges: ["🦅 زعيم الرواشنة الأسبق", "🔙 التائب العائد", "⚡ الخصم اللدود سابقاً"],
         bio: "انضم للمملكة عام 2024 ثم انشق لاحقاً وأسس جماعة «الرواشنة» المنافسة وقاد ضدنا أعتى الحروب كأحد أكبر أعداء المملكة، قبل أن يراجع موقفه ويعود تائباً ومستغفراً إلى أسوار المملكة الربطخشاوية في عام 2026.",
         rep: 195
-      }
+      },
     };
 
     let currentUser = "";
@@ -1609,6 +1624,7 @@ localStorage.removeItem('rg_dm_token');
       const chatBox = document.getElementById(`chat-box-${type}`);
       if (chatBox) {
         renderCachedChat(type, chatBox);
+        markChatRead(type, readChatCache(type));
         if (!chatBox.children.length && type === 'public') {
           const welcome = document.createElement('div'); welcome.className = 'chat-message'; welcome.textContent = 'أهلاً بك في الدردشة العامة للمملكة 👑'; chatBox.appendChild(welcome);
         }
@@ -2255,6 +2271,46 @@ localStorage.removeItem('rg_dm_token');
       readChatCache(type).forEach(m => renderChatMessage(m, box, type, false));
       box.scrollTop = box.scrollHeight;
     }
+    function markChatRead(type, messages) {
+      if (!socket?.connected || !currentUser || !Array.isArray(messages)) return;
+      const ids = messages.filter(m => m && m._id && m.sender !== currentUser && !(m.readBy || []).includes(currentUser)).map(m => String(m._id));
+      if (!ids.length) return;
+      const peer = String(type || '').startsWith('dm:') ? String(type).slice(3).split(':').find(x => x !== currentUser) : null;
+      socket.emit('mark_chat_read', { type, reader: currentUser, messageIds: ids, peer });
+    }
+    function showSelectedMessageSeen() {
+      if (!selectedMessageContext) return;
+      const m = selectedMessageContext.message;
+      const names = Array.isArray(m.readBy) ? [...new Set(m.readBy.filter(x => x && x !== currentUser))] : [];
+      closeMessageActions();
+      openAppDialog({
+        title: '👁️ مشاهدة الرسالة',
+        message: names.length ? `عدد المشاهدات: ${names.length}` : 'لسا ما حدا شاف هالرسالة.',
+        list: names,
+        confirmText: 'تمام',
+        cancelText: null
+      });
+    }
+
+    function openAppDialog({title='تنبيه', message='', list=[], confirmText='موافق', cancelText='إغلاق', onConfirm=null}={}) {
+      const modal=document.getElementById('app-dialog'); if(!modal) return;
+      document.getElementById('app-dialog-title').textContent=title;
+      document.getElementById('app-dialog-message').textContent=message;
+      const listBox=document.getElementById('app-dialog-list'); listBox.replaceChildren();
+      listBox.hidden=!list.length;
+      list.forEach(name=>{const item=document.createElement('div');item.className='app-dialog-person';item.textContent=name;listBox.appendChild(item);});
+      const actions=document.getElementById('app-dialog-actions'); actions.replaceChildren();
+      if(cancelText){const cancel=document.createElement('button');cancel.className='app-dialog-cancel';cancel.textContent=cancelText;cancel.onclick=closeAppDialog;actions.appendChild(cancel);}
+      const confirm=document.createElement('button');confirm.className='app-dialog-confirm';confirm.textContent=confirmText;confirm.onclick=()=>{closeAppDialog();if(typeof onConfirm==='function')onConfirm();};actions.appendChild(confirm);
+      modal.classList.add('open');
+    }
+    function closeAppDialog(){document.getElementById('app-dialog')?.classList.remove('open');}
+    socket.on('seen_update', data => {
+      const type = data?.type; if (!type || !data.messageId) return;
+      const list = readChatCache(type); const m = list.find(x => String(x._id || x.id) === String(data.messageId));
+      if (m) { m.readBy = Array.isArray(data.readBy) ? data.readBy : []; writeChatCache(type, list); refreshRenderedMessage(m, type); }
+    });
+
     function getMessagePreview(message) { return message?.text || (message?.image ? '📷 صورة' : (message?.audio ? '🎙️ رسالة صوتية' : 'رسالة')); }
 
     function sendMessage(type) {
@@ -2386,17 +2442,20 @@ function setupTypingListener(type, inputId) {
     }, 1500);
   });
 }
+setupTypingListener('public', 'chat-input-public');
+setupTypingListener('shura', 'chat-input-shura');
+const privateTypingInput=document.getElementById('private-chat-input');
+if(privateTypingInput) privateTypingInput.addEventListener('input',()=>{ if(!privatePeer)return; socket.emit('typing',{type:'dm:'+ [currentUser,privatePeer].sort().join(':'),peer:privatePeer}); clearTimeout(typingTimeout); typingTimeout=setTimeout(()=>socket.emit('stop_typing',{type:'dm:'+ [currentUser,privatePeer].sort().join(':'),peer:privatePeer}),1500); });
 
-// استدعِ هذه الدوال عند فتح الشاتات المناسبة
-socket.on('user_typing', (data) => {
-  const indicator = document.getElementById(`typing-indicator-${data.type}`);
-  if (indicator) indicator.textContent = `${data.sender} يكتب الآن...`;
-});
-
-socket.on('user_stop_typing', (data) => {
-  const indicator = document.getElementById(`typing-indicator-${data.type}`);
-  if (indicator) indicator.textContent = '';
-});
+// مؤشرات الكتابة
+const typingUsers = new Map();
+function paintTypingIndicator(type) {
+  const indicator=document.getElementById(`typing-indicator-${type}`); if(!indicator)return;
+  const names=[...(typingUsers.get(type)||[])];
+  indicator.textContent=names.length===1?`${names[0]} يكتب الآن`:names.length===2?`${names[0]} و ${names[1]} يكتبان الآن`:names.length>2?`${names.length} أشخاص يكتبون الآن`:'';
+}
+socket.on('user_typing', data => { if(!data?.type || data.sender===currentUser)return; const set=typingUsers.get(data.type)||new Set();set.add(data.sender||'مواطن');typingUsers.set(data.type,set);paintTypingIndicator(data.type); });
+socket.on('user_stop_typing', data => { if(!data?.type)return;const set=typingUsers.get(data.type);if(set){set.delete(data.sender);if(!set.size)typingUsers.delete(data.type);}paintTypingIndicator(data.type); });
 
     function renderChatMessage(data, chatBox, cacheType, animate = true) {
       if (!chatBox || !data) return;
@@ -2441,6 +2500,7 @@ socket.on('user_stop_typing', (data) => {
         });
         bubble.appendChild(reactions);
       }
+      if (isMe && id) { const seen=document.createElement('div'); seen.className='chat-seen-status'; const readers=(data.readBy||[]).filter(x=>x && x!==currentUser); const btn=document.createElement('button'); btn.type='button'; btn.textContent=readers.length ? `👁️ شاهده ${readers.length}` : '✓ تم الإرسال'; btn.onclick=()=>{selectedMessageContext={message:data,cacheType,private:String(cacheType||'').startsWith('dm:')};showSelectedMessageSeen();}; seen.appendChild(btn); bubble.appendChild(seen); }
       bubble.addEventListener('contextmenu', e => { e.preventDefault(); showMessageActions(data, cacheType, e.clientX, e.clientY); });
       let pressTimer = null;
       bubble.addEventListener('touchstart', e => { const t=e.touches?.[0]; pressTimer = setTimeout(() => showMessageActions(data, cacheType, t?.clientX, t?.clientY), 520); }, { passive: true });
@@ -2499,8 +2559,8 @@ socket.on('user_stop_typing', (data) => {
       if (!selectedMessageContext) return;
       const message = selectedMessageContext.message;
       if (message.sender !== currentUser) return;
-      if (!confirm('هل تريد حذف هذه الرسالة؟')) return;
-      sendMessageAction('message_delete', {}); closeMessageActions();
+      closeMessageActions();
+      openAppDialog({title:'حذف الرسالة',message:'متأكد إنك بدك تحذف هالرسالة؟ ما رح تقدر ترجعها بعد الحذف.',confirmText:'احذف الرسالة',cancelText:'إلغاء',onConfirm:()=>{sendMessageAction('message_delete', {});}});
     }
     function replyToSelectedMessage() {
       if (!selectedMessageContext) return;
@@ -2653,6 +2713,7 @@ function cancelChatEdit(type) {
       const box = document.getElementById('private-chat-box');
       openFullscreenModal('private-chat-modal');
       renderCachedChat(room, box);
+      markChatRead(room, readChatCache(room));
       authenticatePrivate(ok => {
         if (!ok || privatePeer !== contact.id) return;
         socket.emit('private_history', { with: privatePeer, since: localStorage.getItem(chatSyncKey(room)) || null }, res => {
@@ -2660,6 +2721,7 @@ function cancelChatEdit(type) {
           if (res.incremental) mergeChatHistory(room, res.history || []); else writeChatCache(room, res.history || []);
           if (res.syncedAt) localStorage.setItem(chatSyncKey(room), res.syncedAt);
           renderCachedChat(room, box);
+          markChatRead(room, res.history || []);
         });
       });
     }
@@ -2668,7 +2730,7 @@ function cancelChatEdit(type) {
       const peer = data.sender === currentUser ? data.peer : data.sender;
       const room = data.type || ('dm:' + [currentUser, peer].sort().join(':'));
       upsertChatCache(room, data);
-      if (privatePeer && room === 'dm:' + [currentUser, privatePeer].sort().join(':')) renderChatMessage(data, document.getElementById('private-chat-box'), room);
+      if (privatePeer && room === 'dm:' + [currentUser, privatePeer].sort().join(':')) { renderChatMessage(data, document.getElementById('private-chat-box'), room); if(data.sender!==currentUser)markChatRead(room,[data]); }
     }
     function sendPrivateMessage(image) {
       if (!privatePeer || !privateAuth) return;
@@ -2698,6 +2760,7 @@ function cancelChatEdit(type) {
       const type = data.type || 'public';
       upsertChatCache(type, data);
       renderSingleMessage(data, type);
+      if (data.sender !== currentUser && (document.getElementById(`chat-modal-${type}`)?.classList.contains('open'))) markChatRead(type,[data]);
       if (data.sender !== currentUser) {
         try { const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); audio.volume = .35; audio.play().catch(() => {}); } catch (_) {}
       }
@@ -2707,7 +2770,7 @@ function cancelChatEdit(type) {
       if (!box) return;
       if (res.incremental) mergeChatHistory(type, res.history || []); else writeChatCache(type, res.history || []);
       if (res.syncedAt) localStorage.setItem(chatSyncKey(type), res.syncedAt);
-      if (activeChatType === type || document.getElementById(`chat-modal-${type}`)?.classList.contains('open')) renderCachedChat(type, box);
+      if (activeChatType === type || document.getElementById(`chat-modal-${type}`)?.classList.contains('open')) { renderCachedChat(type, box); markChatRead(type,res.history||[]); }
     });
     socket.on('message_updated', data => {
       const type = data.type || 'public';
