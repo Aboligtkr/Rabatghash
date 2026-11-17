@@ -7,7 +7,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="IKR Service">
-<meta name="color-scheme" content="dark light">
 <link rel="apple-touch-icon" href="assets/logo/logo.png">
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <meta charset="UTF-8">
@@ -103,12 +102,10 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: calc(env(safe-area-inset-top, 0px) + 12px) 24px 16px 24px;
-  border-bottom: 1px solid color-mix(in srgb, var(--border-color) 28%, transparent);
-  background: transparent;
-  box-shadow: none;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  padding: max(40px, env(safe-area-inset-top)) 24px 16px 24px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--card-bg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   width: 100%;
 }
 
@@ -715,8 +712,8 @@ canvas {
 html:not(.light-mode){--primary:#56c5a4;--primary-hover:#75d7b9;--primary-light:#173b32;--primary-border:#2b6253;--bg-main:#101b19;--card-bg:#172522;--text-main:#edf7f2;--text-muted:#a1b6ad;--border-color:#293b35;--shadow-sm:0 5px 18px #0002;--shadow-md:0 18px 45px #0003}
 html.light-mode{--primary:#16866f;--primary-hover:#0f705d;--primary-light:#e5f5ef;--primary-border:#b8dfd1;--bg-main:#f4f8f6;--card-bg:#fff;--text-main:#1e302b;--text-muted:#71827c;--border-color:#e0ebe5}
 body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0%,#56c5a414,transparent 42%)}
-.container{background:transparent}.header{background:color-mix(in srgb,var(--bg-main) 18%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:none;border-bottom:1px solid color-mix(in srgb,var(--border-color) 25%,transparent)}
-.header:before{content:none}
+.container{background:transparent}.header{background:color-mix(in srgb,var(--card-bg) 88%,transparent);backdrop-filter:blur(18px);box-shadow:0 3px 18px #00000008;border-bottom:1px solid var(--border-color)}
+.header:before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(90deg,#16866f,#80c9a8,#e6c77c)}
 .header-logo,.app-logo{border:1px solid var(--primary-border);background:var(--card-bg);box-shadow:0 0 0 5px var(--primary-light)}
 .app-screen-section{max-width:1100px;padding:28px 22px 130px;animation:appear .3s ease both}@keyframes appear{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
 .profile-card{position:relative;text-align:right;overflow:hidden;background:linear-gradient(120deg,#176c5b,#23977c 65%,#5eb99a)!important;border:1px solid #ffffff20;color:white;padding:34px 28px;min-height:145px;border-radius:26px;box-shadow:0 14px 35px #14634b25}
@@ -735,21 +732,6 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
 .private-section-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.private-section-heading h3{font-size:17px;color:var(--text-main);font-weight:900}.private-section-heading p{font-size:11px;color:var(--text-muted);margin-top:3px}.private-section-icon{width:42px;height:42px;border-radius:14px;background:var(--primary-light);display:grid;place-items:center;color:var(--primary);font-size:20px}
 .private-contacts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:9px}.private-contact-item{display:flex;align-items:center;gap:11px;width:100%;padding:12px;text-align:right;border:1px solid var(--border-color);border-radius:16px;background:var(--bg-main);color:var(--text-main);cursor:pointer;transition:.18s}.private-contact-item:active{transform:scale(.985)}.private-contact-avatar{width:42px;height:42px;flex:0 0 42px;border-radius:50%;display:grid;place-items:center;background:var(--primary-light);color:var(--primary);font-weight:900}.private-contact-copy{min-width:0;flex:1}.private-contact-copy strong{display:block;font-size:13px}.private-contact-copy small{display:block;color:var(--text-muted);font-size:10px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.private-contact-arrow{color:var(--text-muted)}.private-list-loading{padding:14px;color:var(--text-muted);font-size:12px;text-align:center}
 .chat-box-body{display:flex;flex-direction:column;align-items:stretch;direction:ltr;gap:4px!important;padding:16px 15px 22px!important;overflow-x:hidden;box-sizing:border-box}.chat-message{position:relative;direction:rtl;display:flex;flex-direction:column;width:max-content;max-width:min(78%,520px);min-width:0;box-sizing:border-box;padding:9px 12px 7px;margin:7px 0 3px;border:1px solid var(--border-color);border-radius:18px;background:var(--card-bg);color:var(--text-main);box-shadow:0 2px 8px #00000008;overflow-wrap:anywhere;word-break:break-word;touch-action:pan-y;align-self:flex-start}.chat-message.is-mine{align-self:flex-end;margin-inline-start:0;margin-inline-end:0;background:var(--primary);color:#fff;border-color:transparent;border-radius:18px}.chat-message:not(.is-mine){align-self:flex-start}.chat-message.is-grouped{margin-top:2px;border-radius:15px}.chat-message.is-mine.is-grouped{border-radius:15px}.chat-message .chat-message-meta{display:flex;align-items:center;gap:9px;font-size:10px;opacity:.78;margin-bottom:3px}.chat-message.is-grouped .chat-message-meta .chat-sender{display:none}.chat-message .chat-message-text{font-size:14px;line-height:1.7;white-space:pre-wrap;user-select:text}.chat-message-image{display:block;width:auto;max-width:min(68vw,320px);max-height:360px;object-fit:contain;border:0!important;outline:0;box-shadow:none!important;border-radius:14px;margin:5px 0 0;overflow:hidden}.chat-message-audio{display:block;width:min(280px,68vw);max-width:100%;height:42px;margin:7px 0 2px;border-radius:22px}.chat-image-wrap{position:relative;display:inline-flex;flex-direction:column;align-items:flex-start;max-width:100%}.chat-image-save{display:grid;place-items:center;width:27px;height:27px;margin-top:5px;padding:0;border:1px solid var(--border-color);border-radius:50%;background:var(--card-bg);color:var(--text-main);text-decoration:none;user-select:none;-webkit-user-select:none}.chat-image-save svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.chat-send-btn,.chat-voice-btn{width:43px;height:43px;min-width:43px;padding:0!important;display:grid;place-items:center;border:0;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}.chat-send-btn svg,.chat-voice-btn svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}.chat-voice-btn{background:var(--primary-light)!important;color:var(--primary)!important;border:1px solid var(--primary-border)!important;border-radius:50%!important}.chat-voice-btn.is-recording{background:#fee2e2!important;color:#dc2626!important;border-color:#fca5a5!important;animation:voicePulse 1s infinite}@keyframes voicePulse{50%{box-shadow:0 0 0 5px #ef444422}}.chat-recording-label{font-size:10px;color:#dc2626;display:none;align-self:center;white-space:nowrap}.chat-recording-label.active{display:inline}.chat-footer .chat-send-btn{flex:0 0 43px}.chat-footer .chat-voice-btn{flex:0 0 43px}.chat-footer .chat-send-btn:focus,.chat-footer .chat-voice-btn:focus{outline:2px solid var(--primary);outline-offset:2px}.chat-message .chat-reply-quote{padding:7px 9px;margin:0 0 7px;border-right:3px solid var(--primary);border-radius:8px;background:#0000000c;font-size:11px;line-height:1.5;opacity:.9}.chat-message.is-mine .chat-reply-quote{border-right-color:#fff;background:#ffffff20}.chat-message .chat-edited{font-size:9px;opacity:.65;margin-right:5px}.chat-reactions{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}.chat-reaction-chip{border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-main);border-radius:20px;padding:2px 7px;font-size:12px;line-height:1.5;display:inline-flex;align-items:center;gap:4px}.chat-reaction-names{font-size:9px;opacity:.72;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.chat-message.is-mine .chat-reaction-chip{background:#ffffff20;border-color:#ffffff55;color:#fff}.chat-reply-preview{padding:9px 14px;background:var(--primary-light);border-top:1px solid var(--border-color);color:var(--text-main);font-size:11px;display:flex;align-items:center;justify-content:space-between;gap:10px}.chat-reply-preview[hidden]{display:none}.chat-reply-preview button{border:0;background:transparent;color:var(--primary);font-size:18px;cursor:pointer}.chat-footer{flex-shrink:0}.chat-footer input[type=text]{min-width:0}.chat-message-actions-hint{font-size:9px;opacity:.55;margin-top:2px}
-
-/* Native-looking prompts are replaced with dialogs rendered inside the WebView */
-.app-dialog-backdrop{display:none;position:fixed;inset:0;z-index:13000;align-items:center;justify-content:center;padding:24px;background:#0008;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
-.app-dialog-backdrop.open{display:flex;animation:appDialogFade .16s ease both}
-.app-dialog-card{width:min(100%,360px);max-height:min(78dvh,560px);overflow:auto;background:var(--card-bg);color:var(--text-main);border:1px solid var(--border-color);border-radius:23px;padding:20px;box-shadow:0 22px 70px #0005;animation:appDialogPop .2s cubic-bezier(.2,.8,.2,1) both}
-.app-dialog-title{font-size:17px;font-weight:900;margin:0 0 8px}
-.app-dialog-message{font-size:13px;line-height:1.9;color:var(--text-muted);white-space:pre-wrap;margin:0 0 17px}
-.app-dialog-list{display:flex;flex-direction:column;gap:8px;max-height:42dvh;overflow:auto;margin:12px 0 18px}
-.app-dialog-person{padding:10px 12px;border:1px solid var(--border-color);border-radius:13px;background:var(--bg-main);font-size:13px}
-.app-dialog-actions{display:flex;gap:9px;justify-content:flex-start}
-.app-dialog-actions button{border:0;border-radius:13px;padding:10px 17px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
-.app-dialog-cancel{background:var(--bg-main);color:var(--text-main);border:1px solid var(--border-color)!important}
-.app-dialog-confirm{background:var(--primary);color:white}
-@keyframes appDialogFade{from{opacity:0}to{opacity:1}}@keyframes appDialogPop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
-
 .message-actions-backdrop{display:none;position:fixed;inset:0;z-index:12000;background:transparent;align-items:flex-start;justify-content:flex-start;padding:0}.message-actions-backdrop.open{display:block}.message-actions-sheet{position:fixed;width:max-content;max-width:min(92vw,330px);background:var(--card-bg);border:1px solid var(--border-color);border-radius:17px;padding:8px 10px;box-shadow:0 10px 35px #0004;animation:messageSheetIn .12s ease}.message-actions-handle{display:none}.message-reaction-row{display:flex;justify-content:center;gap:5px;padding:2px 0 8px;border-bottom:1px solid var(--border-color)}.message-reaction-row button{border:0;background:var(--bg-main);border-radius:50%;width:35px;height:35px;font-size:18px;cursor:pointer}.message-action-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 7px;background:transparent;border:0;border-bottom:1px solid var(--border-color);color:var(--text-main);font:inherit;text-align:right;font-size:13px;cursor:pointer}.message-action-cancel{display:none}.chat-editing-hint{display:none;padding:6px 12px;background:var(--primary-light);color:var(--primary);font-size:11px;align-items:center;justify-content:space-between}.chat-editing-hint.active{display:flex}.chat-editing-hint button{border:0;background:transparent;color:var(--primary);font-size:17px}@media(max-width:420px){.chat-message{max-width:88%;padding:8px 11px}.private-inline-section{padding:14px}.chat-box-body{padding-inline:11px!important}.message-reaction-row button{width:38px;height:38px;font-size:19px}}
 
 
@@ -765,48 +747,6 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
 .selected-reaction-line .selected-reaction-emoji{flex:0 0 22px;font-size:15px}
 .selected-reaction-empty{font-size:10px;color:var(--text-muted);text-align:center;padding:4px}
 @media(prefers-reduced-motion:reduce){.chat-message.chat-message-enter{animation:none}}
-
-
-
-/* Floating Telegram-inspired chat chrome */
-.fullscreen-modal[id^="chat-modal-"],#private-chat-modal{height:100dvh;min-height:100%;padding-top:env(safe-area-inset-top);padding-bottom:0;overflow:hidden;background:var(--bg-main)}
-.chat-topbar{position:relative;z-index:5;display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:10px;flex:0 0 auto;padding:9px 14px 12px!important;background:color-mix(in srgb,var(--bg-main) 68%,transparent)!important;border:0!important;box-shadow:0 5px 22px #00000008!important;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
-.chat-topbar:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,color-mix(in srgb,var(--card-bg) 72%,transparent),transparent);pointer-events:none}
-.chat-top-close{width:42px;height:42px;border:1px solid var(--border-color);border-radius:15px;background:color-mix(in srgb,var(--card-bg) 72%,transparent);color:var(--text-main);font-size:29px;line-height:1;cursor:pointer;backdrop-filter:blur(12px)}
-.chat-top-title{justify-self:center;min-width:0;max-width:min(70vw,360px);padding:7px 22px;border:1px solid color-mix(in srgb,var(--primary-border) 72%,transparent);border-radius:16px;background:color-mix(in srgb,var(--card-bg) 72%,transparent);text-align:center;box-shadow:0 5px 18px #0000000a;backdrop-filter:blur(12px)}
-.chat-top-title strong{display:block;color:var(--text-main);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-top-title small{display:block;color:var(--text-muted);font-size:9px;margin-top:1px}
-.chat-top-logo{width:42px;height:42px;object-fit:cover;border-radius:50%;border:1px solid var(--primary-border);box-shadow:0 0 0 4px var(--primary-light)}
-.fullscreen-modal[id^="chat-modal-"] .chat-box-body,#private-chat-modal .chat-box-body{flex:1;min-height:0;width:100%;max-width:900px;padding:15px 16px 125px!important;margin:0 auto;overflow-y:auto;overscroll-behavior:contain;background:transparent}
-.chat-footer{position:absolute!important;left:0;right:0;bottom:max(13px,env(safe-area-inset-bottom));z-index:8;width:min(900px,calc(100% - 24px))!important;margin:0 auto!important;padding:9px!important;display:flex;align-items:center;gap:9px!important;background:color-mix(in srgb,var(--card-bg) 70%,transparent)!important;border:1px solid color-mix(in srgb,var(--border-color) 85%,transparent)!important;border-radius:25px!important;box-shadow:0 12px 35px #0002!important;backdrop-filter:blur(24px) saturate(1.35);-webkit-backdrop-filter:blur(24px) saturate(1.35)}
-.chat-footer>*{flex-shrink:0}.chat-footer input[type="text"]{flex:1;min-width:0;height:43px;padding:0 15px!important;border:1px solid var(--border-color)!important;border-radius:15px!important;background:color-mix(in srgb,var(--bg-main) 70%,transparent)!important;color:var(--text-main)}
-.chat-footer .img-upload-btn,.chat-footer .chat-voice-btn,.chat-footer .chat-send-btn{width:43px;height:43px;min-width:43px;flex:0 0 43px;border-radius:15px!important;background:color-mix(in srgb,var(--card-bg) 65%,transparent)!important;border:1px solid var(--border-color)!important;color:var(--primary)!important;box-shadow:0 3px 12px #0000000a}
-.chat-footer .chat-send-btn{background:linear-gradient(135deg,var(--primary),var(--primary-hover))!important;color:white!important;border:0!important;border-radius:15px!important}
-.chat-footer .chat-recording-label{position:absolute;bottom:calc(100% + 7px);right:16px;padding:5px 10px;border-radius:10px;background:var(--card-bg);box-shadow:0 4px 15px #0002}
-.typing-indicator-bar{position:absolute;z-index:7;bottom:calc(max(13px,env(safe-area-inset-bottom)) + 70px);left:18px;right:18px;width:max-content;max-width:calc(100% - 36px);margin:auto;padding:5px 12px;border:1px solid var(--primary-border);border-radius:14px;background:color-mix(in srgb,var(--card-bg) 78%,transparent);backdrop-filter:blur(15px);font-size:11px;box-shadow:0 4px 14px #0000000b;pointer-events:none}
-.typing-indicator-bar:empty{display:none}.typing-indicator-bar:not(:empty):before{content:"•••";display:inline-block;letter-spacing:2px;margin-left:7px;animation:typingDots 1s infinite}
-@keyframes typingDots{0%,60%,100%{opacity:.35}30%{opacity:1}}
-.fullscreen-modal.open{animation:chatScreenIn .28s cubic-bezier(.2,.75,.25,1) both}@keyframes chatScreenIn{from{opacity:0;transform:translateY(14px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
-.app-screen-section.active-tab{animation:sectionEnter .32s cubic-bezier(.2,.75,.25,1) both}@keyframes sectionEnter{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
-.chat-seen-status{font-size:9px;opacity:.72;margin-top:3px;text-align:left;direction:rtl}.chat-message.is-mine .chat-seen-status{color:#fff}.chat-seen-status button{border:0;background:none;color:inherit;font:inherit;text-decoration:underline;cursor:pointer}
-@media(max-width:520px){.chat-topbar{padding-inline:11px!important}.chat-footer{width:calc(100% - 18px)!important;gap:6px!important;padding:7px!important}.chat-footer .img-upload-btn,.chat-footer .chat-voice-btn,.chat-footer .chat-send-btn{width:40px;height:40px;min-width:40px;flex-basis:40px}.chat-footer input[type="text"]{height:40px;padding-inline:11px!important;font-size:13px}.chat-box-body{padding-bottom:115px!important}}
-@media(orientation:landscape) and (max-height:560px){.chat-topbar{padding-block:5px!important}.chat-top-logo,.chat-top-close{width:35px;height:35px}.chat-top-title{padding:4px 18px}.chat-footer{bottom:6px;padding:5px!important}.chat-box-body{padding-bottom:75px!important}.typing-indicator-bar{bottom:62px}}
-
-
-/* Voice notes: custom messenger-style controls, avoiding native audio chrome */
-.voice-preview-bar{display:flex;align-items:center;gap:10px;flex:1;min-width:0;padding:8px 10px;border:1px solid var(--primary-border);border-radius:20px;background:var(--card-bg)}
-.voice-preview-bar audio,.chat-message-audio{display:none!important}
-.voice-action-btn{width:38px;height:38px;flex:0 0 38px;border:0;border-radius:50%;display:grid;place-items:center;background:var(--primary-light);color:var(--primary);font-size:17px;cursor:pointer}
-.voice-wave{display:flex;align-items:center;justify-content:center;gap:3px;height:34px;flex:1;min-width:35px;overflow:hidden}
-.voice-wave i{display:block;width:3px;min-width:3px;border-radius:5px;background:var(--primary);opacity:.72;height:var(--bar-height,12px)}
-.voice-preview-time{font-size:11px;color:var(--text-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-.chat-audio-card{display:flex;align-items:center;gap:9px;min-width:190px;max-width:min(290px,68vw);padding:7px 9px;border-radius:17px;background:var(--primary-light);color:var(--text-main);direction:ltr}
-.chat-audio-card .voice-wave{height:30px}.chat-audio-card .voice-wave i{background:var(--primary)}
-.chat-audio-play{width:34px;height:34px;flex:0 0 34px;border:0;border-radius:50%;background:var(--primary);color:white;display:grid;place-items:center;font-size:13px;cursor:pointer}
-.chat-audio-time{font-size:10px;color:var(--text-muted);white-space:nowrap;font-variant-numeric:tabular-nums}
-html[dir="ltr"] .chat-message{direction:ltr}html[dir="ltr"] .chat-message .chat-message-meta{direction:ltr}
-html[dir="ltr"] .chat-topbar,html[dir="ltr"] .chat-footer{direction:ltr}
-html[dir="ltr"] .nav-item{direction:ltr}
-@media(max-width:520px){.voice-preview-bar{gap:6px;padding:6px}.voice-action-btn{width:34px;height:34px;flex-basis:34px}.chat-audio-card{min-width:165px}}
 
 </style>
 </head>
@@ -1014,22 +954,10 @@ html[dir="ltr"] .nav-item{direction:ltr}
       <div id="tab-settings" class="app-screen-section">
         <div class="profile-card" style="background: linear-gradient(135deg, #475569, #1e293b);">
           <h2>⚙️ حسابك وتفضيلاتك</h2>
-          <p>إدارة المظهر واللغة والحسابات الرسمية والسجلات</p>
+          <p>إدارة المظهر، الحسابات الرسمية، والسير التاريخية</p>
         </div>
 
         <div class="services-grid">
-          <div class="service-card" onclick="toggleAppLanguage()">
-            <div class="service-header">
-              <div class="service-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div>
-              <div><h4 id="language-setting-title">لغة التطبيق: العربية</h4><p id="language-setting-desc">التبديل بين العربية والإنجليزية</p></div>
-            </div>
-          </div>
-          <div class="service-card" onclick="useSystemTheme()">
-            <div class="service-header">
-              <div class="service-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></div>
-              <div><h4 id="system-theme-title">اتباع مظهر الجهاز تلقائياً</h4><p id="system-theme-desc">مزامنة الوضع الفاتح والداكن مع إعدادات الجهاز</p></div>
-            </div>
-          </div>
           <div class="service-card" onclick="toggleDarkMode()">
             <div class="service-header">
               <div class="service-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.7 8.7 0 1 0 20.5 14.2Z"/></svg></div>
@@ -1173,15 +1101,20 @@ html[dir="ltr"] .nav-item{direction:ltr}
 
 
   <div id="private-chat-modal" class="fullscreen-modal">
-    <div class="modal-header chat-topbar"><button class="chat-top-close" onclick="closePrivateChat()" aria-label="إغلاق">‹</button><div class="chat-top-title"><strong id="private-chat-title">محادثة خاصة</strong><small id="private-chat-subtitle">محادثة خاصة</small></div><img class="chat-top-logo" src="assets/logo/logo.png" alt="شعار المملكة"></div>
+    <div class="modal-header"><h3 id="private-chat-title">محادثة خاصة</h3><button class="close-chat-btn" onclick="closePrivateChat()">رجوع ✕</button></div>
     <div id="private-chat-box" class="chat-box-body" aria-live="polite"></div>
     <div id="private-editing-hint" class="chat-editing-hint">تعديل الرسالة <button onclick="cancelChatEdit()">×</button></div>
     <div id="private-reply-preview" class="chat-reply-preview" hidden></div>
-    <div id="typing-indicator-private" class="typing-indicator-bar"></div>
-    <div class="chat-footer"><label class="img-upload-btn" title="إرفاق صورة" aria-label="إرفاق صورة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4H10L8.5 6H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L14 4Z"></path><circle cx="12" cy="13" r="3.5"></circle></svg><input type="file" accept="image/*" style="display:none" onchange="sendPrivateImage(event)"></label><input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة…" onkeydown="if(event.key==='Enter')sendPrivateMessage()"><span id="private-recording-label" class="chat-recording-label">جارٍ تسجيل الرسالة</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('private')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" aria-label="إرسال" title="إرسال" onclick="sendPrivateMessage()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button></div>
+    <div id="typing-indicator-public" class="typing-indicator-bar"></div>
+    <div class="chat-footer"><label class="img-upload-btn" title="إرفاق صورة" aria-label="إرفاق صورة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4H10L8.5 6H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L14 4Z"></path><circle cx="12" cy="13" r="3.5"></circle></svg><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="sendPrivateImage(event)"></label><input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة..." onkeydown="if(event.key==='Enter')sendPrivateMessage()"><span id="private-recording-label" class="chat-recording-label">جارٍ التسجيل</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('private')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" aria-label="إرسال" title="إرسال" onclick="sendPrivateMessage()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button></div>
   </div>
   <div id="chat-modal-public" class="fullscreen-modal">
-    <div class="modal-header chat-topbar"><button class="chat-top-close" onclick="closeChat('public')" aria-label="إغلاق">‹</button><div class="chat-top-title"><strong>الدردشة العامة</strong><small>مجتمع المملكة الربطخشاوية</small></div><img class="chat-top-logo" src="assets/logo/logo.png" alt="شعار المملكة"></div>
+    <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h3>💬 الدردشة العامة للمملكة</h3>
+      </div>
+      <button class="close-chat-btn" onclick="closeChat('public')">إغلاق ✕</button>
+    </div>
 
     <div id="chat-box-public" class="chat-box-body">
       <div class="chat-msg"><b>النظام:</b> أهلاً بك في الدردشة العامة للمملكة 👑</div>
@@ -1194,13 +1127,16 @@ html[dir="ltr"] .nav-item{direction:ltr}
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4H10L8.5 6H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L14 4Z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>
         <input type="file" accept="image/*" style="display:none;" onchange="sendImage(event, 'public')">
       </label>
-      <input type="text" id="chat-input-public" placeholder="اكتب رسالتك هنا…" onkeypress="handleKeyPress(event, 'public')">
-      <span id="public-recording-label" class="chat-recording-label">جارٍ تسجيل الرسالة</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('public')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" aria-label="إرسال" title="إرسال" onclick="sendMessage('public')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
+      <input type="text" id="chat-input-public" placeholder="اكتب رسالتك هنا..." onkeypress="handleKeyPress(event, 'public')">
+      <span id="public-recording-label" class="chat-recording-label">جارٍ التسجيل</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('public')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" aria-label="إرسال" title="إرسال" onclick="sendMessage('public')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
     </div>
   </div>
 
   <div id="chat-modal-shura" class="fullscreen-modal">
-    <div class="modal-header chat-topbar"><button class="chat-top-close" onclick="closeChat('shura')" aria-label="إغلاق">‹</button><div class="chat-top-title"><strong>مجلس الشورى</strong><small>المحادثة الخاصة بالأعضاء</small></div><img class="chat-top-logo" src="assets/logo/logo.png" alt="شعار المملكة"></div>
+    <div class="modal-header">
+      <h3 style="color:var(--primary);">👑 شات مجلس الشورى الخاص</h3>
+      <button class="close-chat-btn" onclick="closeChat('shura')">إغلاق ✕</button>
+    </div>
 
     <div id="chat-box-shura" class="chat-box-body">
       <div class="chat-msg"><b>النظام:</b> مرحباً بكم أعضاء مجلس الشورى المحترمين 🏛️</div>
@@ -1214,7 +1150,7 @@ html[dir="ltr"] .nav-item{direction:ltr}
         <input type="file" accept="image/*" style="display:none;" onchange="sendImage(event, 'shura')">
       </label>
       <input type="text" id="chat-input-shura" placeholder="اكتب رسالتك لأعضاء المجلس..." onkeypress="handleKeyPress(event, 'shura')">
-      <span id="shura-recording-label" class="chat-recording-label">جارٍ تسجيل الرسالة</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('shura')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" style="background-color: var(--primary);" aria-label="إرسال" title="إرسال" onclick="sendMessage('shura')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
+      <span id="shura-recording-label" class="chat-recording-label">جارٍ التسجيل</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('shura')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" style="background-color: var(--primary);" aria-label="إرسال" title="إرسال" onclick="sendMessage('shura')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
     </div>
   </div>
 
@@ -1225,21 +1161,11 @@ html[dir="ltr"] .nav-item{direction:ltr}
         <button onclick="reactToSelectedMessage('❤️')">❤️</button><button onclick="reactToSelectedMessage('😂')">😂</button><button onclick="reactToSelectedMessage('😮')">😮</button><button onclick="reactToSelectedMessage('😢')">😢</button><button onclick="reactToSelectedMessage('👍')">👍</button><button onclick="reactToSelectedMessage('🔥')">🔥</button>
       </div>
       <div id="selected-reaction-details" class="selected-reaction-details" aria-live="polite"></div>
-      <button class="message-action-item" onclick="showSelectedMessageSeen()">👁️ <span>من شاهد الرسالة؟</span></button>
       <button class="message-action-item" onclick="replyToSelectedMessage()">↩️ <span>الرد على الرسالة</span></button>
       <button class="message-action-item" onclick="copySelectedMessage()">⧉ <span>نسخ النص</span></button>
       <button class="message-action-item" id="edit-message-action" onclick="editSelectedMessage()">✏️ <span>تعديل الرسالة</span></button>
       <button class="message-action-item" id="delete-message-action" onclick="deleteSelectedMessage()" style="color:#dc2626;display:none">🗑️ <span>حذف الرسالة</span></button>
     </div>
-  </div>
-
-  <div id="app-dialog" class="app-dialog-backdrop" role="presentation" onclick="if(event.target===this)closeAppDialog()">
-    <section class="app-dialog-card" role="dialog" aria-modal="true" aria-labelledby="app-dialog-title">
-      <h3 id="app-dialog-title" class="app-dialog-title"></h3>
-      <p id="app-dialog-message" class="app-dialog-message"></p>
-      <div id="app-dialog-list" class="app-dialog-list" hidden></div>
-      <div id="app-dialog-actions" class="app-dialog-actions"></div>
-    </section>
   </div>
 
   <div id="leaderboard-modal" class="fullscreen-modal">
@@ -1254,23 +1180,11 @@ html[dir="ltr"] .nav-item{direction:ltr}
   </div>
 
   <script>
-    function applyThemeMode(mode) {
-      const resolved = mode === 'auto' ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : mode;
-      document.documentElement.classList.toggle('light-mode', resolved !== 'dark');
-      document.documentElement.dataset.themePreference = mode;
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.content = resolved === 'dark' ? '#101b19' : '#f4f8f6';
-    }
     function toggleDarkMode() {
-      const current = document.documentElement.classList.contains('light-mode') ? 'light' : 'dark';
-      const next = current === 'light' ? 'dark' : 'light';
-      localStorage.setItem('theme_mode', next); applyThemeMode(next);
-    }
-    function useSystemTheme() { localStorage.setItem('theme_mode', 'auto'); applyThemeMode('auto'); }
-    const systemThemeQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-    if (systemThemeQuery) {
-      const onSystemThemeChange = () => { if ((localStorage.getItem('theme_mode') || 'auto') === 'auto') applyThemeMode('auto'); };
-      systemThemeQuery.addEventListener ? systemThemeQuery.addEventListener('change', onSystemThemeChange) : systemThemeQuery.addListener(onSystemThemeChange);
+      const html = document.documentElement;
+      html.classList.toggle('light-mode');
+      const isLight = html.classList.contains('light-mode');
+      localStorage.setItem('theme_mode', isLight ? 'light' : 'dark');
     }
 
     function hideLoadingMessage() {
@@ -1281,9 +1195,12 @@ html[dir="ltr"] .nav-item{direction:ltr}
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-      const savedTheme = localStorage.getItem('theme_mode') || 'auto';
-      applyThemeMode(savedTheme);
-      applyAppLanguage(localStorage.getItem('app_language') || 'ar');
+      const savedTheme = localStorage.getItem('theme_mode');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.remove('light-mode');
+      } else {
+        document.documentElement.classList.add('light-mode');
+      }
 
       const savedUser = localStorage.getItem('saved_user');
       const savedRole = localStorage.getItem('saved_role');
@@ -1401,17 +1318,7 @@ html[dir="ltr"] .nav-item{direction:ltr}
         badges: ["✨ العهد الجديد", "📩 سفير خطيب"],
         bio: "أحدث انضمام للمملكة في عام 2026، دخل الديار برعاية ودعوة شخصية من العضو المخضرم محمد خطيب الفلسطيني.",
         rep: 80
-      },
-      "moaz": {
-        name: "معاذ 🦅",
-        title: "قائد الرواشنة السابق والعائد التائب",
-        origin: "السعودية 🇸🇦",
-        loc: "السعودية 🇸🇦",
-        year: "2024 (وعاد في 2026)",
-        badges: ["🦅 زعيم الرواشنة الأسبق", "🔙 التائب العائد", "⚡ الخصم اللدود سابقاً"],
-        bio: "انضم للمملكة عام 2024 ثم انشق لاحقاً وأسس جماعة «الرواشنة» المنافسة وقاد ضدنا أعتى الحروب كأحد أكبر أعداء المملكة، قبل أن يراجع موقفه ويعود تائباً ومستغفراً إلى أسوار المملكة الربطخشاوية في عام 2026.",
-        rep: 195
-      },
+      }
     };
 
     let currentUser = "";
@@ -1663,7 +1570,6 @@ localStorage.removeItem('rg_dm_token');
       const chatBox = document.getElementById(`chat-box-${type}`);
       if (chatBox) {
         renderCachedChat(type, chatBox);
-        markChatRead(type, readChatCache(type));
         if (!chatBox.children.length && type === 'public') {
           const welcome = document.createElement('div'); welcome.className = 'chat-message'; welcome.textContent = 'أهلاً بك في الدردشة العامة للمملكة 👑'; chatBox.appendChild(welcome);
         }
@@ -2310,46 +2216,6 @@ localStorage.removeItem('rg_dm_token');
       readChatCache(type).forEach(m => renderChatMessage(m, box, type, false));
       box.scrollTop = box.scrollHeight;
     }
-    function markChatRead(type, messages) {
-      if (!socket?.connected || !currentUser || !Array.isArray(messages)) return;
-      const ids = messages.filter(m => m && m._id && m.sender !== currentUser && !(m.readBy || []).includes(currentUser)).map(m => String(m._id));
-      if (!ids.length) return;
-      const peer = String(type || '').startsWith('dm:') ? String(type).slice(3).split(':').find(x => x !== currentUser) : null;
-      socket.emit('mark_chat_read', { type, reader: currentUser, messageIds: ids, peer });
-    }
-    function showSelectedMessageSeen() {
-      if (!selectedMessageContext) return;
-      const m = selectedMessageContext.message;
-      const names = Array.isArray(m.readBy) ? [...new Set(m.readBy.filter(x => x && x !== currentUser))] : [];
-      closeMessageActions();
-      openAppDialog({
-        title: '👁️ مشاهدة الرسالة',
-        message: names.length ? `عدد المشاهدات: ${names.length}` : 'لسا ما حدا شاف هالرسالة.',
-        list: names,
-        confirmText: 'تمام',
-        cancelText: null
-      });
-    }
-
-    function openAppDialog({title='تنبيه', message='', list=[], confirmText='موافق', cancelText='إغلاق', onConfirm=null}={}) {
-      const modal=document.getElementById('app-dialog'); if(!modal) return;
-      document.getElementById('app-dialog-title').textContent=title;
-      document.getElementById('app-dialog-message').textContent=message;
-      const listBox=document.getElementById('app-dialog-list'); listBox.replaceChildren();
-      listBox.hidden=!list.length;
-      list.forEach(name=>{const item=document.createElement('div');item.className='app-dialog-person';item.textContent=name;listBox.appendChild(item);});
-      const actions=document.getElementById('app-dialog-actions'); actions.replaceChildren();
-      if(cancelText){const cancel=document.createElement('button');cancel.className='app-dialog-cancel';cancel.textContent=cancelText;cancel.onclick=closeAppDialog;actions.appendChild(cancel);}
-      const confirm=document.createElement('button');confirm.className='app-dialog-confirm';confirm.textContent=confirmText;confirm.onclick=()=>{closeAppDialog();if(typeof onConfirm==='function')onConfirm();};actions.appendChild(confirm);
-      modal.classList.add('open');
-    }
-    function closeAppDialog(){document.getElementById('app-dialog')?.classList.remove('open');}
-    socket.on('seen_update', data => {
-      const type = data?.type; if (!type || !data.messageId) return;
-      const list = readChatCache(type); const m = list.find(x => String(x._id || x.id) === String(data.messageId));
-      if (m) { m.readBy = Array.isArray(data.readBy) ? data.readBy : []; writeChatCache(type, list); refreshRenderedMessage(m, type); }
-    });
-
     function getMessagePreview(message) { return message?.text || (message?.image ? '📷 صورة' : (message?.audio ? '🎙️ رسالة صوتية' : 'رسالة')); }
 
     function sendMessage(type) {
@@ -2367,7 +2233,7 @@ localStorage.removeItem('rg_dm_token');
     function sendImage(event, type) {
       const file = event.target.files?.[0];
       if (!file) return;
-      if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type) || file.size > 4 * 1024 * 1024) { showAppNotice('يرجى اختيار صورة PNG أو JPG أو WEBP أو GIF لا يتجاوز حجمها 4 ميغابايت.'); event.target.value = ''; return; }
+      if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type) || file.size > 4 * 1024 * 1024) { alert('اختر صورة PNG أو JPG أو WEBP أو GIF بحجم أقل من 4 ميغابايت'); event.target.value = ''; return; }
       const reader = new FileReader();
       reader.onload = e => {
         if (socket.connected) socket.emit('send_message', { type: type || 'public', image: e.target.result, sender: currentUser || 'مواطن', replyTo: pendingChatReply ? { id: pendingChatReply._id, sender: pendingChatReply.sender, text: getMessagePreview(pendingChatReply) } : null });
@@ -2389,7 +2255,7 @@ async function toggleVoiceRecording(scope) {
     return;
   }
   if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') { 
-    showAppNotice('تسجيل الصوت غير مدعوم في هذا المتصفح.'); 
+    alert('تسجيل الصوت غير مدعوم في متصفحك.'); 
     return; 
   }
   
@@ -2424,7 +2290,7 @@ async function toggleVoiceRecording(scope) {
 
     recorder.start(250);
   } catch (err) {
-    showAppNotice('تعذر الوصول إلى الميكروفون. تحقق من أذونات الموقع.');
+    alert('تعذر الوصول إلى الميكروفون.');
   }
 }
 
@@ -2437,30 +2303,11 @@ function showVoicePreviewUI(scope, blob) {
   
   footer.innerHTML = `
     <div class="voice-preview-bar">
-      <button type="button" class="voice-action-btn" onclick="discardVoicePreview('${scope}')" title="إلغاء التسجيل" aria-label="إلغاء التسجيل">✕</button>
-      <button type="button" class="voice-action-btn" onclick="toggleVoicePreview(this)" data-audio-preview="${audioUrl}" title="معاينة التسجيل" aria-label="معاينة التسجيل">▶</button>
-      <div class="voice-wave" aria-hidden="true">${Array.from({length:28},(_,i)=>`<i style="--bar-height:${7+Math.abs(Math.sin(i*2.13))*21}px"></i>`).join('')}</div>
-      <span class="voice-preview-time">رسالة صوتية</span>
-      <button type="button" class="voice-action-btn" onclick="confirmSendVoice('${scope}')" title="إرسال التسجيل" aria-label="إرسال التسجيل">➤</button>
-      <audio hidden src="${audioUrl}"></audio>
+      <button type="button" class="voice-action-btn" onclick="discardVoicePreview('${scope}')" title="إلغاء التسجيل">🗑️</button>
+      <audio controls src="${audioUrl}"></audio>
+      <button type="button" class="voice-action-btn" onclick="confirmSendVoice('${scope}')" title="إرسال التسجيل">📤</button>
     </div>
   `;
-}
-
-function toggleVoicePreview(button) {
-  const audio = button?.parentElement?.querySelector('audio'); if (!audio) return;
-  if (audio.paused) { audio.play().then(()=>button.textContent='Ⅱ').catch(()=>{}); }
-  else { audio.pause(); button.textContent='▶'; }
-  audio.onended = () => { button.textContent='▶'; };
-}
-function sendVoiceMessage(scope, dataUrl) {
-  if (!dataUrl || !socket?.connected) return;
-  if (scope === 'private') {
-    if (!privatePeer || !privateAuth) return;
-    socket.emit('private_send', { to: privatePeer, text: '', audio: dataUrl }, res => { if (!res?.ok) showAppNotice(res?.error || 'تعذر إرسال الرسالة الصوتية'); });
-  } else {
-    socket.emit('send_message', { type: scope, text: '', audio: dataUrl, sender: currentUser || 'مواطن' });
-  }
 }
 
 function discardVoicePreview(scope) {
@@ -2500,20 +2347,17 @@ function setupTypingListener(type, inputId) {
     }, 1500);
   });
 }
-setupTypingListener('public', 'chat-input-public');
-setupTypingListener('shura', 'chat-input-shura');
-const privateTypingInput=document.getElementById('private-chat-input');
-if(privateTypingInput) privateTypingInput.addEventListener('input',()=>{ if(!privatePeer)return; socket.emit('typing',{type:'dm:'+ [currentUser,privatePeer].sort().join(':'),peer:privatePeer}); clearTimeout(typingTimeout); typingTimeout=setTimeout(()=>socket.emit('stop_typing',{type:'dm:'+ [currentUser,privatePeer].sort().join(':'),peer:privatePeer}),1500); });
 
-// مؤشرات الكتابة
-const typingUsers = new Map();
-function paintTypingIndicator(type) {
-  const indicator=document.getElementById(`typing-indicator-${type}`); if(!indicator)return;
-  const names=[...(typingUsers.get(type)||[])];
-  indicator.textContent=names.length===1?`${names[0]} يكتب الآن`:names.length===2?`${names[0]} و ${names[1]} يكتبان الآن`:names.length>2?`${names.length} أشخاص يكتبون الآن`:'';
-}
-socket.on('user_typing', data => { if(!data?.type || data.sender===currentUser)return; const set=typingUsers.get(data.type)||new Set();set.add(data.sender||'مواطن');typingUsers.set(data.type,set);paintTypingIndicator(data.type); });
-socket.on('user_stop_typing', data => { if(!data?.type)return;const set=typingUsers.get(data.type);if(set){set.delete(data.sender);if(!set.size)typingUsers.delete(data.type);}paintTypingIndicator(data.type); });
+// استدعِ هذه الدوال عند فتح الشاتات المناسبة
+socket.on('user_typing', (data) => {
+  const indicator = document.getElementById(`typing-indicator-${data.type}`);
+  if (indicator) indicator.textContent = `${data.sender} يكتب الآن...`;
+});
+
+socket.on('user_stop_typing', (data) => {
+  const indicator = document.getElementById(`typing-indicator-${data.type}`);
+  if (indicator) indicator.textContent = '';
+});
 
     function renderChatMessage(data, chatBox, cacheType, animate = true) {
       if (!chatBox || !data) return;
@@ -2545,19 +2389,7 @@ socket.on('user_stop_typing', data => { if(!data?.type)return;const set=typingUs
       }
       if (data.text) { const text = document.createElement('div'); text.className = 'chat-message-text'; text.textContent = data.text; bubble.appendChild(text); }
       if (data.image && /^data:image\/(png|jpeg|webp|gif);base64,/.test(data.image)) { const wrap=document.createElement('div');wrap.className='chat-image-wrap';const img = document.createElement('img'); img.className = 'chat-message-image'; img.src = data.image; img.alt = 'صورة مرسلة'; img.loading = 'lazy';const save=document.createElement('a');save.className='chat-image-save';save.href=data.image;save.download='rabatghash-image-'+(data._id||Date.now())+'.'+(({ 'image/png':'png','image/jpeg':'jpg','image/webp':'webp','image/gif':'gif' })[data.image.match(/^data:(image\/[^;]+)/)?.[1]]||'jpg');save.title='تنزيل الصورة';save.setAttribute('aria-label','تنزيل الصورة');save.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5M12 15V3"></path></svg>';wrap.append(img,save);bubble.appendChild(wrap); }
-      if (data.audio && /^data:audio\/(webm|ogg|mp4|mpeg|wav);base64,/.test(data.audio)) {
-        const audio=document.createElement('audio');audio.className='chat-message-audio';audio.preload='metadata';audio.src=data.audio;
-        const card=document.createElement('div');card.className='chat-audio-card';
-        const play=document.createElement('button');play.type='button';play.className='chat-audio-play';play.textContent='▶';play.setAttribute('aria-label','تشغيل الرسالة الصوتية');
-        const wave=document.createElement('div');wave.className='voice-wave';for(let i=0;i<24;i++){const bar=document.createElement('i');bar.style.setProperty('--bar-height',(7+(Math.abs(Math.sin(i*2.13))*20))+'px');wave.appendChild(bar);}
-        const time=document.createElement('span');time.className='chat-audio-time';time.textContent='0:00';
-        play.addEventListener('click',()=>{if(audio.paused){audio.play().catch(()=>{});}else audio.pause();});
-        audio.addEventListener('play',()=>play.textContent='Ⅱ');audio.addEventListener('pause',()=>play.textContent='▶');
-        audio.addEventListener('loadedmetadata',()=>{const d=Math.floor(audio.duration||0);time.textContent=Math.floor(d/60)+':'+String(d%60).padStart(2,'0');});
-        audio.addEventListener('timeupdate',()=>{const d=Math.floor(audio.currentTime||0);time.textContent=Math.floor(d/60)+':'+String(d%60).padStart(2,'0');});
-        wave.addEventListener('click',e=>{if(audio.duration){const r=wave.getBoundingClientRect();audio.currentTime=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*audio.duration;}});
-        card.append(play,wave,time);bubble.append(audio,card);
-      }
+      if (data.audio && /^data:audio\/(webm|ogg|mp4|mpeg|wav);base64,/.test(data.audio)) { const audio=document.createElement('audio');audio.className='chat-message-audio';audio.controls=true;audio.preload='metadata';audio.src=data.audio;bubble.appendChild(audio); }
       if (Array.isArray(data.reactions) && data.reactions.length) {
         const groups = {}; data.reactions.forEach(r => { (groups[r.emoji] ||= []).push(String(r.user || 'مواطن')); });
         const reactions = document.createElement('div'); reactions.className = 'chat-reactions';
@@ -2570,7 +2402,6 @@ socket.on('user_stop_typing', data => { if(!data?.type)return;const set=typingUs
         });
         bubble.appendChild(reactions);
       }
-      if (isMe && id) { const seen=document.createElement('div'); seen.className='chat-seen-status'; const readers=(data.readBy||[]).filter(x=>x && x!==currentUser); const btn=document.createElement('button'); btn.type='button'; btn.textContent=readers.length ? `👁️ شاهده ${readers.length}` : '✓ تم الإرسال'; btn.onclick=()=>{selectedMessageContext={message:data,cacheType,private:String(cacheType||'').startsWith('dm:')};showSelectedMessageSeen();}; seen.appendChild(btn); bubble.appendChild(seen); }
       bubble.addEventListener('contextmenu', e => { e.preventDefault(); showMessageActions(data, cacheType, e.clientX, e.clientY); });
       let pressTimer = null;
       bubble.addEventListener('touchstart', e => { const t=e.touches?.[0]; pressTimer = setTimeout(() => showMessageActions(data, cacheType, t?.clientX, t?.clientY), 520); }, { passive: true });
@@ -2629,8 +2460,8 @@ socket.on('user_stop_typing', data => { if(!data?.type)return;const set=typingUs
       if (!selectedMessageContext) return;
       const message = selectedMessageContext.message;
       if (message.sender !== currentUser) return;
-      closeMessageActions();
-      openAppDialog({title:'حذف الرسالة',message:'متأكد إنك بدك تحذف هالرسالة؟ ما رح تقدر ترجعها بعد الحذف.',confirmText:'احذف الرسالة',cancelText:'إلغاء',onConfirm:()=>{sendMessageAction('message_delete', {});}});
+      if (!confirm('هل تريد حذف هذه الرسالة؟')) return;
+      sendMessageAction('message_delete', {}); closeMessageActions();
     }
     function replyToSelectedMessage() {
       if (!selectedMessageContext) return;
@@ -2680,7 +2511,7 @@ function cancelChatEdit(type) {
   
   if (input) { 
     input.value = ''; 
-    input.placeholder = ctx.private ? 'اكتب رسالة خاصة…' : 'اكتب رسالتك هنا…'; 
+    input.placeholder = ctx.private ? 'اكتب رسالة خاصة...' : 'اكتب رسالتك هنا...'; 
     const sendBtn = input.parentElement?.querySelector('button.btn'); 
     if (sendBtn && editingOriginalHTML[scope]) {
       sendBtn.innerHTML = editingOriginalHTML[scope];
@@ -2783,7 +2614,6 @@ function cancelChatEdit(type) {
       const box = document.getElementById('private-chat-box');
       openFullscreenModal('private-chat-modal');
       renderCachedChat(room, box);
-      markChatRead(room, readChatCache(room));
       authenticatePrivate(ok => {
         if (!ok || privatePeer !== contact.id) return;
         socket.emit('private_history', { with: privatePeer, since: localStorage.getItem(chatSyncKey(room)) || null }, res => {
@@ -2791,7 +2621,6 @@ function cancelChatEdit(type) {
           if (res.incremental) mergeChatHistory(room, res.history || []); else writeChatCache(room, res.history || []);
           if (res.syncedAt) localStorage.setItem(chatSyncKey(room), res.syncedAt);
           renderCachedChat(room, box);
-          markChatRead(room, res.history || []);
         });
       });
     }
@@ -2800,7 +2629,7 @@ function cancelChatEdit(type) {
       const peer = data.sender === currentUser ? data.peer : data.sender;
       const room = data.type || ('dm:' + [currentUser, peer].sort().join(':'));
       upsertChatCache(room, data);
-      if (privatePeer && room === 'dm:' + [currentUser, privatePeer].sort().join(':')) { renderChatMessage(data, document.getElementById('private-chat-box'), room); if(data.sender!==currentUser)markChatRead(room,[data]); }
+      if (privatePeer && room === 'dm:' + [currentUser, privatePeer].sort().join(':')) renderChatMessage(data, document.getElementById('private-chat-box'), room);
     }
     function sendPrivateMessage(image) {
       if (!privatePeer || !privateAuth) return;
@@ -2810,14 +2639,14 @@ function cancelChatEdit(type) {
       if (!text && !image) return;
       const to = privatePeer;
       socket.emit('private_send', { to, text, image: image || '', replyTo: pendingChatReply ? { id: pendingChatReply._id, sender: pendingChatReply.sender, text: getMessagePreview(pendingChatReply) } : null }, res => {
-        if (!res?.ok) showAppNotice(res?.error || 'تعذر إرسال الرسالة.');
+        if (!res?.ok) alert(res?.error || 'فشل إرسال الرسالة');
         else { if (!image) input.value = ''; clearPendingReply('private'); }
       });
     }
     function sendPrivateImage(event) {
       const file = event.target.files?.[0];
       if (!file) return;
-      if (file.size > 4 * 1024 * 1024 || !/^image\/(png|jpeg|webp|gif)$/.test(file.type)) { showAppNotice('يرجى اختيار صورة لا يتجاوز حجمها 4 ميغابايت.'); return; }
+      if (file.size > 4 * 1024 * 1024 || !/^image\/(png|jpeg|webp|gif)$/.test(file.type)) { alert('اختر صورة بحجم أقل من 4 ميغابايت'); return; }
       const reader = new FileReader(); reader.onload = () => sendPrivateMessage(reader.result); reader.readAsDataURL(file); event.target.value = '';
     }
     socket.on('private_receive', data => renderPrivateMessage(data));
@@ -2830,7 +2659,6 @@ function cancelChatEdit(type) {
       const type = data.type || 'public';
       upsertChatCache(type, data);
       renderSingleMessage(data, type);
-      if (data.sender !== currentUser && (document.getElementById(`chat-modal-${type}`)?.classList.contains('open'))) markChatRead(type,[data]);
       if (data.sender !== currentUser) {
         try { const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); audio.volume = .35; audio.play().catch(() => {}); } catch (_) {}
       }
@@ -2840,7 +2668,7 @@ function cancelChatEdit(type) {
       if (!box) return;
       if (res.incremental) mergeChatHistory(type, res.history || []); else writeChatCache(type, res.history || []);
       if (res.syncedAt) localStorage.setItem(chatSyncKey(type), res.syncedAt);
-      if (activeChatType === type || document.getElementById(`chat-modal-${type}`)?.classList.contains('open')) { renderCachedChat(type, box); markChatRead(type,res.history||[]); }
+      if (activeChatType === type || document.getElementById(`chat-modal-${type}`)?.classList.contains('open')) renderCachedChat(type, box);
     });
     socket.on('message_updated', data => {
       const type = data.type || 'public';
@@ -2892,41 +2720,6 @@ function cancelChatEdit(type) {
     });
 
   </script>
-
-
-<div id="app-notice" class="app-notice-backdrop" aria-hidden="true"><div class="app-notice-card" role="alertdialog" aria-modal="true"><div class="app-notice-icon">!</div><p id="app-notice-text"></p><button type="button" onclick="closeAppNotice()">حسناً</button></div></div>
-<style>
-.app-notice-backdrop{display:none;position:fixed;inset:0;z-index:30000;background:#0008;align-items:center;justify-content:center;padding:22px;backdrop-filter:blur(5px)}.app-notice-backdrop.open{display:flex}.app-notice-card{width:min(100%,360px);padding:24px;border-radius:24px;background:var(--card-bg);color:var(--text-main);border:1px solid var(--border-color);box-shadow:0 20px 60px #0005;text-align:center;animation:appear .18s ease}.app-notice-icon{width:42px;height:42px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:var(--primary-light);color:var(--primary);font-weight:900;font-size:20px}.app-notice-card p{line-height:1.8;font-size:14px;margin-bottom:18px}.app-notice-card button{border:0;border-radius:13px;padding:10px 24px;background:var(--primary);color:white;font:inherit;font-weight:800}
-</style>
-<script>
-function showAppNotice(message){const box=document.getElementById('app-notice');const text=document.getElementById('app-notice-text');if(!box||!text){console.warn(message);return;}text.textContent=message;box.classList.add('open');box.setAttribute('aria-hidden','false');}
-function closeAppNotice(){const box=document.getElementById('app-notice');if(box){box.classList.remove('open');box.setAttribute('aria-hidden','true');}}
-const APP_TRANSLATIONS={
-'الخدمات':'Services','الألعاب':'Games','الدردشة':'Chat','الأذكار':'Remembrances','الإعدادات':'Settings',
-'حسابك وتفضيلاتك':'Account & Preferences','إدارة المظهر واللغة والحسابات الرسمية والسجلات':'Manage appearance, language, official accounts and records',
-'تبديل الوضع (ليلي / نهاري)':'Toggle appearance (Dark / Light)','تغيير مظهر السمة بين الوضع الفاتح والداكن':'Switch between light and dark appearance',
-'اتباع مظهر الجهاز تلقائياً':'Follow device appearance','مزامنة الوضع الفاتح والداكن مع إعدادات الجهاز':'Sync light and dark mode with your device settings',
-'لغة التطبيق: العربية':'App language: Arabic','لغة التطبيق: English':'App language: English','التبديل بين العربية والإنجليزية':'Switch between Arabic and English',
-'إرفاق صورة':'Attach image','اكتب رسالة خاصة…':'Write a private message…','اكتب رسالتك هنا…':'Write a message…','إرسال':'Send','إغلاق':'Close','إلغاء':'Cancel','حسناً':'OK',
-'الدردشة العامة':'Public chat','مجتمع المملكة الربطخشاوية':'Rabatghash Community','مجلس الشورى':'Shura Council','المحادثة الخاصة بالأعضاء':'Members-only conversation',
-'محادثة خاصة':'Private chat','جارٍ تسجيل الرسالة':'Recording voice message','تسجيل رسالة صوتية':'Record voice message',
-'سجل السيرة الملكية والأوسمة':'Royal history and honors','استعراض البطولات، البروفايلات، والأوسمة الرسمية':'View achievements, profiles and official honors',
-'حسابات المملكة الربطخشاوية':'Kingdom social accounts','متابعة الحسابات الرسمية على المنصات':'Follow official accounts on social platforms',
-'أذكار الصباح':'Morning remembrances','أذكار المساء':'Evening remembrances','أذكار متنوعة':'Other remembrances',
-'الاسم الثلاثي (مطلوب)':'Full name (required)','سبب الطلب والخبرات...':'Reason for request and experience…','إرسال الطلب':'Submit request',
-'إرفاق صورة':'Attach image','تعديل الرسالة':'Edit message','رسالة صوتية':'Voice message','من شاهد الرسالة؟':'Who viewed this message?',
-'حسابات المملكة الربطخشاوية':'Kingdom social accounts','حسابك وتفضيلاتك':'Account & Preferences',
-'المملكة الربطخشاوية':'The Rabatghash Kingdom','مجتمع واحد، تاريخ واحد، راية واحدة':'One community, one history, one banner','اسم المستخدم':'Username','كود المرور الخاص':'Access code','دخول المواطنين':'Citizen login','دخول كضيف 👤':'Continue as guest 👤','اسم المستخدم أو الكود غير صحيح!':'Incorrect username or access code!','مرحباً بك 👋':'Welcome 👋','مواطن':'Citizen','خروج':'Log out','ديوان المملكة':'Kingdom portal','مساحتك الرسمية في المملكة الإسلامية الربطخشاوية':'Your official space in the Islamic Rabatghash Kingdom','الخدمات المتاحة:':'Available services:','التقديم على الجواز الربطخشاوي':'Apply for a Rabatghash passport','طلب إصدار أو تجديد الجواز الرسمي':'Request a new or renewed official passport','الشكاوى والمقترحات':'Complaints and suggestions','مراسلة الإدارة عبر البريد الإلكتروني مباشرة':'Contact the administration directly by email','طلب الانضمام':'Request to join','تفاصيل الطلب':'Request details','ميدان التحديات':'Challenge arena','تحدى أصدقاءك وحقق أفضل النتائج وسجلها في لوحة الصدارة':'Challenge your friends, achieve top scores and appear on the leaderboard','تحدي النقر⚡':'Tap challenge ⚡','الذاكرة🧠':'Memory 🧠','حجر ورقة مقص✊':'Rock Paper Scissors ✊','الصدارة🏆':'Leaderboard 🏆','اضغط أكبر عدد من المرات خلال 15 ثانية!':'Tap as many times as possible in 15 seconds!','ابدأ التحدي!':'Start challenge!','طابق الرموز المتشابهة! (الوقت: 0 ثانية)':'Match the identical symbols! (Time: 0 seconds)','إعادة اللعبة':'Restart game','اختر سلاحك لتحدي النظام:':'Choose your move to challenge the system:','الديناصور والطيور':'Dinosaur and birds','النقاط:':'Score:','أعلى نتيجة:':'Best score:','اضغط للقفز وتفادي العقبات':'Tap to jump and avoid obstacles','ابدأ اللعب':'Start playing','مجالس المملكة':'Kingdom councils','تواصل مع أبناء المملكة وانضم للمجالس المباشرة':'Connect with community members and join live councils','دردشة المملكة المباشرة':'Kingdom live chat','المجلس العام لجميع المواطنين (شاشة كاملة وإرسال صور)':'Public council for all citizens (full screen and image sharing)','شات مجلس الشورى الخاص':'Private Shura Council chat','مخصص لأعضاء المجلس الاربعة فقط (مغلق ومحمي)':'For the four council members only (private and protected)','المحادثات الخاصة':'Private conversations','محادثاتك مع المواطنين — تظهر هنا مباشرة':'Your conversations with citizens appear here','سجّل الدخول كمواطن لعرض المحادثات':'Log in as a citizen to view conversations','الأذكار اليومية':'Daily remembrances','وردك من الذكر والطمأنينة؛ أذكار الصباح والمساء وأذكار متنوعة في مكان واحد.':'Daily words of remembrance and peace: morning, evening and other remembrances in one place.','اسم العضو':'Member name','المنصب':'Position','الأصل:':'Origin:','الإقامة:':'Residence:','سنة الانضمام:':'Year joined:','السمعة:':'Reputation:','الأوسمة والانجازات:':'Honors and achievements:','السيرة التاريخية داخل المملكة:':'History within the Kingdom:','الاسم الكامل للمتقدم:':'Applicant full name:','إرسال الطلب عبر البريد':'Send request by email','نص الرسالة أو الشكوى:':'Message or complaint:','إرسال عبر البريد الإلكتروني':'Send by email','تويتر: @RabatghashEN':'X: @RabatghashEN','إنستغرام: @rabatghash':'Instagram: @rabatghash','تيك توك: @rabatghash':'TikTok: @rabatghash','إرسال الطلب':'Submit request','أهلاً بك في الدردشة العامة للمملكة 👑':'Welcome to the Kingdom public chat 👑','مرحباً بكم أعضاء مجلس الشورى المحترمين 🏛️':'Welcome, respected Shura Council members 🏛️','الرد على الرسالة':'Reply to message','نسخ النص':'Copy text','حذف الرسالة':'Delete message','أفضل النتائج المسجلة للمواطنين والزوار:':'Top scores recorded by citizens and guests:','إغلاق ✕':'Close ✕','الاسم الثلاثي (مطلوب)':'Full name (required)','سبب الطلب والخبرات...':'Reason for request and experience…','الرسالة':'Message'
-};
-function applyAppLanguage(language){const lang=language==='en'?'en':'ar';const root=document.documentElement;root.lang=lang;root.dir=lang==='en'?'ltr':'rtl';const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;while((node=walker.nextNode())){if(node.parentElement?.closest('script,style'))continue;const raw=node.nodeValue;const trimmed=raw.trim();if(!trimmed)continue;if(lang==='en'&&APP_TRANSLATIONS[trimmed])node.nodeValue=raw.replace(trimmed,APP_TRANSLATIONS[trimmed]);else if(lang==='ar'){const reverse=Object.entries(APP_TRANSLATIONS).find(([,v])=>v===trimmed);if(reverse)node.nodeValue=raw.replace(trimmed,reverse[0]);}}
- document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{const ar=el.dataset.placeholderAr||el.getAttribute('placeholder');if(!el.dataset.placeholderAr)el.dataset.placeholderAr=ar;if(lang==='en'&&APP_TRANSLATIONS[ar])el.placeholder=APP_TRANSLATIONS[ar];else if(lang==='ar')el.placeholder=el.dataset.placeholderAr;});
- const title=document.getElementById('language-setting-title');if(title)title.textContent=lang==='en'?'App language: English':'لغة التطبيق: العربية';const desc=document.getElementById('language-setting-desc');if(desc)desc.textContent=lang==='en'?'Switch between Arabic and English':'التبديل بين العربية والإنجليزية';
- localStorage.setItem('app_language',lang);}
-function toggleAppLanguage(){applyAppLanguage((localStorage.getItem('app_language')||'ar')==='ar'?'en':'ar');}
-// Translate content inserted later by chat updates and modal rendering.
-const languageObserver=new MutationObserver(()=>{const lang=localStorage.getItem('app_language')||'ar';if(lang==='en'){const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;while((n=walker.nextNode())){if(n.parentElement?.closest('script,style'))continue;const t=n.nodeValue.trim();if(APP_TRANSLATIONS[t])n.nodeValue=n.nodeValue.replace(t,APP_TRANSLATIONS[t]);}}});
-languageObserver.observe(document.body,{childList:true,subtree:true});
-</script>
 
 </body>
 </html>
