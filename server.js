@@ -59,7 +59,7 @@ const messageSchema = new mongoose.Schema({
     senderId: String,
     replyTo: { id: String, sender: String, text: String },
     reactions: [{ _id: false, user: String, emoji: String }],
-    seenBy: [{ type: String }], //
+    readBy: { type: [String], default: [] },
     editedAt: Date,
     updatedAt: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now }
@@ -267,7 +267,7 @@ let citizensDB = {
     badges: ["🦅 زعيم الرواشنة الأسبق", "🔙 التائب العائد", "⚡ الخصم اللدود سابقاً"],
     bio: "انضم للمملكة عام 2024 ثم انشق لاحقاً وأسس جماعة «الرواشنة» المنافسة وقاد ضدنا أعتى الحروب كأحد أكبر أعداء المملكة، قبل أن يراجع موقفه ويعود تائباً ومستغفراً إلى أسوار المملكة الربطخشاوية في عام 2026.",
     rep: 195
-  }
+  },
 };
 
 let citizenCredentials = {};
@@ -494,24 +494,48 @@ io.on('connection', (socket) => {
         }
     }
 
-socket.on('typing', (data) => {
-        const chatType = data?.type || 'public';
-        const user = socket.data.citizen || data?.sender || 'مواطن';
+// مؤشر الكتابة في الشات
+    socket.on('typing', (data) => {
+        const chatType = String(data?.type || 'public');
+        const sender = socket.data.citizen || String(data?.sender || 'مواطن');
         if (chatType.startsWith('dm:')) {
-            io.to(chatType).emit('user_typing', { sender: user, type: chatType });
-        } else {
-            socket.broadcast.emit('user_typing', { sender: user, type: chatType });
-        }
+            const peer = String(data?.peer || '').trim().toLowerCase();
+            if (!socket.data.citizen || !validCitizen(peer) || peer === socket.data.citizen || chatType !== privateRoom(socket.data.citizen, peer)) return;
+            io.to('citizen:' + peer).emit('user_typing', { sender, type: chatType });
+        } else if (['public','shura'].includes(chatType)) socket.broadcast.emit('user_typing', { sender, type: chatType });
     });
 
     socket.on('stop_typing', (data) => {
-        const chatType = data?.type || 'public';
-        const user = socket.data.citizen || data?.sender || 'مواطن';
+        const chatType = String(data?.type || 'public');
+        const sender = socket.data.citizen || String(data?.sender || 'مواطن');
         if (chatType.startsWith('dm:')) {
-            io.to(chatType).emit('user_stop_typing', { sender: user, type: chatType });
-        } else {
-            socket.broadcast.emit('user_stop_typing', { sender: user, type: chatType });
-        }
+            const peer = String(data?.peer || '').trim().toLowerCase();
+            if (!socket.data.citizen || !validCitizen(peer) || peer === socket.data.citizen || chatType !== privateRoom(socket.data.citizen, peer)) return;
+            io.to('citizen:' + peer).emit('user_stop_typing', { sender, type: chatType });
+        } else if (['public','shura'].includes(chatType)) socket.broadcast.emit('user_stop_typing', { sender, type: chatType });
+    });
+
+    socket.on('mark_chat_read', async (payload) => {
+        try {
+            const type=String(payload?.type||'');
+            const reader=String(socket.data.citizen || payload?.reader || '').trim().toLowerCase();
+            const ids=Array.isArray(payload?.messageIds)?payload.messageIds.filter(id=>mongoose.isValidObjectId(String(id))).slice(0,200):[];
+            if(!reader || !ids.length) return;
+            let filter={_id:{$in:ids},type:{$in:['public','shura']}};
+            if(type.startsWith('dm:')) {
+                const peer=String(payload?.peer||'').trim().toLowerCase();
+                if(!socket.data.citizen || !validCitizen(peer) || peer===reader || type!==privateRoom(reader,peer)) return;
+                filter={_id:{$in:ids},type};
+            } else { if(!['public','shura'].includes(type)) return; filter.type=type; }
+            const docs=await Message.find(filter).select('_id readBy').lean();
+            for(const doc of docs){
+                await Message.updateOne({_id:doc._id},{$addToSet:{readBy:reader}});
+                const readBy=[...new Set([...(doc.readBy||[]),reader])];
+                const update={type,messageId:String(doc._id),readBy};
+                if(type.startsWith('dm:')) { const members=type.slice(3).split(':'); if(members.length===2)io.to('citizen:'+members[0]).to('citizen:'+members[1]).emit('seen_update',update); }
+                else io.emit('seen_update',update);
+            }
+        } catch(err){ console.error('Mark chat read error:',err); }
     });
     
     socket.on('message_react', async (payload) => {
