@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" class="light-mode">
 <head>
-  <!-- ربط ملف الـ Manifest -->
+ <!-- ربط ملف الـ Manifest -->
 <link rel="manifest" href="manifest.json">
 
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -701,6 +701,14 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
 /* Dhikr reader */
 .adhkar-hero{background:linear-gradient(125deg,#176b58,#22977a);color:#fff;border-radius:25px;padding:25px;margin-bottom:18px;position:relative;overflow:hidden}.adhkar-hero:after{content:'۞';position:absolute;left:16px;top:-24px;font-size:130px;color:#ffffff12}.adhkar-hero h2{font-size:25px;margin-bottom:5px}.adhkar-hero p{color:#e0f4eb;font-size:13px;line-height:1.8}.adhkar-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}.adhkar-tab{border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-muted);border-radius:14px;padding:12px 7px;font-weight:800;cursor:pointer}.adhkar-tab.active{background:var(--primary-light);color:var(--primary);border-color:var(--primary-border)}.adhkar-progress{background:var(--card-bg);border:1px solid var(--border-color);border-radius:17px;padding:14px 16px;margin-bottom:14px}.adhkar-progress-top{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--text-muted);margin-bottom:9px}.adhkar-progress-track{height:7px;background:var(--bg-main);border-radius:9px;overflow:hidden}.adhkar-progress-fill{height:100%;background:linear-gradient(90deg,#16866f,#77cba9);border-radius:9px;transition:width .25s}.adhkar-entry{background:var(--card-bg);border:1px solid var(--border-color);border-radius:19px;padding:19px;margin-bottom:12px;box-shadow:var(--shadow-sm)}.adhkar-entry-text{font-size:19px;line-height:2.15;text-align:center;color:var(--text-main);margin:2px 0 14px}.adhkar-entry-meta{display:flex;justify-content:space-between;align-items:center;color:var(--text-muted);font-size:11px;margin-bottom:12px}.adhkar-entry-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}.adhkar-count{font-size:13px;color:var(--primary);font-weight:800;background:var(--primary-light);padding:8px 12px;border-radius:11px;white-space:nowrap}.adhkar-count-btn{border:0;background:var(--primary);color:white;border-radius:13px;padding:11px 20px;font:inherit;font-weight:800;cursor:pointer;min-width:112px}.adhkar-count-btn:active{transform:scale(.97)}.adhkar-reset{background:transparent;border:1px solid var(--border-color);color:var(--text-muted);border-radius:11px;padding:9px 12px;font:inherit;font-size:12px;cursor:pointer}.adhkar-note{font-size:11px;color:var(--text-muted);line-height:1.8;margin:12px 3px}
 @media(min-width:900px){.app-screen-section{padding-top:40px}.profile-card{padding:40px}.services-grid{gap:20px}}@media(max-width:420px){.app-screen-section{padding:19px 15px 125px}.profile-card{padding:27px 21px}.bottom-nav{width:calc(100% - 18px)}.nav-item{font-size:10px}.modal-body{padding:16px}.chat-footer{padding-inline:10px}.chat-footer .btn{min-width:60px;padding-inline:10px}.adhkar-entry{padding:15px}.adhkar-entry-text{font-size:17px}}
+
+/* Modern messenger experience */
+.private-inline-section{margin-top:22px;background:var(--card-bg);border:1px solid var(--border-color);border-radius:22px;padding:18px;box-shadow:var(--shadow-sm)}
+.private-section-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.private-section-heading h3{font-size:17px;color:var(--text-main);font-weight:900}.private-section-heading p{font-size:11px;color:var(--text-muted);margin-top:3px}.private-section-icon{width:42px;height:42px;border-radius:14px;background:var(--primary-light);display:grid;place-items:center;color:var(--primary);font-size:20px}
+.private-contacts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:9px}.private-contact-item{display:flex;align-items:center;gap:11px;width:100%;padding:12px;text-align:right;border:1px solid var(--border-color);border-radius:16px;background:var(--bg-main);color:var(--text-main);cursor:pointer;transition:.18s}.private-contact-item:active{transform:scale(.985)}.private-contact-avatar{width:42px;height:42px;flex:0 0 42px;border-radius:50%;display:grid;place-items:center;background:var(--primary-light);color:var(--primary);font-weight:900}.private-contact-copy{min-width:0;flex:1}.private-contact-copy strong{display:block;font-size:13px}.private-contact-copy small{display:block;color:var(--text-muted);font-size:10px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.private-contact-arrow{color:var(--text-muted)}.private-list-loading{padding:14px;color:var(--text-muted);font-size:12px;text-align:center}
+.chat-box-body{display:flex;flex-direction:column;align-items:stretch;direction:ltr;gap:4px!important;padding:16px 15px 22px!important;overflow-x:hidden;box-sizing:border-box}.chat-message{position:relative;direction:rtl;display:flex;flex-direction:column;width:max-content;max-width:min(78%,520px);min-width:0;box-sizing:border-box;padding:9px 12px 7px;margin:7px 0 3px;border:1px solid var(--border-color);border-radius:18px;background:var(--card-bg);color:var(--text-main);box-shadow:0 2px 8px #00000008;overflow-wrap:anywhere;word-break:break-word;touch-action:pan-y;align-self:flex-start}.chat-message.is-mine{align-self:flex-end;margin-inline-start:0;margin-inline-end:0;background:var(--primary);color:#fff;border-color:transparent;border-radius:18px}.chat-message:not(.is-mine){align-self:flex-start}.chat-message.is-grouped{margin-top:2px;border-radius:15px}.chat-message.is-mine.is-grouped{border-radius:15px}.chat-message .chat-message-meta{display:flex;align-items:center;gap:9px;font-size:10px;opacity:.78;margin-bottom:3px}.chat-message.is-grouped .chat-message-meta .chat-sender{display:none}.chat-message .chat-message-text{font-size:14px;line-height:1.7;white-space:pre-wrap;user-select:text}.chat-message-image{display:block;width:auto;max-width:min(68vw,320px);max-height:360px;object-fit:contain;border:0!important;outline:0;box-shadow:none!important;border-radius:14px;margin:5px 0 0;overflow:hidden}.chat-message .chat-reply-quote{padding:7px 9px;margin:0 0 7px;border-right:3px solid var(--primary);border-radius:8px;background:#0000000c;font-size:11px;line-height:1.5;opacity:.9}.chat-message.is-mine .chat-reply-quote{border-right-color:#fff;background:#ffffff20}.chat-message .chat-edited{font-size:9px;opacity:.65;margin-right:5px}.chat-reactions{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}.chat-reaction-chip{border:1px solid var(--border-color);background:var(--card-bg);color:var(--text-main);border-radius:20px;padding:2px 7px;font-size:12px;line-height:1.5}.chat-message.is-mine .chat-reaction-chip{background:#ffffff20;border-color:#ffffff55;color:#fff}.chat-reply-preview{padding:9px 14px;background:var(--primary-light);border-top:1px solid var(--border-color);color:var(--text-main);font-size:11px;display:flex;align-items:center;justify-content:space-between;gap:10px}.chat-reply-preview[hidden]{display:none}.chat-reply-preview button{border:0;background:transparent;color:var(--primary);font-size:18px;cursor:pointer}.chat-footer{flex-shrink:0}.chat-footer input[type=text]{min-width:0}.chat-message-actions-hint{font-size:9px;opacity:.55;margin-top:2px}
+.message-actions-backdrop{display:none;position:fixed;inset:0;z-index:12000;background:transparent;align-items:flex-start;justify-content:flex-start;padding:0}.message-actions-backdrop.open{display:block}.message-actions-sheet{position:fixed;width:max-content;max-width:min(92vw,330px);background:var(--card-bg);border:1px solid var(--border-color);border-radius:17px;padding:8px 10px;box-shadow:0 10px 35px #0004;animation:messageSheetIn .12s ease}.message-actions-handle{display:none}.message-reaction-row{display:flex;justify-content:center;gap:5px;padding:2px 0 8px;border-bottom:1px solid var(--border-color)}.message-reaction-row button{border:0;background:var(--bg-main);border-radius:50%;width:35px;height:35px;font-size:18px;cursor:pointer}.message-action-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 7px;background:transparent;border:0;border-bottom:1px solid var(--border-color);color:var(--text-main);font:inherit;text-align:right;font-size:13px;cursor:pointer}.message-action-cancel{display:none}.chat-editing-hint{display:none;padding:6px 12px;background:var(--primary-light);color:var(--primary);font-size:11px;align-items:center;justify-content:space-between}.chat-editing-hint.active{display:flex}.chat-editing-hint button{border:0;background:transparent;color:var(--primary);font-size:17px}@media(max-width:420px){.chat-message{max-width:88%;padding:8px 11px}.private-inline-section{padding:14px}.chat-box-body{padding-inline:11px!important}.message-reaction-row button{width:38px;height:38px;font-size:19px}}
+
 </style>
 </head>
 <body>
@@ -871,9 +879,6 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
           </div>
 
 
-          <div class="service-card citizen-only" onclick="openPrivateContacts()">
-            <div class="service-header"><div class="service-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></div><div><h4>الرسائل الخاصة</h4><p>محادثات مستقلة وآمنة الوصول بين مواطني المملكة، متصلة بالسيرفر</p></div></div>
-          </div>
           <div class="service-card shura-only" id="shura-chat-option" style="display:none;" onclick="openChat('shura')">
             <div class="service-header">
               <div class="service-icon"><svg viewBox="0 0 24 24"><path d="m3 8 5 4 4-7 4 7 5-4-2 11H5zM5 22h14"/></svg></div>
@@ -884,6 +889,10 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
             </div>
           </div>
         </div>
+        <section class="private-inline-section citizen-only" id="private-inline-section">
+          <div class="private-section-heading"><div><h3>المحادثات الخاصة</h3><p>محادثاتك مع المواطنين — تظهر هنا مباشرة</p></div><span class="private-section-icon">✉</span></div>
+          <div id="private-contacts-list" class="private-contacts-grid"><div class="private-list-loading">سجّل الدخول كمواطن لعرض المحادثات</div></div>
+        </section>
       </div>
 
       <!-- 4. قسم الأذكار -->
@@ -1052,13 +1061,11 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
   </div>
 
 
-  <div id="private-contacts-modal" class="fullscreen-modal">
-    <div class="modal-header"><h3>✉️ رسائل المواطنين</h3><button class="close-chat-btn" onclick="closeFullscreenModal('private-contacts-modal')">إغلاق ✕</button></div>
-    <div class="modal-body"><p style="color:var(--text-muted);margin-bottom:18px">اختر مواطناً لفتح محادثتكما الخاصة.</p><div id="private-contacts-list"></div></div>
-  </div>
   <div id="private-chat-modal" class="fullscreen-modal">
     <div class="modal-header"><h3 id="private-chat-title">محادثة خاصة</h3><button class="close-chat-btn" onclick="closePrivateChat()">رجوع ✕</button></div>
     <div id="private-chat-box" class="chat-box-body" aria-live="polite"></div>
+    <div id="private-editing-hint" class="chat-editing-hint">تعديل الرسالة <button onclick="cancelChatEdit()">×</button></div>
+    <div id="private-reply-preview" class="chat-reply-preview" hidden></div>
     <div class="chat-footer"><label class="img-upload-btn" title="إرفاق صورة">📷<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="sendPrivateImage(event)"></label><input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة..." onkeydown="if(event.key==='Enter')sendPrivateMessage()"><button class="btn" onclick="sendPrivateMessage()">إرسال</button></div>
   </div>
   <div id="chat-modal-public" class="fullscreen-modal">
@@ -1073,6 +1080,8 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
       <div class="chat-msg"><b>النظام:</b> أهلاً بك في الدردشة العامة للمملكة 👑</div>
     </div>
 
+    <div id="editing-hint-public" class="chat-editing-hint">تعديل الرسالة <button onclick="cancelChatEdit()">×</button></div>
+    <div id="reply-preview-public" class="chat-reply-preview" hidden></div>
     <div class="chat-footer">
       <label class="img-upload-btn" title="إرفاق صورة">
         📷
@@ -1093,6 +1102,8 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
       <div class="chat-msg"><b>النظام:</b> مرحباً بكم أعضاء مجلس الشورى المحترمين 🏛️</div>
     </div>
 
+    <div id="editing-hint-shura" class="chat-editing-hint">تعديل الرسالة <button onclick="cancelChatEdit()">×</button></div>
+    <div id="reply-preview-shura" class="chat-reply-preview" hidden></div>
     <div class="chat-footer">
       <label class="img-upload-btn" title="إرفاق صورة">
         📷
@@ -1100,6 +1111,18 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
       </label>
       <input type="text" id="chat-input-shura" placeholder="اكتب رسالتك لأعضاء المجلس..." onkeypress="handleKeyPress(event, 'shura')">
       <button class="btn" style="background-color: var(--primary);" onclick="sendMessage('shura')">إرسال</button>
+    </div>
+  </div>
+
+  <div id="message-actions-modal" class="message-actions-backdrop" onclick="if(event.target===this)closeMessageActions()">
+    <div class="message-actions-sheet" role="dialog" aria-label="خيارات الرسالة">
+      <div class="message-actions-handle"></div>
+      <div class="message-reaction-row">
+        <button onclick="reactToSelectedMessage('❤️')">❤️</button><button onclick="reactToSelectedMessage('😂')">😂</button><button onclick="reactToSelectedMessage('😮')">😮</button><button onclick="reactToSelectedMessage('😢')">😢</button><button onclick="reactToSelectedMessage('👍')">👍</button><button onclick="reactToSelectedMessage('🔥')">🔥</button>
+      </div>
+      <button class="message-action-item" onclick="replyToSelectedMessage()">↩️ <span>الرد على الرسالة</span></button>
+      <button class="message-action-item" onclick="copySelectedMessage()">⧉ <span>نسخ النص</span></button>
+      <button class="message-action-item" id="edit-message-action" onclick="editSelectedMessage()">✏️ <span>تعديل الرسالة</span></button>
     </div>
   </div>
 
@@ -1162,6 +1185,7 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
         document.getElementById('tab-games').classList.add('active-tab');
       } else if (tab === 'chat') {
         document.getElementById('tab-chat').classList.add('active-tab');
+        if (isCitizenUser) openPrivateContacts();
       } else if (tab === 'adhkar') {
         document.getElementById('tab-adhkar').classList.add('active-tab');
       } else if (tab === 'settings') {
@@ -1503,26 +1527,15 @@ localStorage.removeItem('rg_dm_token');
       
       const chatBox = document.getElementById(`chat-box-${type}`);
       if (chatBox) {
-        // 1. تحميل الرسائل المخزنة محلياً فـوراً لمنع الانتظار
-        const cachedMessages = localStorage.getItem(`chat_history_${type}`);
-        if (cachedMessages) {
-          try {
-            const parsed = JSON.parse(cachedMessages);
-            chatBox.innerHTML = '';
-            parsed.forEach(msg => {
-              renderSingleMessage(msg, type);
-            });
-          } catch(e) {
-            chatBox.innerHTML = '<div class="chat-msg"><b>النظام:</b> أهلاً بك في الدردشة العامة للمملكة 👑</div>';
-          }
-        } else {
-          chatBox.innerHTML = '<div class="chat-msg"><b>النظام:</b> أهلاً بك في الدردشة العامة للمملكة 👑</div>';
+        renderCachedChat(type, chatBox);
+        if (!chatBox.children.length && type === 'public') {
+          const welcome = document.createElement('div'); welcome.className = 'chat-message'; welcome.textContent = 'أهلاً بك في الدردشة العامة للمملكة 👑'; chatBox.appendChild(welcome);
         }
       }
 
       // 2. طلب التحديثات من السيرفر في الخلفية
       if (typeof socket !== 'undefined' && socket.connected) {
-        socket.emit("fetch_history", type);
+        requestChatHistory(type);
       }
     }
 
@@ -2076,7 +2089,7 @@ localStorage.removeItem('rg_dm_token');
       
       hideLoadingMessage(); 
 
-      socket.emit("fetch_history", "public");
+      requestChatHistory("public");
       socket.emit("fetch_leaderboard");
 
       if (typeof cachedFcmToken !== 'undefined' && cachedFcmToken) {
@@ -2104,96 +2117,197 @@ localStorage.removeItem('rg_dm_token');
       }
     });
 
+    const CHAT_TTL_MS = 48 * 60 * 60 * 1000;
+    let pendingChatReply = null;
+    let selectedMessageContext = null;
+    let editingChatMessage = null;
+    let privateContactsLoadedFor = '';
+
+    function chatCacheKey(type) { return 'rg_chat_cache_' + type; }
+    function cleanChatMessages(list) {
+      const cutoff = Date.now() - CHAT_TTL_MS;
+      return (Array.isArray(list) ? list : []).filter(m => m && new Date(m.createdAt || Date.now()).getTime() >= cutoff).slice(-200);
+    }
+    function readChatCache(type) {
+      try {
+        let raw = localStorage.getItem(chatCacheKey(type));
+        if (!raw) raw = localStorage.getItem(`chat_history_${type}`) || '[]';
+        const clean = cleanChatMessages(JSON.parse(raw));
+        localStorage.setItem(chatCacheKey(type), JSON.stringify(clean));
+        return clean;
+      } catch (_) { return []; }
+    }
+    function writeChatCache(type, list) {
+      try { localStorage.setItem(chatCacheKey(type), JSON.stringify(cleanChatMessages(list))); } catch (e) { console.warn('تعذر تحديث ذاكرة الشات المحلية:', e); }
+    }
+    function mergeChatHistory(type, incoming) {
+      const byId = new Map();
+      [...readChatCache(type), ...(Array.isArray(incoming) ? incoming : [])].forEach(m => byId.set(String(m._id || m.id || `${m.sender}-${m.createdAt}`), m));
+      writeChatCache(type, [...byId.values()].sort((a,b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0)));
+    }
+    function chatSyncKey(type) { return 'rg_chat_sync_' + type; }
+    function requestChatHistory(type) {
+      if (!socket.connected) return;
+      const since = localStorage.getItem(chatSyncKey(type));
+      socket.emit('fetch_history', { type, since: since || null });
+    }
+    function upsertChatCache(type, message) {
+      const list = readChatCache(type); const id = String(message._id || message.id || '');
+      const index = id ? list.findIndex(m => String(m._id || m.id || '') === id) : -1;
+      if (index >= 0) list[index] = { ...list[index], ...message }; else list.push(message);
+      writeChatCache(type, list);
+    }
+    function renderCachedChat(type, box) {
+      if (!box) return;
+      box.replaceChildren();
+      readChatCache(type).forEach(m => renderChatMessage(m, box, type));
+      box.scrollTop = box.scrollHeight;
+    }
+    function getMessagePreview(message) { return message?.text || (message?.image ? '📷 صورة' : 'رسالة'); }
+
     function sendMessage(type) {
       const activeType = type || activeChatType || 'public';
       const input = document.getElementById(`chat-input-${activeType}`);
       if (!input) return;
       const text = input.value.trim();
-
-      if (text !== "" && typeof socket !== 'undefined' && socket.connected) {
-        socket.emit("send_message", {
-          type: activeType,
-          text: text,
-          sender: currentUser || "مواطن"
-        });
-        input.value = "";
-      }
+      if (editingChatMessage && editingChatMessage.cacheType === activeType) { submitChatEdit(input); return; }
+      if (!text || !socket.connected) return;
+      socket.emit('send_message', { type: activeType, text, sender: currentUser || 'مواطن', replyTo: pendingChatReply ? { id: pendingChatReply._id, sender: pendingChatReply.sender, text: getMessagePreview(pendingChatReply) } : null });
+      input.value = '';
+      clearPendingReply(activeType);
     }
 
     function sendImage(event, type) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          socket.emit("send_message", {
-            type: type || "public",
-            image: e.target.result,
-            sender: currentUser || "مواطن"
-          });
-          event.target.value = '';
-        };
-        reader.readAsDataURL(file);
-      }
+      const file = event.target.files?.[0];
+      if (!file) return;
+      if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type) || file.size > 4 * 1024 * 1024) { alert('اختر صورة PNG أو JPG أو WEBP أو GIF بحجم أقل من 4 ميغابايت'); event.target.value = ''; return; }
+      const reader = new FileReader();
+      reader.onload = e => {
+        if (socket.connected) socket.emit('send_message', { type: type || 'public', image: e.target.result, sender: currentUser || 'مواطن', replyTo: pendingChatReply ? { id: pendingChatReply._id, sender: pendingChatReply.sender, text: getMessagePreview(pendingChatReply) } : null });
+        clearPendingReply(type || 'public'); event.target.value = '';
+      };
+      reader.readAsDataURL(file);
     }
 
-    function renderSingleMessage(data) {
-      const chatBox = document.getElementById(`chat-box-${data.type}`) || document.getElementById("chat-box-public");
-      if (!chatBox) return;
+    function renderChatMessage(data, chatBox, cacheType) {
+      if (!chatBox || !data) return;
+      const id = String(data._id || data.id || '');
+      if (id && chatBox.querySelector(`[data-message-id="${CSS.escape(id)}"]`)) return;
+      const isMe = data.sender === currentUser;
+      const previous = chatBox.lastElementChild;
+      const grouped = previous?.dataset?.sender === String(data.sender || '') && (new Date(data.createdAt || Date.now()) - new Date(previous.dataset.createdAt || 0)) < 5 * 60 * 1000;
+      const bubble = document.createElement('article');
+      bubble.className = 'chat-message' + (isMe ? ' is-mine' : '') + (grouped ? ' is-grouped' : '');
+      bubble.dataset.sender = String(data.sender || '');
+      bubble.dataset.createdAt = data.createdAt || new Date().toISOString();
+      if (id) bubble.dataset.messageId = id;
+      bubble.dataset.cacheType = cacheType || data.type || 'public';
 
-      const msgDiv = document.createElement("div");
-      const isMe = (data.sender === currentUser);
-
-      msgDiv.style.margin = "8px 0";
-      msgDiv.style.padding = "12px 16px";
-      msgDiv.style.borderRadius = "14px";
-      msgDiv.style.maxWidth = "75%";
-      msgDiv.style.wordBreak = "break-word";
-
-      if (isMe) {
-        msgDiv.style.marginLeft = "auto";
-        msgDiv.style.marginRight = "0";
-        msgDiv.style.backgroundColor = "var(--primary)";
-        msgDiv.style.color = "#ffffff";
-        msgDiv.style.fontWeight = "600";
-        msgDiv.style.textAlign = "right";
-      } else {
-        msgDiv.style.marginRight = "auto";
-        msgDiv.style.marginLeft = "0";
-        msgDiv.style.backgroundColor = "var(--card-bg)";
-        msgDiv.style.color = "var(--text-main)";
-        msgDiv.style.border = "1px solid var(--border-color)";
-        msgDiv.style.fontWeight = "normal";
-        msgDiv.style.textAlign = "right";
+      if (!grouped || !isMe) {
+        const meta = document.createElement('div'); meta.className = 'chat-message-meta';
+        const sender = document.createElement('strong'); sender.className = 'chat-sender'; sender.textContent = isMe ? 'أنت' : (data.sender || 'مواطن');
+        const time = document.createElement('span'); time.textContent = new Date(data.createdAt || Date.now()).toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' });
+        meta.append(sender, time);
+        if (data.editedAt) { const edited = document.createElement('span'); edited.className = 'chat-edited'; edited.textContent = 'معدّلة'; meta.appendChild(edited); }
+        bubble.appendChild(meta);
       }
-
-      let timeString = "";
-      if (data.createdAt) {
-        const msgDate = new Date(data.createdAt);
-        timeString = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      } else {
-        const now = new Date();
-        timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (data.replyTo?.text) {
+        const quote = document.createElement('div'); quote.className = 'chat-reply-quote';
+        const quoteSender = document.createElement('strong'); quoteSender.textContent = data.replyTo.sender || 'رسالة';
+        const quoteText = document.createElement('div'); quoteText.textContent = data.replyTo.text;
+        quote.append(quoteSender, quoteText); bubble.appendChild(quote);
       }
-
-      let htmlContent = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 10px;">
-          <span style="font-size: 11px; font-weight:700; opacity: 0.9;">${data.sender || 'مواطن'}</span>
-          <span style="font-size: 10px; opacity: 0.7;">${timeString}</span>
-        </div>
-      `;
-
-      if (data.text) {
-        htmlContent += `<div>${data.text}</div>`;
+      if (data.text) { const text = document.createElement('div'); text.className = 'chat-message-text'; text.textContent = data.text; bubble.appendChild(text); }
+      if (data.image && /^data:image\/(png|jpeg|webp|gif);base64,/.test(data.image)) { const img = document.createElement('img'); img.className = 'chat-message-image'; img.src = data.image; img.alt = 'صورة مرسلة'; img.loading = 'lazy'; bubble.appendChild(img); }
+      if (Array.isArray(data.reactions) && data.reactions.length) {
+        const counts = {}; data.reactions.forEach(r => { counts[r.emoji] = (counts[r.emoji] || 0) + 1; });
+        const reactions = document.createElement('div'); reactions.className = 'chat-reactions';
+        Object.entries(counts).forEach(([emoji, count]) => { const chip = document.createElement('span'); chip.className = 'chat-reaction-chip'; chip.textContent = `${emoji} ${count}`; reactions.appendChild(chip); });
+        bubble.appendChild(reactions);
       }
-      if (data.image) {
-        htmlContent += `<img src="${data.image}" style="max-width:100%; border-radius:10px; margin-top:6px;">`;
-      }
-
-      msgDiv.innerHTML = htmlContent;
-      chatBox.appendChild(msgDiv);
+      bubble.addEventListener('contextmenu', e => { e.preventDefault(); showMessageActions(data, cacheType, e.clientX, e.clientY); });
+      let pressTimer = null;
+      bubble.addEventListener('touchstart', e => { const t=e.touches?.[0]; pressTimer = setTimeout(() => showMessageActions(data, cacheType, t?.clientX, t?.clientY), 520); }, { passive: true });
+      ['touchend','touchmove','touchcancel'].forEach(evt => bubble.addEventListener(evt, () => { if (pressTimer) clearTimeout(pressTimer); }, { passive: true }));
+      chatBox.appendChild(bubble);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-
+    function renderSingleMessage(data, type) {
+      const chatType = type || data.type || 'public';
+      const box = document.getElementById(`chat-box-${chatType}`);
+      if (!box) return;
+      renderChatMessage(data, box, chatType);
+    }
+    function showMessageActions(message, cacheType, x, y) {
+      selectedMessageContext = { message, cacheType, private: String(cacheType || '').startsWith('dm:') };
+      const edit = document.getElementById('edit-message-action');
+      if (edit) edit.style.display = message.sender === currentUser && !!message.text ? 'flex' : 'none';
+      const popup = document.getElementById('message-actions-modal');
+      const sheet = popup?.querySelector('.message-actions-sheet');
+      popup?.classList.add('open');
+      if (sheet) {
+        const w = Math.min(330, window.innerWidth - 16), h = sheet.offsetHeight || 130;
+        const left = Math.max(8, Math.min((x ?? window.innerWidth/2) - w/2, window.innerWidth - w - 8));
+        const top = Math.max(8, Math.min((y ?? window.innerHeight/2) - h - 10, window.innerHeight - h - 8));
+        sheet.style.left = left + 'px'; sheet.style.top = top + 'px';
+      }
+    }
+    function closeMessageActions() { document.getElementById('message-actions-modal')?.classList.remove('open'); }
+    function copySelectedMessage() { if (!selectedMessageContext) return; const value=selectedMessageContext.message.text || ''; if(value && navigator.clipboard?.writeText) navigator.clipboard.writeText(value).catch(()=>{}); closeMessageActions(); }
+    function sendMessageAction(eventName, payload) {
+      if (!selectedMessageContext || !socket.connected) return;
+      const { message, cacheType, private: isPrivate } = selectedMessageContext;
+      if (isPrivate) {
+        const peer = cacheType.split(':').slice(1).find(x => x !== currentUser);
+        socket.emit(eventName, { messageId: message._id, type: cacheType, peer, ...payload });
+      } else socket.emit(eventName, { messageId: message._id, type: cacheType, sender: currentUser, ...payload });
+    }
+    function reactToSelectedMessage(emoji) { sendMessageAction('message_react', { emoji }); closeMessageActions(); }
+    function replyToSelectedMessage() {
+      if (!selectedMessageContext) return;
+      pendingChatReply = selectedMessageContext.message;
+      const isPrivate = selectedMessageContext.private;
+      const type = selectedMessageContext.cacheType;
+      const preview = document.getElementById(isPrivate ? 'private-reply-preview' : `reply-preview-${type}`);
+      if (preview) { preview.hidden = false; preview.replaceChildren(); const span = document.createElement('span'); span.textContent = `رد على ${pendingChatReply.sender}: ${getMessagePreview(pendingChatReply)}`; const close = document.createElement('button'); close.textContent = '×'; close.onclick = () => clearPendingReply(type); preview.append(span, close); }
+      closeMessageActions();
+      document.getElementById(isPrivate ? 'private-chat-input' : `chat-input-${type}`)?.focus();
+    }
+    function clearPendingReply(type) {
+      pendingChatReply = null;
+      const isPrivate = type?.startsWith('dm:') || type === 'private';
+      const preview = document.getElementById(isPrivate ? 'private-reply-preview' : `reply-preview-${type || 'public'}`);
+      if (preview) { preview.hidden = true; preview.replaceChildren(); }
+    }
+    function editSelectedMessage() {
+      if (!selectedMessageContext) return;
+      const ctx = selectedMessageContext; editingChatMessage = ctx;
+      const input = document.getElementById(ctx.private ? 'private-chat-input' : `chat-input-${ctx.cacheType}`);
+      if (!input) return;
+      input.value = ctx.message.text || ''; input.placeholder = 'عدّل رسالتك ثم اضغط حفظ التعديل'; input.focus();
+      const send = input.parentElement?.querySelector('button.btn'); if (send) { send.dataset.originalLabel = send.textContent; send.textContent = 'حفظ التعديل'; }
+      const hint = document.getElementById(ctx.private ? 'private-editing-hint' : `editing-hint-${ctx.cacheType}`); if(hint) hint.classList.add('active');
+      closeMessageActions();
+    }
+    function cancelChatEdit(type) {
+      const ctx = editingChatMessage; if (!ctx) return;
+      const input = document.getElementById(ctx.private ? 'private-chat-input' : `chat-input-${ctx.cacheType}`);
+      if (input) { input.value=''; input.placeholder = ctx.private ? 'اكتب رسالة خاصة...' : (ctx.cacheType==='shura'?'اكتب رسالتك لأعضاء المجلس...':'اكتب رسالتك هنا...'); const send=input.parentElement?.querySelector('button.btn'); if(send){send.textContent=send.dataset.originalLabel || 'إرسال';delete send.dataset.originalLabel;} }
+      const hint=document.getElementById(ctx.private?'private-editing-hint':`editing-hint-${ctx.cacheType}`); if(hint) hint.classList.remove('active'); editingChatMessage=null;
+    }
+    function submitChatEdit(input) {
+      if (!editingChatMessage) return false;
+      const value=input.value.trim(), ctx=editingChatMessage;
+      if (!value || value === (ctx.message.text||'')) { cancelChatEdit(); return true; }
+      selectedMessageContext=ctx; sendMessageAction('message_edit',{text:value.slice(0,4000)}); cancelChatEdit(); return true;
+    }
+    function refreshRenderedMessage(data, cacheType) {
+      const box = cacheType?.startsWith('dm:') ? (privatePeer && cacheType === 'dm:' + [currentUser, privatePeer].sort().join(':') ? document.getElementById('private-chat-box') : null) : document.getElementById(`chat-box-${cacheType}`);
+      if (!box) return;
+      const id = String(data._id || ''); const old = id ? box.querySelector(`[data-message-id="${CSS.escape(id)}"]`) : null;
+      if (old) old.remove();
+      const messages = readChatCache(cacheType); box.replaceChildren(); messages.forEach(m => renderChatMessage(m, box, cacheType));
+    }
 
     // الرسائل الخاصة: المصادقة والجلب والإرسال تتم عبر Socket.IO والسيرفر فقط.
     let privatePeer = null;
@@ -2235,64 +2349,70 @@ localStorage.removeItem('rg_dm_token');
     if (callback) callback(privateAuth);
   });
 }
+    function renderPrivateContacts(contacts) {
+      const box=document.getElementById('private-contacts-list'); if(!box)return;
+      box.replaceChildren();
+      if(!contacts?.length){box.innerHTML='<div class="private-list-loading">لا توجد محادثات خاصة محفوظة بعد</div>';return;}
+      contacts.forEach(contact => {
+        const item=document.createElement('button'); item.className='private-contact-item';
+        const avatar=document.createElement('span'); avatar.className='private-contact-avatar'; avatar.textContent=(contact.name||contact.id).trim().charAt(0);
+        const copy=document.createElement('span'); copy.className='private-contact-copy';
+        const title=document.createElement('strong'); title.textContent=contact.name||contact.id;
+        const sub=document.createElement('small'); sub.textContent=contact.title||'مواطن'; copy.append(title,sub);
+        const arrow=document.createElement('span'); arrow.className='private-contact-arrow'; arrow.textContent='‹';
+        item.append(avatar,copy,arrow); item.onclick=()=>openPrivateChat(contact); box.appendChild(item);
+      });
+    }
     function openPrivateContacts() {
       if (!isCitizenUser) return;
-      openFullscreenModal('private-contacts-modal');
-      const box = document.getElementById('private-contacts-list');
-      box.textContent = 'جاري تحميل المواطنين...';
+      const box=document.getElementById('private-contacts-list'); if(!box)return;
+      let cached=[]; try{cached=JSON.parse(localStorage.getItem('rg_private_contacts_'+currentUser)||'[]');}catch(_){}
+      // اعرض القائمة المحفوظة فوراً حتى لو كان الجهاز بلا اتصال.
+      renderPrivateContacts(cached);
+      if(!socket.connected) { if(!cached.length) box.innerHTML='<div class="private-list-loading">لا توجد أسماء محفوظة بعد؛ اتصل بالإنترنت مرة واحدة لتحميل قائمة المواطنين</div>'; return; }
       authenticatePrivate(ok => {
-        if (!ok) { box.textContent = 'لتفعيل الرسائل الخاصة، سجّل خروجاً ثم ادخل بكود المواطن مجدداً.'; return; }
+        if(!ok) { if(!cached.length) box.innerHTML='<div class="private-list-loading">سجّل الدخول بحساب المواطن لتفعيل المحادثات الخاصة</div>'; return; }
         socket.emit('private_contacts', {}, res => {
-          box.replaceChildren();
-          if (!res?.ok) { box.textContent = res?.error || 'تعذر تحميل المواطنين'; return; }
-          res.contacts.forEach(contact => {
-            const item = document.createElement('button');
-            item.className = 'service-card';
-            item.style.cssText = 'width:100%;text-align:right;color:var(--text-main);margin-bottom:10px';
-            const title = document.createElement('strong'); title.textContent = '✉️ ' + contact.name;
-            const sub = document.createElement('p'); sub.textContent = contact.title || 'مواطن'; sub.style.color = 'var(--text-muted)';
-            item.append(title, sub);
-            item.onclick = () => openPrivateChat(contact);
-            box.appendChild(item);
-          });
+          if(!res?.ok || !Array.isArray(res.contacts)) return;
+          localStorage.setItem('rg_private_contacts_'+currentUser, JSON.stringify(res.contacts));
+          renderPrivateContacts(res.contacts); privateContactsLoadedFor=currentUser;
         });
       });
     }
     function openPrivateChat(contact) {
       privatePeer = contact.id;
+      const room = 'dm:' + [currentUser, privatePeer].sort().join(':');
       document.getElementById('private-chat-title').textContent = '✉️ ' + contact.name;
       const box = document.getElementById('private-chat-box');
-      box.textContent = 'جاري تحميل المحادثة...';
       openFullscreenModal('private-chat-modal');
-      socket.emit('private_history', { with: privatePeer }, res => {
-        if (privatePeer !== contact.id) return;
-        box.replaceChildren();
-        if (!res?.ok) { box.textContent = res?.error || 'تعذر التحميل'; return; }
-        res.history.forEach(renderPrivateMessage);
+      renderCachedChat(room, box);
+      authenticatePrivate(ok => {
+        if (!ok || privatePeer !== contact.id) return;
+        socket.emit('private_history', { with: privatePeer, since: localStorage.getItem(chatSyncKey(room)) || null }, res => {
+          if (privatePeer !== contact.id || !res?.ok) return;
+          if (res.incremental) mergeChatHistory(room, res.history || []); else writeChatCache(room, res.history || []);
+          if (res.syncedAt) localStorage.setItem(chatSyncKey(room), res.syncedAt);
+          renderCachedChat(room, box);
+        });
       });
     }
-    function closePrivateChat() { closeFullscreenModal('private-chat-modal'); privatePeer = null; }
+    function closePrivateChat() { closeFullscreenModal('private-chat-modal'); privatePeer = null; clearPendingReply('private'); }
     function renderPrivateMessage(data) {
-      if (!privatePeer || ![data.sender, data.type?.split(':').pop()].includes(privatePeer) && data.sender !== currentUser) return;
-      const box = document.getElementById('private-chat-box');
-      const bubble = document.createElement('div');
-      bubble.className = 'chat-msg';
-      bubble.style.cssText = 'margin:5px 0;max-width:80%;align-self:' + (data.sender === currentUser ? 'flex-end;background:var(--primary);color:white' : 'flex-start');
-      const meta = document.createElement('small'); meta.textContent = (data.sender === currentUser ? 'أنت' : data.sender) + ' · ' + new Date(data.createdAt).toLocaleTimeString('ar', {hour:'2-digit',minute:'2-digit'});
-      bubble.appendChild(meta);
-      if (data.text) { const line = document.createElement('div'); line.textContent = data.text; line.style.whiteSpace = 'pre-wrap'; bubble.appendChild(line); }
-      if (data.image && /^data:image\/(png|jpeg|webp|gif);base64,/.test(data.image)) { const img = document.createElement('img'); img.src = data.image; img.style.cssText='max-width:100%;border-radius:12px;margin-top:8px'; bubble.appendChild(img); }
-      box.appendChild(bubble); box.scrollTop = box.scrollHeight;
+      const peer = data.sender === currentUser ? data.peer : data.sender;
+      const room = data.type || ('dm:' + [currentUser, peer].sort().join(':'));
+      upsertChatCache(room, data);
+      if (privatePeer && room === 'dm:' + [currentUser, privatePeer].sort().join(':')) renderChatMessage(data, document.getElementById('private-chat-box'), room);
     }
     function sendPrivateMessage(image) {
       if (!privatePeer || !privateAuth) return;
       const input = document.getElementById('private-chat-input');
       const text = image ? '' : input.value.trim();
+      if (!image && editingChatMessage?.private) { submitChatEdit(input); return; }
       if (!text && !image) return;
       const to = privatePeer;
-      socket.emit('private_send', { to, text, image: image || '' }, res => {
+      socket.emit('private_send', { to, text, image: image || '', replyTo: pendingChatReply ? { id: pendingChatReply._id, sender: pendingChatReply.sender, text: getMessagePreview(pendingChatReply) } : null }, res => {
         if (!res?.ok) alert(res?.error || 'فشل إرسال الرسالة');
-        else if (!image) input.value = '';
+        else { if (!image) input.value = ''; clearPendingReply('private'); }
       });
     }
     function sendPrivateImage(event) {
@@ -2301,58 +2421,33 @@ localStorage.removeItem('rg_dm_token');
       if (file.size > 4 * 1024 * 1024 || !/^image\/(png|jpeg|webp|gif)$/.test(file.type)) { alert('اختر صورة بحجم أقل من 4 ميغابايت'); return; }
       const reader = new FileReader(); reader.onload = () => sendPrivateMessage(reader.result); reader.readAsDataURL(file); event.target.value = '';
     }
-    socket.on('private_receive', data => {
-      const room = 'dm:' + [currentUser, privatePeer].sort().join(':');
-      if (privatePeer && data.type === room) renderPrivateMessage(data);
+    socket.on('private_receive', data => renderPrivateMessage(data));
+    socket.on('connect', () => {
+      if (isCitizenUser && (privatePassword || localStorage.getItem('rg_dm_token'))) {
+        authenticatePrivate(ok => { if (ok && document.getElementById('tab-chat')?.classList.contains('active-tab')) openPrivateContacts(); });
+      }
     });
-   socket.on('connect', () => {
-  if (
-    isCitizenUser &&
-    (privatePassword || localStorage.getItem('rg_dm_token'))
-  ) {
-    authenticatePrivate();
-  }
-});
-   socket.on("receive_message", (data) => {
-      renderSingleMessage(data, data.type);
-
-      const chatType = data.type || 'public';
-      const cachedMessages = localStorage.getItem(`chat_history_${chatType}`);
-      let messagesList = [];
-      try {
-        if (cachedMessages) messagesList = JSON.parse(cachedMessages);
-      } catch(e) { messagesList = []; }
-
-      messagesList.push(data);
-      if (messagesList.length > 200) messagesList.shift();
-      localStorage.setItem(`chat_history_${chatType}`, JSON.stringify(messagesList));
-
+    socket.on('receive_message', data => {
+      const type = data.type || 'public';
+      upsertChatCache(type, data);
+      renderSingleMessage(data, type);
       if (data.sender !== currentUser) {
-        // تشغيل آمن للصوت بدون أخطاء
-        try {
-          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-          audio.volume = 0.5;
-          audio.play().catch(e => {});
-        } catch (err) {}
+        try { const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); audio.volume = .35; audio.play().catch(() => {}); } catch (_) {}
       }
     });
-
-socket.on("load_history", (res) => {
-      const chatType = res.type;
-      const chatBox = document.getElementById(`chat-box-${chatType}`);
-      if (!chatBox) return;
-
-      // حفظ التاريخ القادم من السيرفر في التخزين المحلي للمهاتفة السريعة
-      if (res.history && res.history.length > 0) {
-        localStorage.setItem(`chat_history_${chatType}`, JSON.stringify(res.history));
-        
-        chatBox.innerHTML = '';
-        res.history.forEach(msg => {
-          renderSingleMessage(msg, chatType);
-        });
-      }
+    socket.on('load_history', res => {
+      const type = res.type || 'public'; const box = document.getElementById(`chat-box-${type}`);
+      if (!box) return;
+      if (res.incremental) mergeChatHistory(type, res.history || []); else writeChatCache(type, res.history || []);
+      if (res.syncedAt) localStorage.setItem(chatSyncKey(type), res.syncedAt);
+      if (activeChatType === type || document.getElementById(`chat-modal-${type}`)?.classList.contains('open')) renderCachedChat(type, box);
     });
-    
+    socket.on('message_updated', data => {
+      const type = data.type || 'public';
+      if (type.startsWith('dm:')) { upsertChatCache(type, data); refreshRenderedMessage(data, type); }
+      else { upsertChatCache(type, data); refreshRenderedMessage(data, type); }
+    });
+
     // تفعيل إشعارات الأندرويد الفورية عبر Capacitor
     document.addEventListener('DOMContentLoaded', async () => {
       try {
