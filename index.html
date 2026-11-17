@@ -681,7 +681,32 @@ canvas {
   object-fit: contain;
   border-radius: var(--radius-sm);
 }
-  
+  /* تعديل زر الحفظ عند تعديل الرسالة ليبقى منظماً */
+.chat-edit-save-btn { font-size: 12px; font-weight: 700; white-space: nowrap; }
+
+/* شريط معاينة التسجيل الصوتي قبل الإرسال (إلغاء أو إرسال) */
+.voice-preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  background: var(--bg-main);
+  padding: 6px 12px;
+  border-radius: 22px;
+  border: 1px solid var(--primary-border);
+}
+.voice-preview-bar audio { height: 34px; flex: 1; }
+.voice-action-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px; }
+
+/* مؤشر من قاعد يكتب */
+.typing-indicator-bar {
+  font-size: 11px;
+  color: var(--primary);
+  padding: 2px 16px;
+  min-height: 18px;
+  font-weight: 700;
+}
+
 /* RABATGHASH — Modern, calm interface */
 :root{--primary:#16866f;--primary-hover:#0f705d;--primary-light:#e5f5ef;--primary-border:#b8dfd1;--bg-main:#f4f8f6;--card-bg:#fff;--text-main:#1e302b;--text-muted:#71827c;--border-color:#e0ebe5;--shadow-sm:0 5px 18px #173c2c0b;--shadow-md:0 18px 45px #173c2c12;--radius-sm:18px;--radius-md:24px;--radius-lg:30px}
 html:not(.light-mode){--primary:#56c5a4;--primary-hover:#75d7b9;--primary-light:#173b32;--primary-border:#2b6253;--bg-main:#101b19;--card-bg:#172522;--text-main:#edf7f2;--text-muted:#a1b6ad;--border-color:#293b35;--shadow-sm:0 5px 18px #0002;--shadow-md:0 18px 45px #0003}
@@ -1080,6 +1105,7 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
     <div id="private-chat-box" class="chat-box-body" aria-live="polite"></div>
     <div id="private-editing-hint" class="chat-editing-hint">تعديل الرسالة <button onclick="cancelChatEdit()">×</button></div>
     <div id="private-reply-preview" class="chat-reply-preview" hidden></div>
+    <div id="typing-indicator-public" class="typing-indicator-bar"></div>
     <div class="chat-footer"><label class="img-upload-btn" title="إرفاق صورة" aria-label="إرفاق صورة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4H10L8.5 6H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L14 4Z"></path><circle cx="12" cy="13" r="3.5"></circle></svg><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="sendPrivateImage(event)"></label><input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة..." onkeydown="if(event.key==='Enter')sendPrivateMessage()"><span id="private-recording-label" class="chat-recording-label">جارٍ التسجيل</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('private')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" aria-label="إرسال" title="إرسال" onclick="sendPrivateMessage()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button></div>
   </div>
   <div id="chat-modal-public" class="fullscreen-modal">
@@ -2218,59 +2244,120 @@ localStorage.removeItem('rg_dm_token');
 
 
     // تسجيل الرسائل الصوتية يعمل عبر MediaRecorder في المتصفحات الحديثة.
-    let activeVoiceRecorder = null;
-    let activeVoiceStream = null;
-    let activeVoiceScope = null;
-    let voiceRecordingTimer = null;
-    async function toggleVoiceRecording(scope) {
-      if (activeVoiceRecorder && activeVoiceScope === scope) { activeVoiceRecorder.stop(); return; }
-      if (activeVoiceRecorder) { alert('أوقف التسجيل الحالي أولاً'); return; }
-      if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') { alert('تسجيل الصوت غير مدعوم في هذا المتصفح. جرّب فتح التطبيق عبر HTTPS أو من تطبيق أندرويد.'); return; }
-      if (scope === 'private' && (!privatePeer || !privateAuth)) { alert('اتصل بالمحادثة الخاصة أولاً'); return; }
-      if (!socket.connected) { alert('يلزم الاتصال بالإنترنت لإرسال رسالة صوتية'); return; }
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const mime = ['audio/webm;codecs=opus','audio/ogg;codecs=opus','audio/mp4'].find(t => MediaRecorder.isTypeSupported?.(t)) || '';
-        const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
-        const chunks = [];
-        activeVoiceRecorder = recorder; activeVoiceStream = stream; activeVoiceScope = scope;
-        const button = document.querySelector(`#${scope === 'private' ? 'private-chat-modal' : `chat-modal-${scope}`} .chat-voice-btn`);
-        const label = document.getElementById(`${scope}-recording-label`);
-        button?.classList.add('is-recording'); button?.setAttribute('aria-label','إيقاف التسجيل'); if (label) label.classList.add('active');
-        recorder.ondataavailable = e => { if (e.data?.size) chunks.push(e.data); };
-        recorder.onerror = () => { alert('تعذر تسجيل الصوت'); finishVoiceUI(scope); };
-        recorder.onstop = () => {
-          clearTimeout(voiceRecordingTimer);
-          const blob = new Blob(chunks, { type: (recorder.mimeType || 'audio/webm').split(';')[0] });
-          finishVoiceUI(scope);
-          if (!blob.size) return;
-          if (blob.size > 2_500_000) { alert('التسجيل طويل أو حجمه كبير. حاول تسجيل رسالة أقصر.'); return; }
-          const reader = new FileReader();
-          reader.onload = () => sendVoiceMessage(scope, reader.result);
-          reader.readAsDataURL(blob);
-        };
-        recorder.start(250);
-        voiceRecordingTimer = setTimeout(() => { if (activeVoiceRecorder === recorder && recorder.state === 'recording') recorder.stop(); }, 90000);
-      } catch (err) { console.error('Voice recording:', err); finishVoiceUI(scope); alert('لم نتمكن من استخدام الميكروفون. اسمح للموقع بالوصول إلى الميكروفون ثم حاول مجدداً.'); }
-    }
-    function finishVoiceUI(scope) {
-      try { activeVoiceStream?.getTracks().forEach(t => t.stop()); } catch (_) {}
-      const button = document.querySelector(`#${scope === 'private' ? 'private-chat-modal' : `chat-modal-${scope}`} .chat-voice-btn`);
-      const label = document.getElementById(`${scope}-recording-label`);
-      button?.classList.remove('is-recording'); button?.setAttribute('aria-label','تسجيل رسالة صوتية'); if (label) label.classList.remove('active');
-      activeVoiceRecorder = null; activeVoiceStream = null; activeVoiceScope = null; clearTimeout(voiceRecordingTimer);
-    }
-    function sendVoiceMessage(scope, audio) {
-      if (!socket.connected) { alert('انقطع الاتصال، لم يتم إرسال التسجيل'); return; }
-      const replyTo = pendingChatReply ? { id: pendingChatReply._id, sender: pendingChatReply.sender, text: getMessagePreview(pendingChatReply) } : null;
-      if (scope === 'private') {
-        if (!privatePeer || !privateAuth) return;
-        socket.emit('private_send', { to: privatePeer, audio, replyTo }, res => { if (!res?.ok) alert(res?.error || 'فشل إرسال الرسالة الصوتية'); else clearPendingReply('private'); });
-      } else {
-        socket.emit('send_message', { type: scope, audio, sender: currentUser || 'مواطن', replyTo });
-        clearPendingReply(scope);
-      }
-    }
+   let pendingVoiceBlob = null;
+let activeVoiceRecorder = null;
+let activeVoiceStream = null;
+let activeVoiceScope = null;
+
+async function toggleVoiceRecording(scope) {
+  if (activeVoiceRecorder && activeVoiceScope === scope) {
+    activeVoiceRecorder.stop(); 
+    return;
+  }
+  if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') { 
+    alert('تسجيل الصوت غير مدعوم في متصفحك.'); 
+    return; 
+  }
+  
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mime = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4'].find(t => MediaRecorder.isTypeSupported?.(t)) || '';
+    const recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+    const chunks = [];
+    
+    activeVoiceRecorder = recorder; 
+    activeVoiceStream = stream; 
+    activeVoiceScope = scope;
+    
+    const voiceBtn = document.querySelector(`#${scope === 'private' ? 'private-chat-modal' : `chat-modal-${scope}`} .chat-voice-btn`);
+    const label = document.getElementById(`${scope}-recording-label`);
+    voiceBtn?.classList.add('is-recording'); 
+    if (label) label.classList.add('active');
+
+    recorder.ondataavailable = e => { if (e.data?.size) chunks.push(e.data); };
+    recorder.onstop = () => {
+      try { activeVoiceStream?.getTracks().forEach(t => t.stop()); } catch(_){}
+      voiceBtn?.classList.remove('is-recording');
+      if (label) label.classList.remove('active');
+      
+      pendingVoiceBlob = new Blob(chunks, { type: (recorder.mimeType || 'audio/webm').split(';')[0] });
+      showVoicePreviewUI(scope, pendingVoiceBlob);
+      
+      activeVoiceRecorder = null; 
+      activeVoiceStream = null; 
+      activeVoiceScope = null;
+    };
+
+    recorder.start(250);
+  } catch (err) {
+    alert('تعذر الوصول إلى الميكروفون.');
+  }
+}
+
+function showVoicePreviewUI(scope, blob) {
+  const footer = document.querySelector(`#${scope === 'private' ? 'private-chat-modal' : `chat-modal-${scope}`} .chat-footer`);
+  if (!footer) return;
+  
+  const audioUrl = URL.createObjectURL(blob);
+  footer.dataset.originalHTML = footer.innerHTML;
+  
+  footer.innerHTML = `
+    <div class="voice-preview-bar">
+      <button type="button" class="voice-action-btn" onclick="discardVoicePreview('${scope}')" title="إلغاء التسجيل">🗑️</button>
+      <audio controls src="${audioUrl}"></audio>
+      <button type="button" class="voice-action-btn" onclick="confirmSendVoice('${scope}')" title="إرسال التسجيل">📤</button>
+    </div>
+  `;
+}
+
+function discardVoicePreview(scope) {
+  pendingVoiceBlob = null;
+  restoreChatFooter(scope);
+}
+
+function confirmSendVoice(scope) {
+  if (!pendingVoiceBlob) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    sendVoiceMessage(scope, reader.result);
+    pendingVoiceBlob = null;
+    restoreChatFooter(scope);
+  };
+  reader.readAsDataURL(pendingVoiceBlob);
+}
+
+function restoreChatFooter(scope) {
+  const footer = document.querySelector(`#${scope === 'private' ? 'private-chat-modal' : `chat-modal-${scope}`} .chat-footer`);
+  if (footer && footer.dataset.originalHTML) {
+    footer.innerHTML = footer.dataset.originalHTML;
+    delete footer.dataset.originalHTML;
+  }
+}
+
+let typingTimeout = null;
+
+function setupTypingListener(type, inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.addEventListener('input', () => {
+    socket.emit('typing', { type });
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      socket.emit('stop_typing', { type });
+    }, 1500);
+  });
+}
+
+// استدعِ هذه الدوال عند فتح الشاتات المناسبة
+socket.on('user_typing', (data) => {
+  const indicator = document.getElementById(`typing-indicator-${data.type}`);
+  if (indicator) indicator.textContent = `${data.sender} يكتب الآن...`;
+});
+
+socket.on('user_stop_typing', (data) => {
+  const indicator = document.getElementById(`typing-indicator-${data.type}`);
+  if (indicator) indicator.textContent = '';
+});
 
     function renderChatMessage(data, chatBox, cacheType, animate = true) {
       if (!chatBox || !data) return;
@@ -2392,22 +2479,50 @@ localStorage.removeItem('rg_dm_token');
       const preview = document.getElementById(isPrivate ? 'private-reply-preview' : `reply-preview-${type || 'public'}`);
       if (preview) { preview.hidden = true; preview.replaceChildren(); }
     }
-    function editSelectedMessage() {
-      if (!selectedMessageContext) return;
-      const ctx = selectedMessageContext; editingChatMessage = ctx;
-      const input = document.getElementById(ctx.private ? 'private-chat-input' : `chat-input-${ctx.cacheType}`);
-      if (!input) return;
-      input.value = ctx.message.text || ''; input.placeholder = 'عدّل رسالتك ثم اضغط حفظ التعديل'; input.focus();
-      const send = input.parentElement?.querySelector('button.btn'); if (send) { send.dataset.originalLabel = send.textContent; send.textContent = 'حفظ التعديل'; }
-      const hint = document.getElementById(ctx.private ? 'private-editing-hint' : `editing-hint-${ctx.cacheType}`); if(hint) hint.classList.add('active');
-      closeMessageActions();
+    let editingOriginalHTML = {};
+
+function editSelectedMessage() {
+  if (!selectedMessageContext) return;
+  const ctx = selectedMessageContext; 
+  editingChatMessage = ctx;
+  const input = document.getElementById(ctx.private ? 'private-chat-input' : `chat-input-${ctx.cacheType}`);
+  if (!input) return;
+  
+  input.value = ctx.message.text || ''; 
+  input.placeholder = 'عدّل رسالتك ثم اضغط حفظ'; 
+  input.focus();
+  
+  const sendBtn = input.parentElement?.querySelector('button.btn'); 
+  if (sendBtn) {
+    editingOriginalHTML[ctx.cacheType || 'private'] = sendBtn.innerHTML;
+    sendBtn.innerHTML = '<span class="chat-edit-save-btn">حفظ</span>';
+  }
+  
+  const hint = document.getElementById(ctx.private ? 'private-editing-hint' : `editing-hint-${ctx.cacheType}`); 
+  if (hint) hint.classList.add('active');
+  closeMessageActions();
+}
+
+function cancelChatEdit(type) {
+  const ctx = editingChatMessage; 
+  if (!ctx) return;
+  const scope = ctx.private ? 'private' : ctx.cacheType;
+  const input = document.getElementById(ctx.private ? 'private-chat-input' : `chat-input-${scope}`);
+  
+  if (input) { 
+    input.value = ''; 
+    input.placeholder = ctx.private ? 'اكتب رسالة خاصة...' : 'اكتب رسالتك هنا...'; 
+    const sendBtn = input.parentElement?.querySelector('button.btn'); 
+    if (sendBtn && editingOriginalHTML[scope]) {
+      sendBtn.innerHTML = editingOriginalHTML[scope];
+      delete editingOriginalHTML[scope];
     }
-    function cancelChatEdit(type) {
-      const ctx = editingChatMessage; if (!ctx) return;
-      const input = document.getElementById(ctx.private ? 'private-chat-input' : `chat-input-${ctx.cacheType}`);
-      if (input) { input.value=''; input.placeholder = ctx.private ? 'اكتب رسالة خاصة...' : (ctx.cacheType==='shura'?'اكتب رسالتك لأعضاء المجلس...':'اكتب رسالتك هنا...'); const send=input.parentElement?.querySelector('button.btn'); if(send){send.textContent=send.dataset.originalLabel || 'إرسال';delete send.dataset.originalLabel;} }
-      const hint=document.getElementById(ctx.private?'private-editing-hint':`editing-hint-${ctx.cacheType}`); if(hint) hint.classList.remove('active'); editingChatMessage=null;
-    }
+  }
+  
+  const hint = document.getElementById(ctx.private ? 'private-editing-hint' : `editing-hint-${scope}`); 
+  if (hint) hint.classList.remove('active'); 
+  editingChatMessage = null;
+}
     function submitChatEdit(input) {
       if (!editingChatMessage) return false;
       const value=input.value.trim(), ctx=editingChatMessage;
