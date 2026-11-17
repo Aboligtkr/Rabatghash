@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="IKR Service">
+<meta name="color-scheme" content="dark light">
 <link rel="apple-touch-icon" href="assets/logo/logo.png">
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <meta charset="UTF-8">
@@ -790,6 +791,23 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
 @media(max-width:520px){.chat-topbar{padding-inline:11px!important}.chat-footer{width:calc(100% - 18px)!important;gap:6px!important;padding:7px!important}.chat-footer .img-upload-btn,.chat-footer .chat-voice-btn,.chat-footer .chat-send-btn{width:40px;height:40px;min-width:40px;flex-basis:40px}.chat-footer input[type="text"]{height:40px;padding-inline:11px!important;font-size:13px}.chat-box-body{padding-bottom:115px!important}}
 @media(orientation:landscape) and (max-height:560px){.chat-topbar{padding-block:5px!important}.chat-top-logo,.chat-top-close{width:35px;height:35px}.chat-top-title{padding:4px 18px}.chat-footer{bottom:6px;padding:5px!important}.chat-box-body{padding-bottom:75px!important}.typing-indicator-bar{bottom:62px}}
 
+
+/* Voice notes: custom messenger-style controls, avoiding native audio chrome */
+.voice-preview-bar{display:flex;align-items:center;gap:10px;flex:1;min-width:0;padding:8px 10px;border:1px solid var(--primary-border);border-radius:20px;background:var(--card-bg)}
+.voice-preview-bar audio,.chat-message-audio{display:none!important}
+.voice-action-btn{width:38px;height:38px;flex:0 0 38px;border:0;border-radius:50%;display:grid;place-items:center;background:var(--primary-light);color:var(--primary);font-size:17px;cursor:pointer}
+.voice-wave{display:flex;align-items:center;justify-content:center;gap:3px;height:34px;flex:1;min-width:35px;overflow:hidden}
+.voice-wave i{display:block;width:3px;min-width:3px;border-radius:5px;background:var(--primary);opacity:.72;height:var(--bar-height,12px)}
+.voice-preview-time{font-size:11px;color:var(--text-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.chat-audio-card{display:flex;align-items:center;gap:9px;min-width:190px;max-width:min(290px,68vw);padding:7px 9px;border-radius:17px;background:var(--primary-light);color:var(--text-main);direction:ltr}
+.chat-audio-card .voice-wave{height:30px}.chat-audio-card .voice-wave i{background:var(--primary)}
+.chat-audio-play{width:34px;height:34px;flex:0 0 34px;border:0;border-radius:50%;background:var(--primary);color:white;display:grid;place-items:center;font-size:13px;cursor:pointer}
+.chat-audio-time{font-size:10px;color:var(--text-muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+html[dir="ltr"] .chat-message{direction:ltr}html[dir="ltr"] .chat-message .chat-message-meta{direction:ltr}
+html[dir="ltr"] .chat-topbar,html[dir="ltr"] .chat-footer{direction:ltr}
+html[dir="ltr"] .nav-item{direction:ltr}
+@media(max-width:520px){.voice-preview-bar{gap:6px;padding:6px}.voice-action-btn{width:34px;height:34px;flex-basis:34px}.chat-audio-card{min-width:165px}}
+
 </style>
 </head>
 <body>
@@ -996,10 +1014,22 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
       <div id="tab-settings" class="app-screen-section">
         <div class="profile-card" style="background: linear-gradient(135deg, #475569, #1e293b);">
           <h2>⚙️ حسابك وتفضيلاتك</h2>
-          <p>إدارة المظهر، الحسابات الرسمية، والسير التاريخية</p>
+          <p>إدارة المظهر واللغة والحسابات الرسمية والسجلات</p>
         </div>
 
         <div class="services-grid">
+          <div class="service-card" onclick="toggleAppLanguage()">
+            <div class="service-header">
+              <div class="service-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div>
+              <div><h4 id="language-setting-title">لغة التطبيق: العربية</h4><p id="language-setting-desc">التبديل بين العربية والإنجليزية</p></div>
+            </div>
+          </div>
+          <div class="service-card" onclick="useSystemTheme()">
+            <div class="service-header">
+              <div class="service-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></div>
+              <div><h4 id="system-theme-title">اتباع مظهر الجهاز تلقائياً</h4><p id="system-theme-desc">مزامنة الوضع الفاتح والداكن مع إعدادات الجهاز</p></div>
+            </div>
+          </div>
           <div class="service-card" onclick="toggleDarkMode()">
             <div class="service-header">
               <div class="service-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.7 8.7 0 1 0 20.5 14.2Z"/></svg></div>
@@ -1148,7 +1178,7 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
     <div id="private-editing-hint" class="chat-editing-hint">تعديل الرسالة <button onclick="cancelChatEdit()">×</button></div>
     <div id="private-reply-preview" class="chat-reply-preview" hidden></div>
     <div id="typing-indicator-private" class="typing-indicator-bar"></div>
-    <div class="chat-footer"><label class="img-upload-btn" title="إرفاق صورة" aria-label="إرفاق صورة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4H10L8.5 6H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L14 4Z"></path><circle cx="12" cy="13" r="3.5"></circle></svg><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="sendPrivateImage(event)"></label><input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة..." onkeydown="if(event.key==='Enter')sendPrivateMessage()"><span id="private-recording-label" class="chat-recording-label">جارٍ التسجيل</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('private')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" aria-label="إرسال" title="إرسال" onclick="sendPrivateMessage()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button></div>
+    <div class="chat-footer"><label class="img-upload-btn" title="إرفاق صورة" aria-label="إرفاق صورة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4H10L8.5 6H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L14 4Z"></path><circle cx="12" cy="13" r="3.5"></circle></svg><input type="file" accept="image/*" style="display:none" onchange="sendPrivateImage(event)"></label><input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة…" onkeydown="if(event.key==='Enter')sendPrivateMessage()"><span id="private-recording-label" class="chat-recording-label">جارٍ تسجيل الرسالة</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('private')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" aria-label="إرسال" title="إرسال" onclick="sendPrivateMessage()"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button></div>
   </div>
   <div id="chat-modal-public" class="fullscreen-modal">
     <div class="modal-header chat-topbar"><button class="chat-top-close" onclick="closeChat('public')" aria-label="إغلاق">‹</button><div class="chat-top-title"><strong>الدردشة العامة</strong><small>مجتمع المملكة الربطخشاوية</small></div><img class="chat-top-logo" src="assets/logo/logo.png" alt="شعار المملكة"></div>
@@ -1164,8 +1194,8 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4H10L8.5 6H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.5L14 4Z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>
         <input type="file" accept="image/*" style="display:none;" onchange="sendImage(event, 'public')">
       </label>
-      <input type="text" id="chat-input-public" placeholder="اكتب رسالتك هنا..." onkeypress="handleKeyPress(event, 'public')">
-      <span id="public-recording-label" class="chat-recording-label">جارٍ التسجيل</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('public')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" aria-label="إرسال" title="إرسال" onclick="sendMessage('public')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
+      <input type="text" id="chat-input-public" placeholder="اكتب رسالتك هنا…" onkeypress="handleKeyPress(event, 'public')">
+      <span id="public-recording-label" class="chat-recording-label">جارٍ تسجيل الرسالة</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('public')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" aria-label="إرسال" title="إرسال" onclick="sendMessage('public')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
     </div>
   </div>
 
@@ -1184,7 +1214,7 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
         <input type="file" accept="image/*" style="display:none;" onchange="sendImage(event, 'shura')">
       </label>
       <input type="text" id="chat-input-shura" placeholder="اكتب رسالتك لأعضاء المجلس..." onkeypress="handleKeyPress(event, 'shura')">
-      <span id="shura-recording-label" class="chat-recording-label">جارٍ التسجيل</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('shura')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" style="background-color: var(--primary);" aria-label="إرسال" title="إرسال" onclick="sendMessage('shura')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
+      <span id="shura-recording-label" class="chat-recording-label">جارٍ تسجيل الرسالة</span><button type="button" class="chat-voice-btn" title="تسجيل رسالة صوتية" aria-label="تسجيل رسالة صوتية" onclick="toggleVoiceRecording('shura')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button><button type="button" class="btn chat-send-btn" style="background-color: var(--primary);" aria-label="إرسال" title="إرسال" onclick="sendMessage('shura')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
     </div>
   </div>
 
@@ -1224,11 +1254,23 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
   </div>
 
   <script>
+    function applyThemeMode(mode) {
+      const resolved = mode === 'auto' ? (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : mode;
+      document.documentElement.classList.toggle('light-mode', resolved !== 'dark');
+      document.documentElement.dataset.themePreference = mode;
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.content = resolved === 'dark' ? '#101b19' : '#f4f8f6';
+    }
     function toggleDarkMode() {
-      const html = document.documentElement;
-      html.classList.toggle('light-mode');
-      const isLight = html.classList.contains('light-mode');
-      localStorage.setItem('theme_mode', isLight ? 'light' : 'dark');
+      const current = document.documentElement.classList.contains('light-mode') ? 'light' : 'dark';
+      const next = current === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme_mode', next); applyThemeMode(next);
+    }
+    function useSystemTheme() { localStorage.setItem('theme_mode', 'auto'); applyThemeMode('auto'); }
+    const systemThemeQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+    if (systemThemeQuery) {
+      const onSystemThemeChange = () => { if ((localStorage.getItem('theme_mode') || 'auto') === 'auto') applyThemeMode('auto'); };
+      systemThemeQuery.addEventListener ? systemThemeQuery.addEventListener('change', onSystemThemeChange) : systemThemeQuery.addListener(onSystemThemeChange);
     }
 
     function hideLoadingMessage() {
@@ -1239,12 +1281,9 @@ body{background:var(--bg-main);background-image:radial-gradient(ellipse at 90% 0
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-      const savedTheme = localStorage.getItem('theme_mode');
-      if (savedTheme === 'dark') {
-        document.documentElement.classList.remove('light-mode');
-      } else {
-        document.documentElement.classList.add('light-mode');
-      }
+      const savedTheme = localStorage.getItem('theme_mode') || 'auto';
+      applyThemeMode(savedTheme);
+      applyAppLanguage(localStorage.getItem('app_language') || 'ar');
 
       const savedUser = localStorage.getItem('saved_user');
       const savedRole = localStorage.getItem('saved_role');
@@ -2328,7 +2367,7 @@ localStorage.removeItem('rg_dm_token');
     function sendImage(event, type) {
       const file = event.target.files?.[0];
       if (!file) return;
-      if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type) || file.size > 4 * 1024 * 1024) { alert('اختر صورة PNG أو JPG أو WEBP أو GIF بحجم أقل من 4 ميغابايت'); event.target.value = ''; return; }
+      if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type) || file.size > 4 * 1024 * 1024) { showAppNotice('يرجى اختيار صورة PNG أو JPG أو WEBP أو GIF لا يتجاوز حجمها 4 ميغابايت.'); event.target.value = ''; return; }
       const reader = new FileReader();
       reader.onload = e => {
         if (socket.connected) socket.emit('send_message', { type: type || 'public', image: e.target.result, sender: currentUser || 'مواطن', replyTo: pendingChatReply ? { id: pendingChatReply._id, sender: pendingChatReply.sender, text: getMessagePreview(pendingChatReply) } : null });
@@ -2350,7 +2389,7 @@ async function toggleVoiceRecording(scope) {
     return;
   }
   if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') { 
-    alert('تسجيل الصوت غير مدعوم في متصفحك.'); 
+    showAppNotice('تسجيل الصوت غير مدعوم في هذا المتصفح.'); 
     return; 
   }
   
@@ -2385,7 +2424,7 @@ async function toggleVoiceRecording(scope) {
 
     recorder.start(250);
   } catch (err) {
-    alert('تعذر الوصول إلى الميكروفون.');
+    showAppNotice('تعذر الوصول إلى الميكروفون. تحقق من أذونات الموقع.');
   }
 }
 
@@ -2398,11 +2437,30 @@ function showVoicePreviewUI(scope, blob) {
   
   footer.innerHTML = `
     <div class="voice-preview-bar">
-      <button type="button" class="voice-action-btn" onclick="discardVoicePreview('${scope}')" title="إلغاء التسجيل">🗑️</button>
-      <audio controls src="${audioUrl}"></audio>
-      <button type="button" class="voice-action-btn" onclick="confirmSendVoice('${scope}')" title="إرسال التسجيل">📤</button>
+      <button type="button" class="voice-action-btn" onclick="discardVoicePreview('${scope}')" title="إلغاء التسجيل" aria-label="إلغاء التسجيل">✕</button>
+      <button type="button" class="voice-action-btn" onclick="toggleVoicePreview(this)" data-audio-preview="${audioUrl}" title="معاينة التسجيل" aria-label="معاينة التسجيل">▶</button>
+      <div class="voice-wave" aria-hidden="true">${Array.from({length:28},(_,i)=>`<i style="--bar-height:${7+Math.abs(Math.sin(i*2.13))*21}px"></i>`).join('')}</div>
+      <span class="voice-preview-time">رسالة صوتية</span>
+      <button type="button" class="voice-action-btn" onclick="confirmSendVoice('${scope}')" title="إرسال التسجيل" aria-label="إرسال التسجيل">➤</button>
+      <audio hidden src="${audioUrl}"></audio>
     </div>
   `;
+}
+
+function toggleVoicePreview(button) {
+  const audio = button?.parentElement?.querySelector('audio'); if (!audio) return;
+  if (audio.paused) { audio.play().then(()=>button.textContent='Ⅱ').catch(()=>{}); }
+  else { audio.pause(); button.textContent='▶'; }
+  audio.onended = () => { button.textContent='▶'; };
+}
+function sendVoiceMessage(scope, dataUrl) {
+  if (!dataUrl || !socket?.connected) return;
+  if (scope === 'private') {
+    if (!privatePeer || !privateAuth) return;
+    socket.emit('private_send', { to: privatePeer, text: '', audio: dataUrl }, res => { if (!res?.ok) showAppNotice(res?.error || 'تعذر إرسال الرسالة الصوتية'); });
+  } else {
+    socket.emit('send_message', { type: scope, text: '', audio: dataUrl, sender: currentUser || 'مواطن' });
+  }
 }
 
 function discardVoicePreview(scope) {
@@ -2487,7 +2545,19 @@ socket.on('user_stop_typing', data => { if(!data?.type)return;const set=typingUs
       }
       if (data.text) { const text = document.createElement('div'); text.className = 'chat-message-text'; text.textContent = data.text; bubble.appendChild(text); }
       if (data.image && /^data:image\/(png|jpeg|webp|gif);base64,/.test(data.image)) { const wrap=document.createElement('div');wrap.className='chat-image-wrap';const img = document.createElement('img'); img.className = 'chat-message-image'; img.src = data.image; img.alt = 'صورة مرسلة'; img.loading = 'lazy';const save=document.createElement('a');save.className='chat-image-save';save.href=data.image;save.download='rabatghash-image-'+(data._id||Date.now())+'.'+(({ 'image/png':'png','image/jpeg':'jpg','image/webp':'webp','image/gif':'gif' })[data.image.match(/^data:(image\/[^;]+)/)?.[1]]||'jpg');save.title='تنزيل الصورة';save.setAttribute('aria-label','تنزيل الصورة');save.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5M12 15V3"></path></svg>';wrap.append(img,save);bubble.appendChild(wrap); }
-      if (data.audio && /^data:audio\/(webm|ogg|mp4|mpeg|wav);base64,/.test(data.audio)) { const audio=document.createElement('audio');audio.className='chat-message-audio';audio.controls=true;audio.preload='metadata';audio.src=data.audio;bubble.appendChild(audio); }
+      if (data.audio && /^data:audio\/(webm|ogg|mp4|mpeg|wav);base64,/.test(data.audio)) {
+        const audio=document.createElement('audio');audio.className='chat-message-audio';audio.preload='metadata';audio.src=data.audio;
+        const card=document.createElement('div');card.className='chat-audio-card';
+        const play=document.createElement('button');play.type='button';play.className='chat-audio-play';play.textContent='▶';play.setAttribute('aria-label','تشغيل الرسالة الصوتية');
+        const wave=document.createElement('div');wave.className='voice-wave';for(let i=0;i<24;i++){const bar=document.createElement('i');bar.style.setProperty('--bar-height',(7+(Math.abs(Math.sin(i*2.13))*20))+'px');wave.appendChild(bar);}
+        const time=document.createElement('span');time.className='chat-audio-time';time.textContent='0:00';
+        play.addEventListener('click',()=>{if(audio.paused){audio.play().catch(()=>{});}else audio.pause();});
+        audio.addEventListener('play',()=>play.textContent='Ⅱ');audio.addEventListener('pause',()=>play.textContent='▶');
+        audio.addEventListener('loadedmetadata',()=>{const d=Math.floor(audio.duration||0);time.textContent=Math.floor(d/60)+':'+String(d%60).padStart(2,'0');});
+        audio.addEventListener('timeupdate',()=>{const d=Math.floor(audio.currentTime||0);time.textContent=Math.floor(d/60)+':'+String(d%60).padStart(2,'0');});
+        wave.addEventListener('click',e=>{if(audio.duration){const r=wave.getBoundingClientRect();audio.currentTime=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*audio.duration;}});
+        card.append(play,wave,time);bubble.append(audio,card);
+      }
       if (Array.isArray(data.reactions) && data.reactions.length) {
         const groups = {}; data.reactions.forEach(r => { (groups[r.emoji] ||= []).push(String(r.user || 'مواطن')); });
         const reactions = document.createElement('div'); reactions.className = 'chat-reactions';
@@ -2610,7 +2680,7 @@ function cancelChatEdit(type) {
   
   if (input) { 
     input.value = ''; 
-    input.placeholder = ctx.private ? 'اكتب رسالة خاصة...' : 'اكتب رسالتك هنا...'; 
+    input.placeholder = ctx.private ? 'اكتب رسالة خاصة…' : 'اكتب رسالتك هنا…'; 
     const sendBtn = input.parentElement?.querySelector('button.btn'); 
     if (sendBtn && editingOriginalHTML[scope]) {
       sendBtn.innerHTML = editingOriginalHTML[scope];
@@ -2740,14 +2810,14 @@ function cancelChatEdit(type) {
       if (!text && !image) return;
       const to = privatePeer;
       socket.emit('private_send', { to, text, image: image || '', replyTo: pendingChatReply ? { id: pendingChatReply._id, sender: pendingChatReply.sender, text: getMessagePreview(pendingChatReply) } : null }, res => {
-        if (!res?.ok) alert(res?.error || 'فشل إرسال الرسالة');
+        if (!res?.ok) showAppNotice(res?.error || 'تعذر إرسال الرسالة.');
         else { if (!image) input.value = ''; clearPendingReply('private'); }
       });
     }
     function sendPrivateImage(event) {
       const file = event.target.files?.[0];
       if (!file) return;
-      if (file.size > 4 * 1024 * 1024 || !/^image\/(png|jpeg|webp|gif)$/.test(file.type)) { alert('اختر صورة بحجم أقل من 4 ميغابايت'); return; }
+      if (file.size > 4 * 1024 * 1024 || !/^image\/(png|jpeg|webp|gif)$/.test(file.type)) { showAppNotice('يرجى اختيار صورة لا يتجاوز حجمها 4 ميغابايت.'); return; }
       const reader = new FileReader(); reader.onload = () => sendPrivateMessage(reader.result); reader.readAsDataURL(file); event.target.value = '';
     }
     socket.on('private_receive', data => renderPrivateMessage(data));
@@ -2822,6 +2892,41 @@ function cancelChatEdit(type) {
     });
 
   </script>
+
+
+<div id="app-notice" class="app-notice-backdrop" aria-hidden="true"><div class="app-notice-card" role="alertdialog" aria-modal="true"><div class="app-notice-icon">!</div><p id="app-notice-text"></p><button type="button" onclick="closeAppNotice()">حسناً</button></div></div>
+<style>
+.app-notice-backdrop{display:none;position:fixed;inset:0;z-index:30000;background:#0008;align-items:center;justify-content:center;padding:22px;backdrop-filter:blur(5px)}.app-notice-backdrop.open{display:flex}.app-notice-card{width:min(100%,360px);padding:24px;border-radius:24px;background:var(--card-bg);color:var(--text-main);border:1px solid var(--border-color);box-shadow:0 20px 60px #0005;text-align:center;animation:appear .18s ease}.app-notice-icon{width:42px;height:42px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:var(--primary-light);color:var(--primary);font-weight:900;font-size:20px}.app-notice-card p{line-height:1.8;font-size:14px;margin-bottom:18px}.app-notice-card button{border:0;border-radius:13px;padding:10px 24px;background:var(--primary);color:white;font:inherit;font-weight:800}
+</style>
+<script>
+function showAppNotice(message){const box=document.getElementById('app-notice');const text=document.getElementById('app-notice-text');if(!box||!text){console.warn(message);return;}text.textContent=message;box.classList.add('open');box.setAttribute('aria-hidden','false');}
+function closeAppNotice(){const box=document.getElementById('app-notice');if(box){box.classList.remove('open');box.setAttribute('aria-hidden','true');}}
+const APP_TRANSLATIONS={
+'الخدمات':'Services','الألعاب':'Games','الدردشة':'Chat','الأذكار':'Remembrances','الإعدادات':'Settings',
+'حسابك وتفضيلاتك':'Account & Preferences','إدارة المظهر واللغة والحسابات الرسمية والسجلات':'Manage appearance, language, official accounts and records',
+'تبديل الوضع (ليلي / نهاري)':'Toggle appearance (Dark / Light)','تغيير مظهر السمة بين الوضع الفاتح والداكن':'Switch between light and dark appearance',
+'اتباع مظهر الجهاز تلقائياً':'Follow device appearance','مزامنة الوضع الفاتح والداكن مع إعدادات الجهاز':'Sync light and dark mode with your device settings',
+'لغة التطبيق: العربية':'App language: Arabic','لغة التطبيق: English':'App language: English','التبديل بين العربية والإنجليزية':'Switch between Arabic and English',
+'إرفاق صورة':'Attach image','اكتب رسالة خاصة…':'Write a private message…','اكتب رسالتك هنا…':'Write a message…','إرسال':'Send','إغلاق':'Close','إلغاء':'Cancel','حسناً':'OK',
+'الدردشة العامة':'Public chat','مجتمع المملكة الربطخشاوية':'Rabatghash Community','مجلس الشورى':'Shura Council','المحادثة الخاصة بالأعضاء':'Members-only conversation',
+'محادثة خاصة':'Private chat','جارٍ تسجيل الرسالة':'Recording voice message','تسجيل رسالة صوتية':'Record voice message',
+'سجل السيرة الملكية والأوسمة':'Royal history and honors','استعراض البطولات، البروفايلات، والأوسمة الرسمية':'View achievements, profiles and official honors',
+'حسابات المملكة الربطخشاوية':'Kingdom social accounts','متابعة الحسابات الرسمية على المنصات':'Follow official accounts on social platforms',
+'أذكار الصباح':'Morning remembrances','أذكار المساء':'Evening remembrances','أذكار متنوعة':'Other remembrances',
+'الاسم الثلاثي (مطلوب)':'Full name (required)','سبب الطلب والخبرات...':'Reason for request and experience…','إرسال الطلب':'Submit request',
+'إرفاق صورة':'Attach image','تعديل الرسالة':'Edit message','رسالة صوتية':'Voice message','من شاهد الرسالة؟':'Who viewed this message?',
+'حسابات المملكة الربطخشاوية':'Kingdom social accounts','حسابك وتفضيلاتك':'Account & Preferences',
+'المملكة الربطخشاوية':'The Rabatghash Kingdom','مجتمع واحد، تاريخ واحد، راية واحدة':'One community, one history, one banner','اسم المستخدم':'Username','كود المرور الخاص':'Access code','دخول المواطنين':'Citizen login','دخول كضيف 👤':'Continue as guest 👤','اسم المستخدم أو الكود غير صحيح!':'Incorrect username or access code!','مرحباً بك 👋':'Welcome 👋','مواطن':'Citizen','خروج':'Log out','ديوان المملكة':'Kingdom portal','مساحتك الرسمية في المملكة الإسلامية الربطخشاوية':'Your official space in the Islamic Rabatghash Kingdom','الخدمات المتاحة:':'Available services:','التقديم على الجواز الربطخشاوي':'Apply for a Rabatghash passport','طلب إصدار أو تجديد الجواز الرسمي':'Request a new or renewed official passport','الشكاوى والمقترحات':'Complaints and suggestions','مراسلة الإدارة عبر البريد الإلكتروني مباشرة':'Contact the administration directly by email','طلب الانضمام':'Request to join','تفاصيل الطلب':'Request details','ميدان التحديات':'Challenge arena','تحدى أصدقاءك وحقق أفضل النتائج وسجلها في لوحة الصدارة':'Challenge your friends, achieve top scores and appear on the leaderboard','تحدي النقر⚡':'Tap challenge ⚡','الذاكرة🧠':'Memory 🧠','حجر ورقة مقص✊':'Rock Paper Scissors ✊','الصدارة🏆':'Leaderboard 🏆','اضغط أكبر عدد من المرات خلال 15 ثانية!':'Tap as many times as possible in 15 seconds!','ابدأ التحدي!':'Start challenge!','طابق الرموز المتشابهة! (الوقت: 0 ثانية)':'Match the identical symbols! (Time: 0 seconds)','إعادة اللعبة':'Restart game','اختر سلاحك لتحدي النظام:':'Choose your move to challenge the system:','الديناصور والطيور':'Dinosaur and birds','النقاط:':'Score:','أعلى نتيجة:':'Best score:','اضغط للقفز وتفادي العقبات':'Tap to jump and avoid obstacles','ابدأ اللعب':'Start playing','مجالس المملكة':'Kingdom councils','تواصل مع أبناء المملكة وانضم للمجالس المباشرة':'Connect with community members and join live councils','دردشة المملكة المباشرة':'Kingdom live chat','المجلس العام لجميع المواطنين (شاشة كاملة وإرسال صور)':'Public council for all citizens (full screen and image sharing)','شات مجلس الشورى الخاص':'Private Shura Council chat','مخصص لأعضاء المجلس الاربعة فقط (مغلق ومحمي)':'For the four council members only (private and protected)','المحادثات الخاصة':'Private conversations','محادثاتك مع المواطنين — تظهر هنا مباشرة':'Your conversations with citizens appear here','سجّل الدخول كمواطن لعرض المحادثات':'Log in as a citizen to view conversations','الأذكار اليومية':'Daily remembrances','وردك من الذكر والطمأنينة؛ أذكار الصباح والمساء وأذكار متنوعة في مكان واحد.':'Daily words of remembrance and peace: morning, evening and other remembrances in one place.','اسم العضو':'Member name','المنصب':'Position','الأصل:':'Origin:','الإقامة:':'Residence:','سنة الانضمام:':'Year joined:','السمعة:':'Reputation:','الأوسمة والانجازات:':'Honors and achievements:','السيرة التاريخية داخل المملكة:':'History within the Kingdom:','الاسم الكامل للمتقدم:':'Applicant full name:','إرسال الطلب عبر البريد':'Send request by email','نص الرسالة أو الشكوى:':'Message or complaint:','إرسال عبر البريد الإلكتروني':'Send by email','تويتر: @RabatghashEN':'X: @RabatghashEN','إنستغرام: @rabatghash':'Instagram: @rabatghash','تيك توك: @rabatghash':'TikTok: @rabatghash','إرسال الطلب':'Submit request','أهلاً بك في الدردشة العامة للمملكة 👑':'Welcome to the Kingdom public chat 👑','مرحباً بكم أعضاء مجلس الشورى المحترمين 🏛️':'Welcome, respected Shura Council members 🏛️','الرد على الرسالة':'Reply to message','نسخ النص':'Copy text','حذف الرسالة':'Delete message','أفضل النتائج المسجلة للمواطنين والزوار:':'Top scores recorded by citizens and guests:','إغلاق ✕':'Close ✕','الاسم الثلاثي (مطلوب)':'Full name (required)','سبب الطلب والخبرات...':'Reason for request and experience…','الرسالة':'Message'
+};
+function applyAppLanguage(language){const lang=language==='en'?'en':'ar';const root=document.documentElement;root.lang=lang;root.dir=lang==='en'?'ltr':'rtl';const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;while((node=walker.nextNode())){if(node.parentElement?.closest('script,style'))continue;const raw=node.nodeValue;const trimmed=raw.trim();if(!trimmed)continue;if(lang==='en'&&APP_TRANSLATIONS[trimmed])node.nodeValue=raw.replace(trimmed,APP_TRANSLATIONS[trimmed]);else if(lang==='ar'){const reverse=Object.entries(APP_TRANSLATIONS).find(([,v])=>v===trimmed);if(reverse)node.nodeValue=raw.replace(trimmed,reverse[0]);}}
+ document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{const ar=el.dataset.placeholderAr||el.getAttribute('placeholder');if(!el.dataset.placeholderAr)el.dataset.placeholderAr=ar;if(lang==='en'&&APP_TRANSLATIONS[ar])el.placeholder=APP_TRANSLATIONS[ar];else if(lang==='ar')el.placeholder=el.dataset.placeholderAr;});
+ const title=document.getElementById('language-setting-title');if(title)title.textContent=lang==='en'?'App language: English':'لغة التطبيق: العربية';const desc=document.getElementById('language-setting-desc');if(desc)desc.textContent=lang==='en'?'Switch between Arabic and English':'التبديل بين العربية والإنجليزية';
+ localStorage.setItem('app_language',lang);}
+function toggleAppLanguage(){applyAppLanguage((localStorage.getItem('app_language')||'ar')==='ar'?'en':'ar');}
+// Translate content inserted later by chat updates and modal rendering.
+const languageObserver=new MutationObserver(()=>{const lang=localStorage.getItem('app_language')||'ar';if(lang==='en'){const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;while((n=walker.nextNode())){if(n.parentElement?.closest('script,style'))continue;const t=n.nodeValue.trim();if(APP_TRANSLATIONS[t])n.nodeValue=n.nodeValue.replace(t,APP_TRANSLATIONS[t]);}}});
+languageObserver.observe(document.body,{childList:true,subtree:true});
+</script>
 
 </body>
 </html>
