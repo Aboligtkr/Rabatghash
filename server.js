@@ -56,8 +56,14 @@ const messageSchema = new mongoose.Schema({
     image: String,
     sender: String,
     senderId: String,
+    replyTo: { id: String, sender: String, text: String },
+    reactions: [{ _id: false, user: String, emoji: String }],
+    editedAt: Date,
+    updatedAt: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now }
 });
+// Automatically expire every chat message 48 hours after creation.
+messageSchema.index({ createdAt: 1 }, { expireAfterSeconds: 48 * 60 * 60 });
 
 const Message = mongoose.model("Message", messageSchema);
 
@@ -420,8 +426,13 @@ io.on('connection', (socket) => {
         if (!me || !validCitizen(other) || other === me) return ack({ ok: false, error: 'محادثة غير مسموحة' });
         try {
             const room = privateRoom(me, other);
-            const history = await Message.find({ type: room }).sort({ createdAt: -1 }).limit(200).lean();
-            ack({ ok: true, with: other, history: history.reverse() });
+            const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000);
+            const since = payload?.since && !Number.isNaN(Date.parse(payload.since)) ? new Date(payload.since) : null;
+            const filter = { type: room, createdAt: { $gte: cutoff } };
+            if (since) filter.$or = [{ createdAt: { $gt: since } }, { updatedAt: { $gt: since } }];
+            const history = await Message.find(filter).sort({ createdAt: -1 }).limit(200).lean();
+            history.reverse();
+            ack({ ok: true, with: other, history, incremental: !!since, syncedAt: new Date().toISOString() });
         } catch (err) { ack({ ok: false, error: 'تعذر تحميل المحادثة' }); }
     });
 
@@ -434,12 +445,70 @@ io.on('connection', (socket) => {
             return;
         }
         try {
-            const saved = await new Message({ type: privateRoom(me, other), sender: me, senderId: me, text, image, createdAt: new Date() }).save();
+            const saved = await new Message({ type: privateRoom(me, other), sender: me, senderId: me, text, image, replyTo: payload?.replyTo && typeof payload.replyTo.text === 'string' ? { id: String(payload.replyTo.id || ''), sender: String(payload.replyTo.sender || '').slice(0, 100), text: String(payload.replyTo.text).slice(0, 500) } : undefined, createdAt: new Date(), updatedAt: new Date() }).save();
             const data = saved.toObject();
             io.to('citizen:' + me).to('citizen:' + other).emit('private_receive', { ...data, peer: other });
             sendChatPush({ sender: me, recipient: other, text, image, chatType: 'private' }).catch(err => console.error('[FCM] private:', err));
             if (typeof ack === 'function') ack({ ok: true });
         } catch (err) { if (typeof ack === 'function') ack({ ok: false, error: 'فشل حفظ الرسالة' }); }
+    });
+
+    async function findAuthorizedChatMessage(payload, forEdit = false) {
+        const id = String(payload?.messageId || '');
+        if (!mongoose.isValidObjectId(id)) return null;
+        const message = await Message.findById(id);
+        if (!message || Date.now() - new Date(message.createdAt).getTime() > 48 * 60 * 60 * 1000) return null;
+        const type = String(payload?.type || '');
+        if (String(message.type).startsWith('dm:')) {
+            const me = socket.data.citizen;
+            const other = String(payload?.peer || '').trim().toLowerCase();
+            if (!me || !validCitizen(other) || other === me || message.type !== privateRoom(me, other)) return null;
+            if (forEdit && message.sender !== me) return null;
+            return message;
+        }
+        if (!['public', 'shura'].includes(type) || message.type !== type) return null;
+        if (forEdit && String(payload?.sender || '') !== String(message.sender || '')) return null;
+        return message;
+    }
+
+    function broadcastUpdatedMessage(message) {
+        const data = message.toObject ? message.toObject() : message;
+        if (String(data.type || '').startsWith('dm:')) {
+            const members = String(data.type).slice(3).split(':');
+            if (members.length === 2) io.to('citizen:' + members[0]).to('citizen:' + members[1]).emit('message_updated', data);
+        } else {
+            io.emit('message_updated', data);
+        }
+    }
+
+    socket.on('message_react', async (payload) => {
+        try {
+            const emoji = String(payload?.emoji || '');
+            if (!['❤️', '😂', '😮', '😢', '👍', '🔥'].includes(emoji)) return;
+            const message = await findAuthorizedChatMessage(payload, false);
+            if (!message) return;
+            const user = String(socket.data.citizen || payload?.sender || socket.id).slice(0, 100);
+            const existing = (message.reactions || []).find(r => r.user === user);
+            message.reactions = (message.reactions || []).filter(r => r.user !== user);
+            if (!existing || existing.emoji !== emoji) message.reactions.push({ user, emoji });
+            message.updatedAt = new Date();
+            await message.save();
+            broadcastUpdatedMessage(message);
+        } catch (err) { console.error('Message reaction error:', err); }
+    });
+
+    socket.on('message_edit', async (payload) => {
+        try {
+            const text = typeof payload?.text === 'string' ? payload.text.trim().slice(0, 4000) : '';
+            if (!text) return;
+            const message = await findAuthorizedChatMessage(payload, true);
+            if (!message || !message.text) return;
+            message.text = text;
+            message.editedAt = new Date();
+            message.updatedAt = new Date();
+            await message.save();
+            broadcastUpdatedMessage(message);
+        } catch (err) { console.error('Message edit error:', err); }
     });
 
     socket.on('register_fcm_token', async (payload) => {
@@ -459,11 +528,18 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on("fetch_history", async (type) => {
+    socket.on("fetch_history", async (request) => {
         try {
-            const chatType = type === 'shura' ? 'shura' : 'public';
-            const history = await Message.find({ type: chatType }).sort({ createdAt: 1 }).limit(200);
-            socket.emit("load_history", { type: chatType, history: history });
+            const requestedType = typeof request === 'string' ? request : request?.type;
+            const chatType = requestedType === 'shura' ? 'shura' : 'public';
+            const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000);
+            const sinceValue = typeof request === 'object' && request?.since ? request.since : null;
+            const since = sinceValue && !Number.isNaN(Date.parse(sinceValue)) ? new Date(sinceValue) : null;
+            const filter = { type: chatType, createdAt: { $gte: cutoff } };
+            if (since) filter.$or = [{ createdAt: { $gt: since } }, { updatedAt: { $gt: since } }];
+            const history = await Message.find(filter).sort({ createdAt: -1 }).limit(200).lean();
+            history.reverse();
+            socket.emit("load_history", { type: chatType, history, incremental: !!since, syncedAt: new Date().toISOString() });
         } catch (err) {
             console.error("خطأ في استرجاع السجل:", err);
         }
@@ -511,7 +587,9 @@ io.on('connection', (socket) => {
                 image: data.image || "",
                 sender: senderName,
                 senderId: socket.id,
-                createdAt: new Date()
+                replyTo: data.replyTo && typeof data.replyTo.text === 'string' ? { id: String(data.replyTo.id || ''), sender: String(data.replyTo.sender || '').slice(0, 100), text: String(data.replyTo.text).slice(0, 500) } : undefined,
+                createdAt: new Date(),
+                updatedAt: new Date()
             });
 
             const savedMsg = await newMessage.save();
