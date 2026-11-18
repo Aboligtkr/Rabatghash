@@ -9,11 +9,25 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const { initializeApp, cert, getApps } = require('firebase-admin/app');
 const { getMessaging } = require('firebase-admin/messaging');
+let webPush = null;
+try { webPush = require('web-push'); } catch (_) { console.warn('[WebPush] ثبّت الحزمة عبر npm install web-push لتفعيل إشعارات المتصفح.'); }
 const app = express();
 app.use(cors());
 app.use(express.static(__dirname));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+app.get('/api/push/vapid-public-key', (_req, res) => {
+  if (!vapidPublicKey || !vapidPrivateKey || !webPush) return res.status(503).json({ ok: false, error: 'Web Push is not configured' });
+  res.json({ ok: true, publicKey: vapidPublicKey });
+});
+
+app.get('/health', (_req, res) => {
+  res.status(200).json({
+    ok: true,
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'connecting'
+  });
+});
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -59,6 +73,7 @@ const messageSchema = new mongoose.Schema({
     senderId: String,
     replyTo: { id: String, sender: String, text: String },
     reactions: [{ _id: false, user: String, emoji: String }],
+    readBy: { type: [String], default: [] },
     editedAt: Date,
     updatedAt: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now }
@@ -107,7 +122,7 @@ let globalLeaderboard = {
   memory: { name: 'لا يوجد', score: 999999 }
 };
 
-let streakData = { count: 0, lastActiveDay: null, participants: [], todayParticipants: [] };
+let streakData = { count: 0, lastActiveDay: null, trackingDay: null, participants: [], todayParticipants: [] };
 const utcDay = (date = new Date()) => date.toISOString().slice(0, 10);
 const dayBefore = (day) => new Date(Date.parse(day + 'T00:00:00Z') - 86400000).toISOString().slice(0, 10);
 function refreshStreakDay() {
@@ -115,8 +130,12 @@ function refreshStreakDay() {
   if (streakData.lastActiveDay && streakData.lastActiveDay !== today && streakData.lastActiveDay !== dayBefore(today)) {
     streakData.count = 0;
     streakData.participants = [];
-    streakData.todayParticipants = [];
     streakData.lastActiveDay = null;
+  }
+  if (streakData.trackingDay !== today) {
+    streakData.trackingDay = today;
+    streakData.todayParticipants = [];
+    streakData.participants = [];
   }
 }
 async function recordStreakMessage(data) {
@@ -125,7 +144,8 @@ async function recordStreakMessage(data) {
   const today = utcDay();
   const sender = String(data.sender || '').trim().toLowerCase();
   if (!sender) return;
-  if (streakData.lastActiveDay !== today) {
+  if (streakData.trackingDay !== today) {
+    streakData.trackingDay = today;
     streakData.todayParticipants = [];
   }
   if (!streakData.todayParticipants.includes(sender)) streakData.todayParticipants.push(sender);
@@ -144,7 +164,7 @@ async function loadPersistentState() {
     if (savedLb) globalLeaderboard = savedLb.data;
 
     const savedStreak = await GameState.findOne({ key: 'streakData' });
-    if (savedStreak) streakData = { count: 0, lastActiveDay: null, participants: [], todayParticipants: [], ...savedStreak.data };
+    if (savedStreak) streakData = { count: 0, lastActiveDay: null, trackingDay: null, participants: [], todayParticipants: [], ...savedStreak.data };
     refreshStreakDay();
   } catch (e) {
     console.error("خطأ في استرجاع الحالة الثابتة:", e);
@@ -256,27 +276,27 @@ let citizensDB = {
     badges: ["✨ العهد الجديد", "📩 سفير خطيب"],
     bio: "أحدث انضمام للمملكة في عام 2026، دخل الديار برعاية ودعوة شخصية من العضو المخضرم محمد خطيب الفلسطيني.",
     rep: 80
-    },
-  "moaz": {
-    name: "معاذ 🦅",
-    title: "قائد الرواشنة السابق والعائد التائب",
-    origin: "السعودية 🇸🇦",
-    loc: "السعودية 🇸🇦",
-    year: "2024 (وعاد في 2026)",
-    badges: ["🦅 زعيم الرواشنة الأسبق", "🔙 التائب العائد", "⚡ الخصم اللدود سابقاً"],
-    bio: "انضم للمملكة عام 2024 ثم انشق لاحقاً وأسس جماعة «الرواشنة» المنافسة وقاد ضدنا أعتى الحروب كأحد أكبر أعداء المملكة، قبل أن يراجع موقفه ويعود تائباً ومستغفراً إلى أسوار المملكة الربطخشاوية في عام 2026.",
-    rep: 195
   },
-  "abdulaziz dark": {
-    name: "عبدالعزيز دارك 🌑",
-    title: "المواطن الصلب وحصن المملكة الحصين",
-    origin: "السعودية 🇸🇦",
-    loc: "السعودية 🇸🇦",
-    year: "2024 (وعاد في 2026)",
-    badges: ["🌑 راكون الأسوار", "🛡️ الفخور الصنديد", "⚔️ مواطن المملكة العتيد"],
-    bio: "أحد الأعمدة الأساسية والأركان الرصينة في صفوف المملكة سابقا. عُرف بشجاعته الفائقة ودفاعه المستميت وفخره الدائم براية الربطخشاوية. عاد حديثاً في عام 2026 ليأخذ مكانه الطبيعي بين إخوانه كدرع حصين وسند لا يُشق له غبار.",
-    rep: 220
-     }
+        "moaz": {
+        name: "معاذ 🦅",
+        title: "قائد الرواشنة السابق والعائد التائب",
+        origin: "السعودية 🇸🇦",
+        loc: "السعودية 🇸🇦",
+        year: "2024 (وعاد في 2026)",
+        badges: ["🦅 زعيم الرواشنة الأسبق", "🔙 التائب العائد", "⚡ الخصم اللدود سابقاً"],
+        bio: "انضم للمملكة عام 2024 ثم انشق لاحقاً وأسس جماعة «الرواشنة» المنافسة وقاد ضدنا أعتى الحروب كأحد أكبر أعداء المملكة، قبل أن يراجع موقفه ويعود تائباً ومستغفراً إلى أسوار المملكة الربطخشاوية في عام 2026.",
+        rep: 195
+        },
+       "abdulaziz": {
+        name: "عبدالعزيز دارك 🌑",
+        title: "المواطن الصلب وحصن المملكة الحصين",
+        origin: "السعودية 🇸🇦",
+        loc: "السعودية 🇸🇦",
+        year: "2024 (وعاد في 2026)",
+        badges: ["🌑 راكون الأسوار", "🛡️ الفخور الصنديد", "⚔️ مواطن المملكة العتيد"],
+        bio: "أحد الأعمدة الأساسية والأركان الرصينة في صفوف المملكة سابقا. عُرف بشجاعته الفائقة ودفاعه المستميت وفخره الدائم براية الربطخشاوية. عاد حديثاً في عام 2026 ليأخذ مكانه الطبيعي بين إخوانه كدرع حصين وسند لا يُشق له غبار.",
+        rep: 220
+        }
 };
 
 let citizenCredentials = {};
@@ -288,7 +308,38 @@ try {
   console.error('Invalid CITIZEN_CREDENTIALS_JSON'); 
 }
 const privateRoom = (a, b) => 'dm:' + [a, b].sort().join(':');
+function sanitizeReply(reply) {
+  if (!reply || typeof reply !== 'object' || typeof reply.text !== 'string') return undefined;
+  return {
+    id: String(reply.id || '').slice(0, 64),
+    sender: String(reply.sender || '').slice(0, 100),
+    text: String(reply.text).slice(0, 500)
+  };
+}
+
 const validCitizen = (name) => Object.prototype.hasOwnProperty.call(citizenCredentials, name);
+const configuredShuraCitizens = String(process.env.SHURA_CITIZENS || '')
+  .split(',').map(name => name.trim().toLowerCase()).filter(Boolean);
+const canAccessShura = citizen =>
+  !!citizen && configuredShuraCitizens.length > 0 && configuredShuraCitizens.includes(String(citizen).toLowerCase());
+
+// Web Push (Safari/iOS Home Screen web apps and supported desktop/mobile browsers).
+const vapidPublicKey = String(process.env.VAPID_PUBLIC_KEY || '').trim();
+const vapidPrivateKey = String(process.env.VAPID_PRIVATE_KEY || '').trim();
+const vapidSubject = String(process.env.VAPID_SUBJECT || 'mailto:admin@example.com').trim();
+if (webPush && vapidPublicKey && vapidPrivateKey) {
+  try { webPush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey); console.log('[WebPush] VAPID configured.'); }
+  catch (err) { console.error('[WebPush] VAPID configuration error:', err.message); }
+}
+
+const webPushSchema = new mongoose.Schema({
+  endpoint: { type: String, unique: true, required: true },
+  keys: { p256dh: String, auth: String },
+  user: { type: String, required: true, index: true },
+  updatedAt: { type: Date, default: Date.now }
+});
+const WebPushSubscription = mongoose.model('WebPushSubscription', webPushSchema);
+
 
 const fcmTokenSchema = new mongoose.Schema({
     token: { type: String, unique: true, required: true },
@@ -297,30 +348,55 @@ const fcmTokenSchema = new mongoose.Schema({
 });
 const FcmToken = mongoose.model("FcmToken", fcmTokenSchema);
 
-// FCM push delivery shared by public, council and private messages.
+async function sendWebPushToUsers(users, payload) {
+  if (!webPush || !vapidPublicKey || !vapidPrivateKey) return;
+  const eligible = [...new Set((users || []).map(x => String(x || '').trim().toLowerCase()).filter(x => validCitizen(x)))];
+  if (!eligible.length) return;
+  const docs = await WebPushSubscription.find({ user: { $in: eligible } }).lean();
+  const expired = [];
+  await Promise.all(docs.map(async doc => {
+    try {
+      await webPush.sendNotification({ endpoint: doc.endpoint, keys: doc.keys }, JSON.stringify(payload), { TTL: 60 * 60 });
+    } catch (err) {
+      if (err.statusCode === 404 || err.statusCode === 410) expired.push(doc.endpoint);
+      else console.error('[WebPush] delivery error:', err.statusCode || '', err.message || err);
+    }
+  }));
+  if (expired.length) await WebPushSubscription.deleteMany({ endpoint: { $in: expired } });
+}
+
+// FCM + Web Push delivery. Only authenticated citizens can ever be recipients.
 async function sendChatPush({ sender, recipient = null, text = '', image = '', chatType = 'public' }) {
-  if (!getApps().length) {
-    console.warn('[FCM] Firebase Admin is not initialized');
-    return;
-  }
   const senderId = String(sender || '').trim().toLowerCase();
-  const filter = recipient ? { user: String(recipient).trim().toLowerCase() } : {};
-  const docs = await FcmToken.find(filter).lean();
-  const targets = docs.filter(d => d.token && String(d.user || '').trim().toLowerCase() !== senderId);
-  if (!targets.length) {
-    console.log('[FCM] No eligible device tokens for', chatType);
+  let recipients = [];
+  if (chatType === 'private') {
+    const target = String(recipient || '').trim().toLowerCase();
+    if (validCitizen(target) && target !== senderId) recipients = [target];
+  } else if (chatType === 'shura') {
+    recipients = configuredShuraCitizens.filter(user => validCitizen(user) && user !== senderId);
+  } else if (chatType === 'public') {
+    recipients = Object.keys(citizenCredentials).filter(user => user !== senderId);
+  }
+  if (!recipients.length) return;
+
+  const title = chatType === 'private' ? `رسالة خاصة من ${sender}` : chatType === 'shura' ? `رسالة في مجلس الشورى من ${sender}` : `رسالة جديدة من ${sender} 👑`;
+  const body = image === 'audio' ? '🎙️ أرسل رسالة صوتية' : (image ? '📷 أرسل صورة جديدة' : String(text || 'رسالة جديدة').slice(0, 180));
+  const pushPayload = { title, body, url: '/', chatType };
+  sendWebPushToUsers(recipients, pushPayload).catch(err => console.error('[WebPush] send error:', err));
+
+  if (!getApps().length) {
+    console.warn('[FCM] Firebase Admin is not initialized; Web Push was still attempted.');
     return;
   }
-  const uniqueTokens = [...new Set(targets.map(d => d.token))];
+  const docs = await FcmToken.find({ user: { $in: recipients } }).lean();
+  const uniqueTokens = [...new Set(docs.map(d => d.token).filter(Boolean))];
+  if (!uniqueTokens.length) return;
   for (let offset = 0; offset < uniqueTokens.length; offset += 500) {
     const tokens = uniqueTokens.slice(offset, offset + 500);
     try {
       const response = await getMessaging().sendEachForMulticast({
         tokens,
-        notification: {
-          title: chatType === 'private' ? `رسالة خاصة من ${sender}` : `رسالة جديدة من ${sender} 👑`,
-          body: image === 'audio' ? '🎙️ أرسل رسالة صوتية' : (image ? '📷 أرسل صورة جديدة' : String(text || 'رسالة جديدة').slice(0, 180))
-        },
+        notification: { title, body },
         data: { chatType },
         android: { priority: 'high', notification: { sound: 'default' } }
       });
@@ -329,13 +405,11 @@ async function sendChatPush({ sender, recipient = null, text = '', image = '', c
       response.responses.forEach((item, i) => {
         if (item.success) return;
         const code = item.error?.code || 'unknown';
-        console.error(`[FCM] token failure: ${code} - ${item.error?.message || ''}`);
         if (['messaging/registration-token-not-registered', 'messaging/invalid-registration-token'].includes(code)) invalid.push(tokens[i]);
+        else console.error(`[FCM] token failure: ${code} - ${item.error?.message || ''}`);
       });
       if (invalid.length) await FcmToken.deleteMany({ token: { $in: invalid } });
-    } catch (err) {
-      console.error('[FCM] delivery error:', err);
-    }
+    } catch (err) { console.error('[FCM] delivery error:', err); }
   }
 }
 
@@ -345,11 +419,21 @@ io.on('connection', (socket) => {
             const username = String(payload?.username || '').trim().toLowerCase();
             const password = String(payload?.password || '').trim();
 
-            if (citizenCredentials[username] && citizenCredentials[username] === password) {
+            if (validCitizen(username) && citizenCredentials[username] === password) {
+                if (socket.data.citizen && socket.data.citizen !== username) {
+                    socket.leave('citizen:' + socket.data.citizen);
+                    socket.leave('shura');
+                }
+                socket.data.citizen = username;
+                socket.join('citizen:' + username);
+                if (canAccessShura(username)) socket.join('shura');
                 if (typeof ack === 'function') {
                     ack({ ok: true, user: username, role: 'مواطن' });
                 }
             } else {
+                if (socket.data.citizen) socket.leave('citizen:' + socket.data.citizen);
+                socket.leave('shura');
+                socket.data.citizen = null;
                 if (typeof ack === 'function') {
                     ack({ ok: false, error: 'اسم المستخدم أو الكود غير صحيح!' });
                 }
@@ -408,6 +492,8 @@ io.on('connection', (socket) => {
           }
           socket.data.citizen = citizen;
           socket.join('citizen:' + citizen);
+          if (canAccessShura(citizen)) socket.join('shura');
+          else socket.leave('shura');
         }
 
         if (typeof ack === 'function') {
@@ -424,6 +510,13 @@ io.on('connection', (socket) => {
     });
 
     socket.on('citizen_logout', async (payload, ack) => {
+      const oldCitizen = String(socket.data.citizen || '').trim().toLowerCase();
+      if (oldCitizen && validCitizen(oldCitizen)) {
+        try {
+          if (payload?.fcmToken) await FcmToken.deleteOne({ token: String(payload.fcmToken), user: oldCitizen });
+          if (payload?.webPushEndpoint) await WebPushSubscription.deleteOne({ endpoint: String(payload.webPushEndpoint), user: oldCitizen });
+        } catch (e) { console.error('[Push] logout cleanup error:', e); }
+      }
       const token = String(payload?.token || '');
       if (token && token.length <= 256) {
         try {
@@ -431,6 +524,7 @@ io.on('connection', (socket) => {
         } catch (e) { console.error(e); }
       }
       if (socket.data.citizen) socket.leave('citizen:' + socket.data.citizen);
+      socket.leave('shura');
       socket.data.citizen = null;
       if (typeof ack === 'function') ack({ ok: true });
     });
@@ -454,7 +548,7 @@ io.on('connection', (socket) => {
             const history = await Message.find(filter).sort({ createdAt: -1 }).limit(200).lean();
             history.reverse();
             ack({ ok: true, with: other, history, incremental: !!since, syncedAt: new Date().toISOString() });
-        } catch (err) { ack({ ok: false, error: 'تعذر تحميل المحادثة' }); }
+        } catch (err) { console.error('Private history error:', err); ack({ ok: false, error: 'تعذر تحميل المحادثة' }); }
     });
 
     socket.on('private_send', async (payload, ack) => {
@@ -467,12 +561,12 @@ io.on('connection', (socket) => {
             return;
         }
         try {
-            const saved = await new Message({ type: privateRoom(me, other), sender: me, senderId: me, text, image, audio, replyTo: payload?.replyTo && typeof payload.replyTo.text === 'string' ? { id: String(payload.replyTo.id || ''), sender: String(payload.replyTo.sender || '').slice(0, 100), text: String(payload.replyTo.text).slice(0, 500) } : undefined, createdAt: new Date(), updatedAt: new Date() }).save();
+            const saved = await new Message({ type: privateRoom(me, other), sender: me, senderId: me, text, image, audio, replyTo: sanitizeReply(payload?.replyTo), createdAt: new Date(), updatedAt: new Date() }).save();
             const data = saved.toObject();
             io.to('citizen:' + me).to('citizen:' + other).emit('private_receive', { ...data, peer: other });
             sendChatPush({ sender: me, recipient: other, text, image: image || (audio ? 'audio' : ''), chatType: 'private' }).catch(err => console.error('[FCM] private:', err));
             if (typeof ack === 'function') ack({ ok: true });
-        } catch (err) { if (typeof ack === 'function') ack({ ok: false, error: 'فشل حفظ الرسالة' }); }
+        } catch (err) { console.error('Private send error:', err); if (typeof ack === 'function') ack({ ok: false, error: 'فشل حفظ الرسالة' }); }
     });
 
     async function findAuthorizedChatMessage(payload, forEdit = false) {
@@ -489,7 +583,8 @@ io.on('connection', (socket) => {
             return message;
         }
         if (!['public', 'shura'].includes(type) || message.type !== type) return null;
-        if (forEdit && String(payload?.sender || '') !== String(message.sender || '')) return null;
+        if (type === 'shura' && !canAccessShura(socket.data.citizen)) return null;
+        if (forEdit && message.senderId !== socket.id && (!socket.data.citizen || message.sender !== socket.data.citizen)) return null;
         return message;
     }
 
@@ -498,6 +593,8 @@ io.on('connection', (socket) => {
         if (String(data.type || '').startsWith('dm:')) {
             const members = String(data.type).slice(3).split(':');
             if (members.length === 2) io.to('citizen:' + members[0]).to('citizen:' + members[1]).emit('message_updated', data);
+        } else if (data.type === 'shura') {
+            io.to('shura').emit('message_updated', data);
         } else {
             io.emit('message_updated', data);
         }
@@ -505,13 +602,53 @@ io.on('connection', (socket) => {
 
 // مؤشر الكتابة في الشات
     socket.on('typing', (data) => {
-        const chatType = data?.type || 'public';
-        socket.broadcast.emit('user_typing', { sender: socket.data.citizen || data.sender, type: chatType });
+        const chatType = String(data?.type || 'public');
+        const sender = socket.data.citizen || String(data?.sender || 'مواطن');
+        if (chatType.startsWith('dm:')) {
+            const peer = String(data?.peer || '').trim().toLowerCase();
+            if (!socket.data.citizen || !validCitizen(peer) || peer === socket.data.citizen || chatType !== privateRoom(socket.data.citizen, peer)) return;
+            io.to('citizen:' + peer).emit('user_typing', { sender, type: chatType });
+        } else if (chatType === 'public') socket.broadcast.emit('user_typing', { sender, type: chatType });
+        else if (chatType === 'shura' && canAccessShura(socket.data.citizen)) socket.to('shura').emit('user_typing', { sender, type: chatType });
     });
 
     socket.on('stop_typing', (data) => {
-        const chatType = data?.type || 'public';
-        socket.broadcast.emit('user_stop_typing', { sender: socket.data.citizen || data.sender, type: chatType });
+        const chatType = String(data?.type || 'public');
+        const sender = socket.data.citizen || String(data?.sender || 'مواطن');
+        if (chatType.startsWith('dm:')) {
+            const peer = String(data?.peer || '').trim().toLowerCase();
+            if (!socket.data.citizen || !validCitizen(peer) || peer === socket.data.citizen || chatType !== privateRoom(socket.data.citizen, peer)) return;
+            io.to('citizen:' + peer).emit('user_stop_typing', { sender, type: chatType });
+        } else if (chatType === 'public') socket.broadcast.emit('user_stop_typing', { sender, type: chatType });
+        else if (chatType === 'shura' && canAccessShura(socket.data.citizen)) socket.to('shura').emit('user_stop_typing', { sender, type: chatType });
+    });
+
+    socket.on('mark_chat_read', async (payload) => {
+        try {
+            const type=String(payload?.type||'');
+            const reader=String(socket.data.citizen || '').trim().toLowerCase();
+            const ids=Array.isArray(payload?.messageIds)?payload.messageIds.filter(id=>mongoose.isValidObjectId(String(id))).slice(0,200):[];
+            if(!reader || !ids.length) return;
+            let filter={_id:{$in:ids},type:{$in:['public','shura']}};
+            if(type.startsWith('dm:')) {
+                const peer=String(payload?.peer||'').trim().toLowerCase();
+                if(!socket.data.citizen || !validCitizen(peer) || peer===reader || type!==privateRoom(reader,peer)) return;
+                filter={_id:{$in:ids},type};
+            } else {
+                if(!['public','shura'].includes(type)) return;
+                if(type === 'shura' && !canAccessShura(socket.data.citizen)) return;
+                filter.type=type;
+            }
+            const docs=await Message.find(filter).select('_id readBy').lean();
+            for(const doc of docs){
+                await Message.updateOne({_id:doc._id},{$addToSet:{readBy:reader}});
+                const readBy=[...new Set([...(doc.readBy||[]),reader])];
+                const update={type,messageId:String(doc._id),readBy};
+                if(type.startsWith('dm:')) { const members=type.slice(3).split(':'); if(members.length===2)io.to('citizen:'+members[0]).to('citizen:'+members[1]).emit('seen_update',update); }
+                else if (type === 'shura') io.to('shura').emit('seen_update',update);
+                else io.emit('seen_update',update);
+            }
+        } catch(err){ console.error('Mark chat read error:',err); }
     });
     
     socket.on('message_react', async (payload) => {
@@ -520,7 +657,7 @@ io.on('connection', (socket) => {
             if (!['❤️', '😂', '😮', '😢', '👍', '🔥'].includes(emoji)) return;
             const message = await findAuthorizedChatMessage(payload, false);
             if (!message) return;
-            const user = String(socket.data.citizen || payload?.sender || socket.id).slice(0, 100);
+            const user = String(socket.data.citizen || 'الضيف').slice(0, 100);
             const existing = (message.reactions || []).find(r => r.user === user);
             message.reactions = (message.reactions || []).filter(r => r.user !== user);
             if (!existing || existing.emoji !== emoji) message.reactions.push({ user, emoji });
@@ -539,6 +676,8 @@ io.on('connection', (socket) => {
             if (String(data.type).startsWith('dm:')) {
                 const members = String(data.type).slice(3).split(':');
                 if (members.length === 2) io.to('citizen:' + members[0]).to('citizen:' + members[1]).emit('message_deleted', data);
+            } else if (data.type === 'shura') {
+                io.to('shura').emit('message_deleted', data);
             } else {
                 io.emit('message_deleted', data);
             }
@@ -559,27 +698,60 @@ io.on('connection', (socket) => {
         } catch (err) { console.error('Message edit error:', err); }
     });
 
-    socket.on('register_fcm_token', async (payload) => {
+    socket.on('register_fcm_token', async (payload, ack) => {
         const token = typeof payload === 'string' ? payload : payload?.token;
-        const user = String(payload?.user || socket.data.citizen || 'unknown').trim().toLowerCase();
-        if (token) {
-            try {
-                await FcmToken.findOneAndUpdate(
-                    { token },
-                    { user, updatedAt: new Date() },
-                    { upsert: true, new: true }
-                );
-                console.log("تم حفظ وتحديث FCM Token في قاعدة البيانات بنجاح للمستخدم:", user);
-            } catch (err) {
-                console.error("خطأ في حفظ الرمز بقاعدة البيانات:", err);
-            }
+        const user = String(socket.data.citizen || '').trim().toLowerCase();
+        if (!user || !validCitizen(user) || !token || typeof token !== 'string') {
+          if (typeof ack === 'function') ack({ ok: false, error: 'يجب تسجيل الدخول كمواطن أولاً' });
+          return;
         }
+        try {
+          await FcmToken.findOneAndUpdate({ token }, { user, updatedAt: new Date() }, { upsert: true, new: true });
+          if (typeof ack === 'function') ack({ ok: true });
+        } catch (err) {
+          console.error('FCM token save error:', err);
+          if (typeof ack === 'function') ack({ ok: false });
+        }
+    });
+
+    socket.on('register_web_push', async (subscription, ack) => {
+      const user = String(socket.data.citizen || '').trim().toLowerCase();
+      const endpoint = String(subscription?.endpoint || '');
+      const p256dh = String(subscription?.keys?.p256dh || '');
+      const auth = String(subscription?.keys?.auth || '');
+      if (!user || !validCitizen(user) || !endpoint.startsWith('https://') || !p256dh || !auth) {
+        if (typeof ack === 'function') ack({ ok: false, error: 'يجب تسجيل الدخول كمواطن أولاً' });
+        return;
+      }
+      try {
+        await WebPushSubscription.findOneAndUpdate({ endpoint }, { endpoint, keys: { p256dh, auth }, user, updatedAt: new Date() }, { upsert: true, new: true });
+        if (typeof ack === 'function') ack({ ok: true });
+      } catch (err) {
+        console.error('[WebPush] subscription save error:', err);
+        if (typeof ack === 'function') ack({ ok: false, error: 'تعذر حفظ اشتراك الإشعارات' });
+      }
+    });
+
+    socket.on('unregister_device_push', async (payload, ack) => {
+      const user = String(socket.data.citizen || '').trim().toLowerCase();
+      if (!user || !validCitizen(user)) { if (typeof ack === 'function') ack({ ok: false }); return; }
+      try {
+        const fcmToken = String(payload?.fcmToken || '');
+        const endpoint = String(payload?.endpoint || '');
+        if (fcmToken) await FcmToken.deleteOne({ token: fcmToken, user });
+        if (endpoint) await WebPushSubscription.deleteOne({ endpoint, user });
+        if (typeof ack === 'function') ack({ ok: true });
+      } catch (err) { console.error('[Push] unregister error:', err); if (typeof ack === 'function') ack({ ok: false }); }
     });
 
     socket.on("fetch_history", async (request) => {
         try {
             const requestedType = typeof request === 'string' ? request : request?.type;
             const chatType = requestedType === 'shura' ? 'shura' : 'public';
+            if (chatType === 'shura' && !canAccessShura(socket.data.citizen)) {
+              socket.emit('load_history', { type: chatType, history: [], incremental: false, error: 'غير مصرح لك بدخول مجلس الشورى' });
+              return;
+            }
             const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000);
             const sinceValue = typeof request === 'object' && request?.since ? request.since : null;
             const since = sinceValue && !Number.isNaN(Date.parse(sinceValue)) ? new Date(sinceValue) : null;
@@ -623,34 +795,46 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('send_message', async (data) => {
+    socket.on('send_message', async (data, ack) => {
         try {
-            if (!data || !['public', 'shura'].includes(data.type)) return;
-            const senderName = data.sender || "مواطن";
+            if (!data || !['public', 'shura'].includes(data.type)) {
+              if (typeof ack === 'function') ack({ ok: false, error: 'نوع المحادثة غير صالح' });
+              return;
+            }
+            if (data.type === 'shura' && !canAccessShura(socket.data.citizen)) {
+              if (typeof ack === 'function') ack({ ok: false, error: 'غير مصرح لك بإرسال رسائل في مجلس الشورى' });
+              return;
+            }
+            const senderName = socket.data.citizen || (String(data.sender || '') === 'الضيف' ? 'الضيف' : 'مواطن');
+            const text = typeof data.text === 'string' ? data.text.trim().slice(0, 4000) : '';
             const audio = typeof data.audio === 'string' && /^data:audio\/(webm|ogg|mp4|mpeg|wav);base64,/.test(data.audio) && data.audio.length < 3_500_000 ? data.audio : '';
             const image = typeof data.image === 'string' && /^data:image\/(png|jpeg|webp|gif);base64,/.test(data.image) && data.image.length < 7_000_000 ? data.image : '';
-            if (!data.text && !image && !audio) return;
-            if (data.type === 'public') await recordStreakMessage(data);
+            if (!text && !image && !audio) {
+              if (typeof ack === 'function') ack({ ok: false, error: 'الرسالة فارغة أو نوع المرفق غير مدعوم' });
+              return;
+            }
+            if (data.type === 'public') await recordStreakMessage({ type: data.type, sender: senderName });
 
-            const newMessage = new Message({
-                type: data.type || "public",
-                text: data.text || "",
+            const savedMsg = await new Message({
+                type: data.type,
+                text,
                 image,
                 audio,
                 sender: senderName,
-                senderId: socket.id,
-                replyTo: data.replyTo && typeof data.replyTo.text === 'string' ? { id: String(data.replyTo.id || ''), sender: String(data.replyTo.sender || '').slice(0, 100), text: String(data.replyTo.text).slice(0, 500) } : undefined,
+                senderId: socket.data.citizen || socket.id,
+                replyTo: sanitizeReply(data.replyTo),
                 createdAt: new Date(),
                 updatedAt: new Date()
-            });
+            }).save();
 
-            const savedMsg = await newMessage.save();
-            io.emit('receive_message', savedMsg);
+            if (data.type === 'shura') io.to('shura').emit('receive_message', savedMsg);
+            else io.emit('receive_message', savedMsg);
 
-            sendChatPush({ sender: senderName, text: data.text, image: image || (audio ? 'audio' : ''), chatType: data.type }).catch(err => console.error('[FCM] chat:', err));
-
+            sendChatPush({ sender: senderName, text, image: image || (audio ? 'audio' : ''), chatType: data.type }).catch(err => console.error('[FCM] chat:', err));
+            if (typeof ack === 'function') ack({ ok: true, messageId: String(savedMsg._id) });
         } catch (err) {
             console.error("خطأ في حفظ أو إرسال الرسالة:", err);
+            if (typeof ack === 'function') ack({ ok: false, error: 'حدث خطأ أثناء حفظ الرسالة' });
         }
     });
 
