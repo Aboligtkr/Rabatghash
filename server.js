@@ -391,8 +391,8 @@ async function sendChatPush({ sender, recipient = null, text = '', image = '', c
   }
   if (!recipients.length) return;
 
-  const title = chatType === 'private' ? `رسالة خاصة من ${sender}` : chatType === 'shura' ? `رسالة في مجلس الشورى من ${sender}` : `رسالة جديدة من ${sender} 👑`;
-  const body = image === 'audio' ? '🎙️ أرسل رسالة صوتية' : (image ? '📷 أرسل صورة جديدة' : String(text || 'رسالة جديدة').slice(0, 180));
+  const title = chatType === 'private' ? `Private Message From ${sender}` : chatType === 'shura' ? `New Shura Message From ${sender}` : `New Message From ${sender} `;
+  const body = image === 'audio' ? ' Sent A New Voice Message' : (image ? 'Sent A New ' : String(text || 'New Message').slice(0, 180));
   const pushPayload = { title, body, url: '/', chatType };
   sendWebPushToUsers(recipients, pushPayload).catch(err => console.error('[WebPush] send error:', err));
 
