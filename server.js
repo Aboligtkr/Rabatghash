@@ -326,7 +326,13 @@ const canAccessShura = citizen =>
 // Web Push (Safari/iOS Home Screen web apps and supported desktop/mobile browsers).
 const vapidPublicKey = String(process.env.VAPID_PUBLIC_KEY || '').trim();
 const vapidPrivateKey = String(process.env.VAPID_PRIVATE_KEY || '').trim();
-const vapidSubject = String(process.env.VAPID_SUBJECT || 'mailto:admin@example.com').trim();
+console.log('[WebPush Debug]', {
+  packageLoaded: !!webPush,
+  publicKeyExists: !!vapidPublicKey,
+  privateKeyExists: !!vapidPrivateKey,
+  subjectExists: !!vapidSubject
+});
+const vapidSubject = String(process.env.VAPID_SUBJECT || 'mailto:baybarskgr@outlook.com').trim();
 if (webPush && vapidPublicKey && vapidPrivateKey) {
   try { webPush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey); console.log('[WebPush] VAPID configured.'); }
   catch (err) { console.error('[WebPush] VAPID configuration error:', err.message); }
