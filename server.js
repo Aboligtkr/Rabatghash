@@ -332,7 +332,7 @@ console.log('[WebPush Debug]', {
   privateKeyExists: !!vapidPrivateKey,
   subjectExists: !!vapidSubject
 });
-const vapidSubject = String(process.env.VAPID_SUBJECT || 'mailto:baybarskgr@outlook.com').trim();
+const vapidSubject = String(process.env.VAPID_SUBJECT).trim();
 if (webPush && vapidPublicKey && vapidPrivateKey) {
   try { webPush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey); console.log('[WebPush] VAPID configured.'); }
   catch (err) { console.error('[WebPush] VAPID configuration error:', err.message); }
